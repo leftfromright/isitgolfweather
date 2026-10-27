@@ -14,6 +14,7 @@
       --accent: #2e7d32;
       --chart-line: #2e7d32;
       --chart-bar: rgba(33, 150, 243, 0.45);
+      --sun-line: #fb8c00;
     }
 
     [data-theme="dark"] {
@@ -25,6 +26,7 @@
       --accent: #4caf50;
       --chart-line: #66bb6a;
       --chart-bar: rgba(100, 181, 246, 0.45);
+      --sun-line: #ffb74d;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -87,7 +89,6 @@
       color: var(--text);
     }
 
-    /* Warning Banners */
     .alert-banner {
       padding: 0.75rem 1rem;
       border-radius: 6px;
@@ -136,7 +137,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Score Header Badge */
     .score-badge {
       display: flex;
       align-items: center;
@@ -196,10 +196,9 @@
     .date-btn .day { font-weight: bold; display: block; }
     .date-btn .date { font-size: 0.75rem; opacity: 0.8; }
 
-    /* SVG Chart */
     .chart-container {
       width: 100%;
-      height: 180px;
+      height: 190px;
       margin-top: 0.75rem;
       position: relative;
     }
@@ -209,6 +208,8 @@
     .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
     .chart-bar { fill: var(--chart-bar); }
+    .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
+    .sun-text { fill: var(--sun-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
   </style>
 </head>
 <body>
@@ -222,7 +223,7 @@
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.4</div>
+  <div class="version-tag">Version 0.5</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Enter city or town (e.g. Leamington Spa)...">
@@ -234,13 +235,10 @@
 
   <div id="weatherContent" style="display: none;">
     
-    <!-- Upcoming Date Bar -->
     <div class="date-bar" id="dateBar"></div>
 
-    <!-- Daylight / Sunset Warning Banner -->
     <div id="daylightBanner" style="display: none;"></div>
 
-    <!-- Golfability Score Card -->
     <div class="card">
       <h2>Golf Rating</h2>
       <div id="scoreBadge" class="score-badge score-high">
@@ -250,7 +248,6 @@
       <div id="assessment"></div>
     </div>
 
-    <!-- Weather Overview -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       <div class="temp-large">
@@ -278,7 +275,6 @@
       </div>
     </div>
 
-    <!-- Sunrise / Sunset Card -->
     <div class="card">
       <h2>Sun & Daylight Hours</h2>
       <div class="grid">
@@ -297,15 +293,13 @@
       </div>
     </div>
 
-    <!-- Hourly Temperature & Rain Chart -->
     <div class="card">
-      <h2>Hourly Forecast (Temp Line & Rain Bars)</h2>
+      <h2>24-Hour Forecast (Temp Line, Rain Bars & Sun Events)</h2>
       <div class="chart-container">
         <svg id="hourlyChart"></svg>
       </div>
     </div>
 
-    <!-- Day Summary -->
     <div class="card">
       <h2>Day Summary</h2>
       <div class="grid">
@@ -327,14 +321,12 @@
 </div>
 
 <script>
-  // State
   let currentUnit = 'C'; 
   let speedUnit = 'mph'; 
   let currentData = null;
   let currentCityName = '';
   let selectedDayIndex = 0; 
 
-  // DOM Elements
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
@@ -403,6 +395,7 @@
         currentCityName = overrideName;
       }
 
+      // Explicitly request timezone=auto so sunrise/sunset match local time
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=1&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
@@ -482,22 +475,22 @@
     return Math.round(score * 10) / 10;
   }
 
-  function renderChart(hourlyTemps, hourlyPrecip, isF) {
+  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec) {
     const svg = document.getElementById('hourlyChart');
     svg.innerHTML = '';
 
     const width = svg.clientWidth || 600;
-    const height = 150;
-    const paddingLeft = 35; // Extra padding for Y axis labels
+    const height = 160;
+    const paddingLeft = 35;
     const paddingRight = 15;
     const paddingBottom = 25;
-    const paddingTop = 15;
+    const paddingTop = 20;
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
     const maxRain = Math.max(...hourlyPrecip, 2);
 
-    const count = hourlyTemps.length;
+    const count = 24; // 24 full hours plotted (00:00 to 23:00)
     const stepX = (width - paddingLeft - paddingRight) / (count - 1);
 
     // Render Y-Axis Temp Labels & Horizontal Gridlines
@@ -543,13 +536,12 @@
       const y = height - paddingBottom - ((temp - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
       points += `${x},${y} `;
 
-      // Time label every 3 hours
-      if (i % 3 === 0 || i === count - 1) {
+      if (i % 4 === 0 || i === count - 1) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', x);
         text.setAttribute('y', height - 5);
         text.setAttribute('class', 'chart-text');
-        text.textContent = `${i + 6}:00`;
+        text.textContent = `${i}:00`;
         svg.appendChild(text);
       }
     });
@@ -558,6 +550,44 @@
     polyline.setAttribute('points', points.trim());
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
+
+    // Draw Sunrise Line if within 0-23h range
+    if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
+      const sunX = paddingLeft + sunriseHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', sunX);
+      line.setAttribute('x2', sunX);
+      line.setAttribute('y1', paddingTop - 5);
+      line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'sun-line');
+      svg.appendChild(line);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', sunX);
+      label.setAttribute('y', paddingTop - 8);
+      label.setAttribute('class', 'sun-text');
+      label.textContent = '🌅 Rise';
+      svg.appendChild(label);
+    }
+
+    // Draw Sunset Line if within 0-23h range
+    if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
+      const sunX = paddingLeft + sunsetHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', sunX);
+      line.setAttribute('x2', sunX);
+      line.setAttribute('y1', paddingTop - 5);
+      line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'sun-line');
+      svg.appendChild(line);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', sunX);
+      label.setAttribute('y', paddingTop - 8);
+      label.setAttribute('class', 'sun-text');
+      label.textContent = '🌇 Set';
+      svg.appendChild(label);
+    }
   }
 
   function render() {
@@ -602,7 +632,7 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[selectedDayIndex]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    // Sunrise & Sunset Parsing
+    // Parse Sunrise/Sunset with ISO-8601 Strings for robust local time parsing
     const sunriseDate = new Date(d.sunrise[selectedDayIndex]);
     const sunsetDate = new Date(d.sunset[selectedDayIndex]);
     
@@ -610,17 +640,22 @@
     document.getElementById('sunriseTime').textContent = formatTime(sunriseDate);
     document.getElementById('sunsetTime').textContent = formatTime(sunsetDate);
 
-    // Daylight Banner & Remaining Time Logic
+    // Daylight Warning Banner Calculations
     const now = new Date();
     const millisUntilSunset = sunsetDate.getTime() - now.getTime();
     const hoursUntilSunset = millisUntilSunset / (1000 * 60 * 60);
 
     if (isToday) {
-      if (hoursUntilSunset <= 0) {
+      if (now.getTime() > sunsetDate.getTime()) {
         daylightBanner.className = 'alert-banner alert-danger';
-        daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining for play today.</span>`;
+        daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining today.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = '0 hrs';
+      } else if (now.getTime() < sunriseDate.getTime()) {
+        daylightBanner.className = 'alert-banner alert-warning';
+        daylightBanner.innerHTML = `🌅 <span><strong>Pre-Sunrise:</strong> Sun rises at ${formatTime(sunriseDate)}.</span>`;
+        daylightBanner.style.display = 'flex';
+        document.getElementById('daylightLeft').textContent = `${((sunsetDate - sunriseDate) / (1000 * 60 * 60)).toFixed(1)} hrs total`;
       } else if (hoursUntilSunset < 2) {
         daylightBanner.className = 'alert-banner alert-danger';
         daylightBanner.innerHTML = `⚠️ <span><strong>Sunset Warning:</strong> Less than 2 hours of daylight left (${hoursUntilSunset.toFixed(1)}h remaining). You likely won't finish 9 holes.</span>`;
@@ -628,7 +663,7 @@
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
       } else if (hoursUntilSunset < 4) {
         daylightBanner.className = 'alert-banner alert-warning';
-        daylightBanner.innerHTML = `⏳ <span><strong>Limited Daylight Warning:</strong> ~${hoursUntilSunset.toFixed(1)} hours until sunset. You may only have time to complete 9 holes.</span>`;
+        daylightBanner.innerHTML = `⏳ <span><strong>Limited Daylight Warning:</strong> ~${hoursUntilSunset.toFixed(1)} hours until sunset. You may only have time for 9 holes.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
       } else {
@@ -636,7 +671,6 @@
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
       }
     } else {
-      // Future dates calculate total daylight hours between sunrise and sunset
       const totalDaylight = (sunsetDate.getTime() - sunriseDate.getTime()) / (1000 * 60 * 60);
       daylightBanner.style.display = 'none';
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
@@ -676,16 +710,19 @@
 
     document.getElementById('assessment').innerHTML = assessmentHTML;
 
-    // Filter hourly data for daytime hours (06:00 to 21:00) of selected day
-    const startIndex = (selectedDayIndex + 1) * 24 + 6;
-    const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 15);
-    const dayPrecip = h.precipitation.slice(startIndex, startIndex + 15);
+    // Filter hourly data for all 24 hours of selected day
+    const startIndex = (selectedDayIndex + 1) * 24; 
+    const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
+    const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    renderChart(displayTemps, dayPrecip, isF);
+    // Convert Sunrise & Sunset to decimal hours (e.g., 6:30 AM -> 6.5)
+    const sunriseHourDec = sunriseDate.getHours() + (sunriseDate.getMinutes() / 60);
+    const sunsetHourDec = sunsetDate.getHours() + (sunsetDate.getMinutes() / 60);
+
+    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec);
   }
 
-  // Event Listeners
   unitToggle.addEventListener('click', () => {
     currentUnit = currentUnit === 'C' ? 'F' : 'C';
     unitToggle.textContent = `°${currentUnit}`;
