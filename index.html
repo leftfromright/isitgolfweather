@@ -326,7 +326,6 @@
       white-space: nowrap;
     }
     
-    /* Clean Range Slider without progress fill tint */
     input[type="range"] {
       width: 100%;
       height: 6px;
@@ -494,6 +493,10 @@
       background-color: var(--warn-med-bg);
       border-color: var(--warn-med-border);
     }
+    .grid-item.stat-orange {
+      background-color: var(--warn-orange-bg);
+      border-color: var(--warn-orange-border);
+    }
     .grid-item.stat-bad {
       background-color: var(--warn-bad-bg);
       border-color: var(--warn-bad-border);
@@ -555,7 +558,6 @@
       border: none;
     }
 
-    /* Split Chart Container with Fixed Frozen Y-Axis */
     .chart-wrapper-split {
       display: flex;
       width: 100%;
@@ -633,7 +635,7 @@
 
 <div class="container">
   <header class="hero-banner">
-    <div class="floating-version">v0.18</div>
+    <div class="floating-version">v0.19</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
@@ -753,7 +755,7 @@
       </div>
     </div>
 
-    <!-- Day Summary Card -->
+    <!-- Day Summary Card with Fully Color-Coded Metrics -->
     <div class="card">
       <h2>Day Summary</h2>
       <div class="summary-grid">
@@ -785,11 +787,11 @@
           <div class="label">High / Low</div>
           <div class="value-main" id="tempRange">--</div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" id="dailyRainCard">
           <div class="label">Daily Rain</div>
           <div class="value-main" id="todayRain">--</div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" id="maxWindCard">
           <div class="label">Max Wind</div>
           <div class="value-main" id="maxWind">--</div>
         </div>
@@ -878,6 +880,8 @@
   const recentRainCard = document.getElementById('recentRainCard');
   const forecastRainCard = document.getElementById('forecastRainCard');
   const daylightCard = document.getElementById('daylightCard');
+  const dailyRainCard = document.getElementById('dailyRainCard');
+  const maxWindCard = document.getElementById('maxWindCard');
 
   try {
     const saved = localStorage.getItem('golf_home_course');
@@ -1159,32 +1163,36 @@
     }
   }
 
-  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
+  // Enhanced Scoring Algorithm with Strict Snow & Freezing Triggers
+  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh, weatherCode) {
+    const isSnow = [71, 73, 75].includes(weatherCode);
+    if (tempC <= 0 || isSnow) return 1.0; // Instant 1/10 for freezing or snow
+
     let score = 10;
     const windMph = windSpeedKmh / 1.609;
 
     if (windowRainMm > 10) score -= 4.5;
     else if (windowRainMm > 4) score -= 3.0;
-    else if (windowRainMm > 1) score -= 1.5;
-    else if (windowRainMm > 0.1) score -= 0.5;
+    else if (windowRainMm > 1) score -= 1.8;
+    else if (windowRainMm > 0.1) score -= 0.8;
 
-    if (past24RainMm > 15) score -= 2.5;
-    else if (past24RainMm > 5) score -= 1.2;
+    if (past24RainMm > 15) score -= 2.8;
+    else if (past24RainMm > 5) score -= 1.5;
 
-    if (windMph > 30) score -= 4.0;
-    else if (windMph > 20) score -= 2.5;
-    else if (windMph > 12) score -= 1.2;
+    if (windMph > 30) score -= 4.5;
+    else if (windMph > 20) score -= 2.8;
+    else if (windMph > 12) score -= 1.5;
 
     if (tempC < 4) score -= 3.5;
-    else if (tempC < 8) score -= 2.5;
-    else if (tempC < 14) score -= 1.5;
+    else if (tempC < 8) score -= 2.2;
+    else if (tempC < 12) score -= 1.2;
     else if (tempC > 32) score -= 1.5;
 
     score = Math.max(1, Math.min(10, score));
     return Math.round(score * 10) / 10;
   }
 
-  // Render Chart with Frozen Y-Axis & Corrected Sunset Label
+  // Render Chart using Option 3 Directional Symbols (☀️↑ and ☀️↓)
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, isToday) {
     const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
@@ -1205,7 +1213,6 @@
     const count = 24;
     const stepX = (width - paddingLeft - paddingRight) / (count - 1);
 
-    // Frozen Y-Axis Labels
     const ySteps = 5;
     for (let i = 0; i < ySteps; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / (ySteps - 1)));
@@ -1304,7 +1311,7 @@
       label.setAttribute('x', sunX);
       label.setAttribute('y', paddingTop - 8);
       label.setAttribute('class', 'sun-text');
-      label.textContent = '🌅 Rise';
+      label.textContent = '☀️↑ Rise'; // Option 3 Symbol
       svg.appendChild(label);
     }
 
@@ -1322,7 +1329,7 @@
       label.setAttribute('x', sunX);
       label.setAttribute('y', paddingTop - 8);
       label.setAttribute('class', 'sun-text');
-      label.textContent = '🌇 Set'; // Corrected Sunset Text
+      label.textContent = '☀️↓ Set'; // Option 3 Symbol
       svg.appendChild(label);
     }
   }
@@ -1360,7 +1367,6 @@
     const isToday = selectedDayIndex === 0;
     document.getElementById('dayLabel').textContent = isToday ? 'Right Now' : `Forecast for ${d.time[selectedDayIndex]}`;
 
-    // Compute 4-Hour Playing Window starting at Tee Time
     const startIndex = selectedDayIndex * 24; 
     const teeStartHourIndex = startIndex + selectedTeeHour;
     
@@ -1415,6 +1421,18 @@
     recentRainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
     forecastRainCard.className = 'grid-item ' + (windowRainSum > 5 ? 'stat-bad' : windowRainSum > 0.5 ? 'stat-med' : 'stat-good');
 
+    // Color Code Day Summary Grid Cards (Daily Rain & Max Wind)
+    if (todayRainSum > 10.0) dailyRainCard.className = 'grid-item stat-bad';
+    else if (todayRainSum > 4.0) dailyRainCard.className = 'grid-item stat-orange';
+    else if (todayRainSum > 1.0) dailyRainCard.className = 'grid-item stat-med';
+    else dailyRainCard.className = 'grid-item stat-good';
+
+    const maxDayWindMph = d.wind_speed_10m_max[selectedDayIndex] / 1.609;
+    if (maxDayWindMph > 30) maxWindCard.className = 'grid-item stat-bad';
+    else if (maxDayWindMph > 20) maxWindCard.className = 'grid-item stat-orange';
+    else if (maxDayWindMph > 12) maxWindCard.className = 'grid-item stat-med';
+    else maxWindCard.className = 'grid-item stat-good';
+
     const sunriseObj = parseTimeFromISO(d.sunrise[selectedDayIndex]);
     const sunsetObj = parseTimeFromISO(d.sunset[selectedDayIndex]);
     
@@ -1453,8 +1471,8 @@
       daylightCard.className = 'grid-item stat-good';
     }
 
-    // Dynamic Golf Rating Scoring & Verdict Updates
-    const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
+    // Dynamic Score Calculation
+    const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, weatherCode);
     scoreText.textContent = `${score} / 10`;
 
     if (score >= 8.0) {
@@ -1468,25 +1486,29 @@
       scoreIcon.textContent = '🌧️';
     }
 
+    const isSnow = [71, 73, 75].includes(weatherCode);
+    const isFreezing = windowAvgTemp <= 0;
     const isHeavyWind = windMph > 25;
     const isHeavyRain = windowRainSum > 5 || todayRainSum > 12;
 
-    // Smart Verdict Banner accounting for incoming rain mid-round
-    if (score >= 8.5) {
+    // Strict Dynamic Verdict Logic
+    if (isFreezing || isSnow) {
+      verdictBanner.className = 'verdict-banner verdict-vlow';
+      verdictTitle.textContent = 'No Chance ⛔';
+      verdictSub.textContent = isSnow ? 'Snow forecast. Greens covered and unplayable.' : 'Freezing temperatures (0°C or below). Frozen turf & frost delay expected.';
+    } else if (score >= 8.5 && windowRainSum === 0 && last24hRain < 2.0 && windMph < 14 && windowAvgTemp >= 12 && windowAvgTemp <= 26) {
+      verdictBanner.className = 'verdict-banner verdict-vhigh';
+      verdictTitle.textContent = 'Yes, Perfect! ⛳';
+      verdictSub.textContent = 'Firm fairways, gentle breeze, and dry skies. Get out on the course!';
+    } else if (score >= 7.0) {
       if (startRain === 0 && laterRain > 0.1) {
         verdictBanner.className = 'verdict-banner verdict-high';
         verdictTitle.textContent = 'Good (Rain Later) 🌦️';
         verdictSub.textContent = `Dry at tee-off (${selectedTeeHour}:00), but rain is expected within 1–2 hours. Pack a jacket!`;
-      } else {
-        verdictBanner.className = 'verdict-banner verdict-vhigh';
-        verdictTitle.textContent = 'Yes, Perfect! ⛳';
-        verdictSub.textContent = 'Firm fairways, gentle breeze, and dry skies. Get out on the course!';
-      }
-    } else if (score >= 7.0) {
-      if (startRain === 0 && laterRain > 0.2) {
-        verdictBanner.className = 'verdict-banner verdict-med';
-        verdictTitle.textContent = 'Playable (Drizzle Forecast) 🌦️';
-        verdictSub.textContent = 'Clear start, but rain arriving mid-round. Umbrella mandatory.';
+      } else if (last24hRain > 5.0) {
+        verdictBanner.className = 'verdict-banner verdict-high';
+        verdictTitle.textContent = 'Good (Soggy Fairways) 👍';
+        verdictSub.textContent = 'Dry overhead, but recent heavy rain means soft turf and minimal roll.';
       } else {
         verdictBanner.className = 'verdict-banner verdict-high';
         verdictTitle.textContent = 'Yes, Good! 👍';
@@ -1495,7 +1517,9 @@
     } else if (score >= 5.0) {
       verdictBanner.className = 'verdict-banner verdict-med';
       verdictTitle.textContent = 'Not Bad 🌥️';
-      verdictSub.textContent = 'Playable round, but factor in cold weather, damp ground, or breeze.';
+      if (last24hRain > 8.0) verdictSub.textContent = 'Soggy underfoot from recent rain. Wet fairways expected.';
+      else if (windMph > 16) verdictSub.textContent = 'Playable round, but expect a stiff breeze impacting club selection.';
+      else verdictSub.textContent = 'Playable round, but factor in cool weather or light dampness.';
     } else if (score >= 3.0) {
       verdictBanner.className = 'verdict-banner verdict-low';
       verdictTitle.textContent = 'Poor 🌧️';
