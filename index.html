@@ -596,12 +596,9 @@
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
     .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
-    .sun-text { fill: var(--sun-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
     .now-line { stroke: var(--now-line); stroke-width: 1.5; stroke-dasharray: 2,2; }
-    .now-text { fill: var(--now-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
-    
     .tee-line { stroke: var(--tee-line); stroke-width: 2; stroke-dasharray: 3,3; }
-    .tee-text { fill: var(--tee-line); font-size: 10px; font-weight: bold; text-anchor: middle; }
+    .chart-icon-marker { font-size: 12px; text-anchor: middle; cursor: pointer; }
 
     .chart-legend {
       display: flex;
@@ -643,7 +640,7 @@
 
 <div class="container">
   <header class="hero-banner">
-    <div class="floating-version">v0.20</div>
+    <div class="floating-version">v0.21</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
@@ -744,7 +741,7 @@
       </div>
     </div>
 
-    <!-- 24-Hour Forecast Chart with Tee Time Line & Zero Vertical Scroll -->
+    <!-- 24-Hour Forecast Chart with Icon Markers -->
     <div class="card">
       <h2>24-Hour Forecast</h2>
       <div class="chart-wrapper-split">
@@ -845,9 +842,11 @@
   
   let debounceTimer = null;
   let savedHomeCourse = null;
+  let rAFPending = false; // Slider animation frame flag
 
   const fahrenheitCountries = ['US', 'PR', 'VI', 'GU', 'MP', 'AS', 'BS', 'KY', 'LR'];
 
+  // Global DOM Caching for Max Render Speed
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
@@ -935,10 +934,18 @@
     pwaModal.style.display = 'none';
   });
 
+  // RequestAnimationFrame Throttling for Silky Smooth Slider Dragging
   teeTimeSlider.addEventListener('input', (e) => {
     selectedTeeHour = parseInt(e.target.value);
     updateTeeTimeDisplay();
-    render();
+    
+    if (!rAFPending) {
+      rAFPending = true;
+      requestAnimationFrame(() => {
+        render();
+        rAFPending = false;
+      });
+    }
   });
 
   function updateTeeTimeDisplay() {
@@ -1017,7 +1024,6 @@
 
       locationInput.value = currentCityName;
 
-      // Request past_days=7 for full 7-day rainfall context
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
@@ -1175,7 +1181,6 @@
     }
   }
 
-  // Synchronized Scoring Logic
   function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh, weatherCode, orangeCardCount) {
     const isSnow = [71, 73, 75].includes(weatherCode);
     if (tempC <= 0 || isSnow) return 1.0; 
@@ -1199,7 +1204,6 @@
     else if (tempC < 8) score -= 2.2;
     else if (tempC < 12) score -= 1.2;
 
-    // Cap score if warning cards exist to prevent "7.7 Yes Good" when cards are orange
     if (orangeCardCount >= 3) {
       score = Math.min(score, 6.4);
     } else if (orangeCardCount >= 1) {
@@ -1210,8 +1214,8 @@
     return Math.round(score * 10) / 10;
   }
 
-  // Render Chart with Vertical Golf Ball Line & Zero Vertical Scroll
-  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
+  // Render Chart with Icon-Only Markers (Sunset = 🌙 Moon)
+  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday, sunriseDisplay, sunsetDisplay) {
     const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
     ySvg.innerHTML = '';
@@ -1222,7 +1226,7 @@
     const paddingLeft = 10;
     const paddingRight = 15;
     const paddingBottom = 22;
-    const paddingTop = 18;
+    const paddingTop = 20;
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
@@ -1297,77 +1301,96 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
+    // 📍 Now Marker Icon
     if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
       const nowX = paddingLeft + currentHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', nowX);
       line.setAttribute('x2', nowX);
-      line.setAttribute('y1', paddingTop - 5);
+      line.setAttribute('y1', paddingTop - 2);
       line.setAttribute('y2', height - paddingBottom);
       line.setAttribute('class', 'now-line');
       svg.appendChild(line);
 
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', nowX);
-      label.setAttribute('y', paddingTop - 7);
-      label.setAttribute('class', 'now-text');
-      label.textContent = '📍 Now';
-      svg.appendChild(label);
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', nowX);
+      icon.setAttribute('y', paddingTop - 5);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '📍';
+      
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = 'Current Time (Now)';
+      icon.appendChild(title);
+      svg.appendChild(icon);
     }
 
+    // ☀️ Sunrise Marker Icon
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const sunX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', sunX);
       line.setAttribute('x2', sunX);
-      line.setAttribute('y1', paddingTop - 5);
+      line.setAttribute('y1', paddingTop - 2);
       line.setAttribute('y2', height - paddingBottom);
       line.setAttribute('class', 'sun-line');
       svg.appendChild(line);
 
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', sunX);
-      label.setAttribute('y', paddingTop - 7);
-      label.setAttribute('class', 'sun-text');
-      label.textContent = '☀️↑ Rise';
-      svg.appendChild(label);
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', sunX);
+      icon.setAttribute('y', paddingTop - 5);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '☀️';
+      
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `Sunrise (${sunriseDisplay})`;
+      icon.appendChild(title);
+      svg.appendChild(icon);
     }
 
+    // 🌙 Sunset Marker Icon (Updated to Moon)
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const sunX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.setAttribute('x1', sunX);
       line.setAttribute('x2', sunX);
-      line.setAttribute('y1', paddingTop - 5);
+      line.setAttribute('y1', paddingTop - 2);
       line.setAttribute('y2', height - paddingBottom);
       line.setAttribute('class', 'sun-line');
       svg.appendChild(line);
 
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', sunX);
-      label.setAttribute('y', paddingTop - 7);
-      label.setAttribute('class', 'sun-text');
-      label.textContent = '☀️↓ Set';
-      svg.appendChild(label);
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', sunX);
+      icon.setAttribute('y', paddingTop - 5);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '🌙'; // Updated Sunset Moon Icon
+      
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `Sunset (${sunsetDisplay})`;
+      icon.appendChild(title);
+      svg.appendChild(icon);
     }
 
-    // Tee Time Vertical Line with Golf Ball Marker
+    // ⛳ Tee Time Marker Icon
     if (teeHourDec >= 0 && teeHourDec <= 23) {
       const teeX = paddingLeft + teeHourDec * stepX;
       const teeLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       teeLine.setAttribute('x1', teeX);
       teeLine.setAttribute('x2', teeX);
-      teeLine.setAttribute('y1', paddingTop - 5);
+      teeLine.setAttribute('y1', paddingTop - 2);
       teeLine.setAttribute('y2', height - paddingBottom);
       teeLine.setAttribute('class', 'tee-line');
       svg.appendChild(teeLine);
 
-      const teeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      teeLabel.setAttribute('x', teeX);
-      teeLabel.setAttribute('y', paddingTop - 7);
-      teeLabel.setAttribute('class', 'tee-text');
-      teeLabel.textContent = '⛳ Tee';
-      svg.appendChild(teeLabel);
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', teeX);
+      icon.setAttribute('y', paddingTop - 5);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '⛳';
+      
+      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = `Selected Tee Time (${teeHourDec}:00)`;
+      icon.appendChild(title);
+      svg.appendChild(icon);
     }
   }
 
@@ -1389,7 +1412,6 @@
     const isF = currentUnit === 'F';
     const c = currentData.current;
 
-    // Past 7 Days Offset Calculation
     const pastOffset = 7;
     const currentDayIdx = pastOffset + selectedDayIndex;
 
@@ -1436,7 +1458,6 @@
     document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
     document.getElementById('windSub').textContent = windVisual.label;
 
-    // Past 24h & 7 Days Rainfall Context Calculation
     const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
     const past7DaysRain = d.precipitation_sum.slice(0, currentDayIdx).reduce((a, b) => a + b, 0);
 
@@ -1515,7 +1536,6 @@
       daylightCard.className = 'grid-item stat-good';
     }
 
-    // Callout Box Formatting with Detailed Past 7-Day Rainfall Context
     let orangeCardCount = 0;
 
     const totalMoisture = last24hRain + windowRainSum;
@@ -1632,7 +1652,6 @@
     gearListHTML += '</ul>';
     gearCallout.innerHTML = gearListHTML;
 
-    // Dynamic Score Calculation with Synchronized Orange Card Cap
     const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, weatherCode, orangeCardCount);
     scoreText.textContent = `${score} / 10`;
 
@@ -1652,7 +1671,6 @@
     const isHeavyWind = windMph > 25;
     const isHeavyRain = windowRainSum > 5 || todayRainSum > 12;
 
-    // Strict Dynamic Verdict Logic
     if (isFreezing || isSnow) {
       verdictBanner.className = 'verdict-banner verdict-vlow';
       verdictTitle.textContent = 'No Chance ⛔';
@@ -1699,7 +1717,7 @@
     const dayPrecip = h.precipitation ? h.precipitation.slice(startIndex, startIndex + 24) : [];
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    renderChart(displayTemps, dayPrecip, riseDec, setDec, nowDec, selectedTeeHour, isToday);
+    renderChart(displayTemps, dayPrecip, riseDec, setDec, nowDec, selectedTeeHour, isToday, sunriseObj.display, sunsetObj.display);
   }
 
   unitToggle.addEventListener('click', () => {
