@@ -69,11 +69,18 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
+    /* Full-width container on mobile */
     .container {
       max-width: 650px;
       margin: 0 auto;
     }
 
+    @media (max-width: 600px) {
+      body { padding: 0 0 1rem 0; }
+      .container { max-width: 100%; }
+    }
+
+    /* Hero Banner Header Layout */
     .hero-banner {
       background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
       color: #ffffff;
@@ -85,6 +92,26 @@
       justify-content: space-between;
       align-items: center;
     }
+
+    @media (max-width: 600px) {
+      .hero-banner {
+        border-radius: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .controls button {
+        flex: 1;
+        text-align: center;
+      }
+    }
+
     .hero-title h1 {
       font-size: 1.6rem;
       color: #ffffff;
@@ -102,6 +129,7 @@
       margin-bottom: 1rem;
       border-bottom: 1px solid var(--border);
       padding-bottom: 0.5rem;
+      padding-left: 0.5rem;
     }
 
     .controls { display: flex; gap: 0.4rem; }
@@ -133,6 +161,7 @@
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
+      padding: 0 0.5rem;
     }
     input[type="text"] {
       flex: 1;
@@ -146,7 +175,7 @@
     .autocomplete-list {
       position: absolute;
       top: 100%;
-      left: 0;
+      left: 0.5rem;
       right: 90px;
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -170,10 +199,44 @@
       color: var(--accent);
     }
 
+    /* Verdict Banner Box */
+    .verdict-banner {
+      border-radius: 8px;
+      padding: 1.1rem 1.25rem;
+      margin: 0 0.5rem 1.25rem 0.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .verdict-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+    }
+    .verdict-sub {
+      font-size: 0.9rem;
+      opacity: 0.92;
+      font-weight: 500;
+    }
+
+    /* Verdict Tier Colors */
+    .verdict-vhigh { background: #1b5e20; color: #ffffff; border: 1px solid #144718; }
+    .verdict-high  { background: #2e7d32; color: #ffffff; border: 1px solid #1b5e20; }
+    .verdict-med   { background: #f57f17; color: #ffffff; border: 1px solid #e65100; }
+    .verdict-low   { background: #e65100; color: #ffffff; border: 1px solid #bf360c; }
+    .verdict-vlow  { background: #c62828; color: #ffffff; border: 1px solid #b71c1c; }
+
+    [data-theme="dark"] .verdict-vhigh { background: #144718; color: #e8f3ec; border-color: #2e7d32; }
+    [data-theme="dark"] .verdict-high  { background: #1b3e20; color: #81c784; border-color: #2e7d32; }
+    [data-theme="dark"] .verdict-med   { background: #3e3310; color: #fff176; border-color: #fbc02d; }
+    [data-theme="dark"] .verdict-low   { background: #3e1f10; color: #ffb74d; border-color: #f57c00; }
+    [data-theme="dark"] .verdict-vlow  { background: #3e1b1b; color: #ef9a9a; border-color: #c62828; }
+
     .alert-banner {
       padding: 0.75rem 1rem;
       border-radius: 6px;
-      margin-bottom: 1rem;
+      margin: 0 0.5rem 1rem 0.5rem;
       font-weight: bold;
       font-size: 0.9rem;
       display: flex;
@@ -192,23 +255,12 @@
       border: 1px solid #ef9a9a;
     }
 
-    [data-theme="dark"] .alert-warning {
-      background-color: #3e3310;
-      color: #ffe082;
-      border-color: #fbc02d;
-    }
-    [data-theme="dark"] .alert-danger {
-      background-color: #3e1b1b;
-      color: #ef9a9a;
-      border-color: #c62828;
-    }
-
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 1.25rem;
-      margin-bottom: 1.25rem;
+      margin: 0 0.5rem 1.25rem 0.5rem;
       box-shadow: var(--shadow);
     }
 
@@ -220,7 +272,6 @@
       letter-spacing: 0.6px;
     }
 
-    /* Centered Rating Card Styling */
     .card-centered {
       text-align: center;
     }
@@ -257,7 +308,6 @@
       text-align: left;
     }
 
-    /* Centered Overview Hero */
     .overview-hero {
       text-align: center;
       margin-bottom: 1rem;
@@ -307,7 +357,7 @@
       border-color: var(--warn-bad-border);
     }
 
-    /* Sun Card Specific Grid Layout */
+    /* Sun Grid Layout */
     .sun-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -318,27 +368,28 @@
       grid-column: 1 / -1;
     }
 
-    #status { margin-bottom: 1rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
+    #status { margin: 0 0.5rem 1rem 0.5rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
     
-    /* Responsive Equal-Width Date Bar */
+    /* Responsive Date Bar - Strict Single Row Desktop Grid */
     .date-bar {
       display: flex;
       gap: 0.5rem;
       overflow-x: auto;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      padding: 0 0.5rem 0.5rem 0.5rem;
+      margin-bottom: 0.75rem;
     }
     @media (min-width: 600px) {
       .date-bar {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(7, minmax(0, 1fr));
         overflow-x: visible;
+        padding: 0 0.5rem 0.5rem 0.5rem;
       }
     }
     .date-btn {
       flex: 0 0 auto;
       text-align: center;
-      padding: 0.5rem 0.4rem;
+      padding: 0.5rem 0.2rem;
       font-size: 0.8rem;
       display: flex;
       flex-direction: column;
@@ -346,9 +397,12 @@
       gap: 0.15rem;
       min-width: 65px;
     }
+    @media (min-width: 600px) {
+      .date-btn { min-width: 0; width: 100%; }
+    }
     .date-btn .day { font-weight: bold; }
     .date-btn .date-icon { font-size: 1.1rem; margin: 0.1rem 0; }
-    .date-btn .date { font-size: 0.75rem; opacity: 0.8; }
+    .date-btn .date { font-size: 0.72rem; opacity: 0.8; }
 
     .chart-container {
       width: 100%;
@@ -389,7 +443,7 @@
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.10</div>
+  <div class="version-tag">Version 0.11</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
@@ -401,11 +455,18 @@
 
   <div id="weatherContent" style="display: none;">
     
+    <!-- Simple Answer Verdict Banner Banner -->
+    <div id="verdictBanner" class="verdict-banner verdict-high">
+      <div id="verdictTitle" class="verdict-title">--</div>
+      <div id="verdictSub" class="verdict-sub">--</div>
+    </div>
+
+    <!-- Date Bar Selector -->
     <div class="date-bar" id="dateBar"></div>
 
     <div id="daylightBanner" style="display: none;"></div>
 
-    <!-- Centered Rating Card -->
+    <!-- Rating Card -->
     <div class="card card-centered">
       <h2>Golf Rating</h2>
       <div id="scoreBadge" class="score-badge score-high">
@@ -418,7 +479,7 @@
       <div id="adviceCallout" class="callout-box"></div>
     </div>
 
-    <!-- Right Now Overview Card with Centered Layout & Two-Line Metrics -->
+    <!-- Right Now Overview Card -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       
@@ -450,7 +511,7 @@
       </div>
     </div>
 
-    <!-- Reorganized Sun Card -->
+    <!-- Sun Card -->
     <div class="card">
       <h2>Sun & Daylight Hours</h2>
       <div class="sun-grid">
@@ -468,13 +529,13 @@
           <div class="label">Sunset</div>
           <div class="value-main">
             <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 10V4M4.93 10.93l4.24-4.24M1 18h22M2 22h20M19.07 10.93l-4.24-4.24"/>
+              <path d="M12 10V4M4.93 10.93l4.24-4.24M1 18h22M2 22h20M19.07 10.93l-4.24 4.24"/>
               <circle cx="12" cy="18" r="4"/>
             </svg>
             <span id="sunsetTime">--:--</span>
           </div>
         </div>
-        <div class="grid-item full-width">
+        <div class="grid-item full-width" id="daylightCard">
           <div class="label">Daylight Remaining</div>
           <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
         </div>
@@ -527,6 +588,11 @@
   const statusEl = document.getElementById('status');
   const contentEl = document.getElementById('weatherContent');
   const dateBar = document.getElementById('dateBar');
+  
+  const verdictBanner = document.getElementById('verdictBanner');
+  const verdictTitle = document.getElementById('verdictTitle');
+  const verdictSub = document.getElementById('verdictSub');
+
   const scoreBadge = document.getElementById('scoreBadge');
   const scoreIcon = document.getElementById('scoreIcon');
   const scoreText = document.getElementById('scoreText');
@@ -538,6 +604,7 @@
 
   const windCard = document.getElementById('windCard');
   const rainCard = document.getElementById('rainCard');
+  const daylightCard = document.getElementById('daylightCard');
 
   function getWeatherInfo(code) {
     const codes = {
@@ -747,7 +814,6 @@
       svg.appendChild(gridline);
     });
 
-    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
@@ -792,7 +858,6 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Current Time Marker Line
     if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
       const nowX = paddingLeft + currentHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -811,7 +876,6 @@
       svg.appendChild(label);
     }
 
-    // Sunrise Marker
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const sunX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -830,7 +894,6 @@
       svg.appendChild(label);
     }
 
-    // Sunset Marker
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const sunX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -845,7 +908,7 @@
       label.setAttribute('x', sunX);
       label.setAttribute('y', paddingTop - 8);
       label.setAttribute('class', 'sun-text');
-      label.textContent = '🌇 Set';
+      label.textContent = '`🌇 Set`';
       svg.appendChild(label);
     }
   }
@@ -901,7 +964,6 @@
     const todayRainSum = d.precipitation_sum[selectedDayIndex];
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
 
-    // Humorous Lighthearted Sub-Label for Recent Rain
     let rainSubText = 'Bone dry';
     if (last24hRain > 12) rainSubText = 'Recent downpour!';
     else if (last24hRain > 5) rainSubText = 'Soggy underfoot';
@@ -912,7 +974,6 @@
     document.getElementById('todayRain').textContent = toPrecip(todayRainSum);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    // Apply Card Warning Colors
     const windMph = windVal / 1.609;
     windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
     rainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
@@ -935,35 +996,41 @@
     if (isToday) {
       if (nowDec >= setDec) {
         daylightBanner.className = 'alert-banner alert-danger';
-        daylightBanner.innerHTML = `Booked for night golf? 🌇 <span>It's dark out—no daylight remaining today.</span>`;
+        daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining today.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = '0 hrs';
+        daylightCard.className = 'grid-item full-width stat-bad';
       } else if (nowDec < riseDec) {
         daylightBanner.className = 'alert-banner alert-warning';
         daylightBanner.innerHTML = `🌅 <span>Pre-sunrise right now. First tee time after ${sunriseObj.display}!</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${(setDec - riseDec).toFixed(1)} hrs total`;
+        daylightCard.className = 'grid-item full-width stat-med';
       } else if (hoursUntilSunset < 2) {
         daylightBanner.className = 'alert-banner alert-danger';
         daylightBanner.innerHTML = `⚠️ <span><strong>Sunset Warning:</strong> Less than 2 hours of daylight left (${hoursUntilSunset.toFixed(1)}h remaining). You likely won't finish 9 holes.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
+        daylightCard.className = 'grid-item full-width stat-bad';
       } else if (hoursUntilSunset < 4) {
         daylightBanner.className = 'alert-banner alert-warning';
         daylightBanner.innerHTML = `⏳ <span><strong>Limited Daylight Warning:</strong> ~${hoursUntilSunset.toFixed(1)} hours until sunset. You may only have time for 9 holes.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
+        daylightCard.className = 'grid-item full-width stat-med';
       } else {
         daylightBanner.style.display = 'none';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
+        daylightCard.className = 'grid-item full-width stat-good';
       }
     } else {
       const totalDaylight = setDec - riseDec;
       daylightBanner.style.display = 'none';
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
+      daylightCard.className = 'grid-item full-width stat-good';
     }
 
-    // Golf Rating
+    // Golf Rating Calculation
     const score = calculateGolfScore(tempVal, todayRainSum, last24hRain, windVal);
     scoreText.textContent = `${score} / 10`;
 
@@ -978,9 +1045,32 @@
       scoreIcon.textContent = '🌧️';
     }
 
+    // Dynamic Verdict Banner Logic
+    if (score >= 8.5) {
+      verdictBanner.className = 'verdict-banner verdict-vhigh';
+      verdictTitle.textContent = 'Yes, Perfect! ⛳';
+      verdictSub.textContent = 'Firm fairways, gentle breeze, and dry skies. Get out on the course!';
+    } else if (score >= 7.0) {
+      verdictBanner.className = 'verdict-banner verdict-high';
+      verdictTitle.textContent = 'Yes, Good! 👍';
+      verdictSub.textContent = 'Great conditions for a round. Pack standard layers and enjoy.';
+    } else if (score >= 5.0) {
+      verdictBanner.className = 'verdict-banner verdict-med';
+      verdictTitle.textContent = 'Not Bad 🌥️';
+      verdictSub.textContent = 'Playable round, but factor in damp ground or a bit of wind.';
+    } else if (score >= 3.0) {
+      verdictBanner.className = 'verdict-banner verdict-low';
+      verdictTitle.textContent = 'Poor 🌧️';
+      verdictSub.textContent = 'High wind or rain expected. Waterproofs & extra towels required.';
+    } else {
+      verdictBanner.className = 'verdict-banner verdict-vlow';
+      verdictTitle.textContent = 'No Chance ⛔';
+      verdictSub.textContent = 'Heavy rain or gale force winds. Time to hit the indoor simulator.';
+    }
+
     // Ground Status Callout
     if (last24hRain > 10) {
-      groundCallout.innerHTML = `<strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water possible in low spots; minimal roll.`;
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water likely; minimal roll.`;
     } else if (last24hRain > 2) {
       groundCallout.innerHTML = `<strong>Ground Status:</strong> Damp underfoot. Standard playable conditions.`;
     } else {
@@ -996,25 +1086,31 @@
       windCallout.innerHTML = `<strong>Wind Impact:</strong> Light breeze. Minimal impact on flight.`;
     }
 
-    // Calculate Rain Forecast for the Next 4 Hours Specifically (18-hole window)
+    // Calculate Rain Forecast for Next 4 Hours Specifically
     const startIndex = (selectedDayIndex + 1) * 24; 
-    const currentStartHourIndex = isToday ? startIndex + nowHour : startIndex + 8; // Default 8 AM if looking ahead
+    const currentStartHourIndex = isToday ? startIndex + nowHour : startIndex + 8;
     const next4hPrecip = h.precipitation.slice(currentStartHourIndex, currentStartHourIndex + 4);
     const next4hRainSum = next4hPrecip.reduce((a, b) => a + b, 0);
 
-    // Gear Advice Calibrated to Next 4 Hours
+    // Gear Advice with Explicit Rain Status Declarations
+    let rainStatusTag = '';
+    if (next4hRainSum > 5) rainStatusTag = '<strong>Rain Outlook (Next 4h): Heavy Rain.</strong> ';
+    else if (next4hRainSum > 1.5) rainStatusTag = '<strong>Rain Outlook (Next 4h): Moderate Rain.</strong> ';
+    else if (next4hRainSum > 0.1) rainStatusTag = '<strong>Rain Outlook (Next 4h): Light Rain.</strong> ';
+    else rainStatusTag = '<strong>Rain Outlook (Next 4h): No Rain.</strong> ';
+
     if (next4hRainSum > 5) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Downpour forecast! 🌧️ Grab an umbrella, waterproof jacket, and everything you've got to keep dry.`;
-    } else if (next4hRainSum > 0.5) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Light rain forecast ☔—a waterproof jacket should be enough for your round.`;
+      adviceCallout.innerHTML = `${rainStatusTag}Downpour forecast! 🌧️ Grab an umbrella, waterproof jacket, and everything you've got to keep dry.`;
+    } else if (next4hRainSum > 0.1) {
+      adviceCallout.innerHTML = `${rainStatusTag}A light rain shower is expected ☔—a waterproof jacket should be enough.`;
     } else if (tempVal > 22 && weatherCode <= 2) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and stay hydrated.`;
+      adviceCallout.innerHTML = `${rainStatusTag}Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and stay hydrated.`;
     } else if (tempVal < 7) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Proper chilly out! 🧤 Layer up, grab winter mitts, and play a soft low-compression ball.`;
+      adviceCallout.innerHTML = `${rainStatusTag}Proper chilly out! 🧤 Layer up, grab winter mitts, and play a soft low-compression ball.`;
     } else if (windMph > 22) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and play knockdown shots.`;
+      adviceCallout.innerHTML = `${rainStatusTag}It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and play knockdown shots.`;
     } else {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Decent golfing weather! 🏌️ Standard polo, maybe a light pullover in the bag.`;
+      adviceCallout.innerHTML = `${rainStatusTag}Decent golfing weather! 🏌️ Standard polo, maybe a light pullover in the bag.`;
     }
 
     const dayTempsC = h.precipitation ? h.temperature_2m.slice(startIndex, startIndex + 24) : [];
