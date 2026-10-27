@@ -33,11 +33,20 @@
       --shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
 
       --warn-good-bg: #e8f5e9;
-      --warn-good-border: #a5d6a7;
+      --warn-good-border: #2e7d32;
+      --warn-good-text: #1b5e20;
+
       --warn-med-bg: #fff8e1;
-      --warn-med-border: #ffe082;
+      --warn-med-border: #fbc02d;
+      --warn-med-text: #826100;
+
+      --warn-orange-bg: #fff3e0;
+      --warn-orange-border: #f57c00;
+      --warn-orange-text: #b75400;
+
       --warn-bad-bg: #ffebee;
-      --warn-bad-border: #ef9a9a;
+      --warn-bad-border: #c62828;
+      --warn-bad-text: #b71c1c;
     }
 
     [data-theme="dark"] {
@@ -58,10 +67,19 @@
 
       --warn-good-bg: #1b3e20;
       --warn-good-border: #2e7d32;
+      --warn-good-text: #a5d6a7;
+
       --warn-med-bg: #3e3310;
       --warn-med-border: #fbc02d;
+      --warn-med-text: #ffe082;
+
+      --warn-orange-bg: #3e2610;
+      --warn-orange-border: #f57c00;
+      --warn-orange-text: #ffcc80;
+
       --warn-bad-bg: #3e1b1b;
       --warn-bad-border: #c62828;
+      --warn-bad-text: #ef9a9a;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -360,15 +378,16 @@
     [data-theme="dark"] .score-med  { background: #3e3810; color: #fff176; border-color: #fbc02d; }
     [data-theme="dark"] .score-low  { background: #3e1b1b; color: #e57373; border-color: #c62828; }
 
-    /* Callout Box Formatting: Header Line 1, Description Line 2 */
+    /* Dynamically Color-Coded Callout Boxes */
     .callout-box {
       margin-top: 0.6rem;
       padding: 0.65rem 0.9rem;
-      background: var(--bg);
-      border-left: 4px solid var(--accent);
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 0.88rem;
       text-align: left;
+      border-left: 5px solid var(--accent);
+      background: var(--bg);
+      transition: background-color 0.2s, border-color 0.2s;
     }
     .callout-title {
       font-weight: bold;
@@ -377,6 +396,27 @@
     }
     .callout-body {
       display: block;
+    }
+
+    .callout-good {
+      background-color: var(--warn-good-bg);
+      border-left-color: var(--warn-good-border);
+      color: var(--warn-good-text);
+    }
+    .callout-med {
+      background-color: var(--warn-med-bg);
+      border-left-color: var(--warn-med-border);
+      color: var(--warn-med-text);
+    }
+    .callout-orange {
+      background-color: var(--warn-orange-bg);
+      border-left-color: var(--warn-orange-border);
+      color: var(--warn-orange-text);
+    }
+    .callout-bad {
+      background-color: var(--warn-bad-bg);
+      border-left-color: var(--warn-bad-border);
+      color: var(--warn-bad-text);
     }
 
     .gear-list {
@@ -477,6 +517,7 @@
       align-items: center;
       gap: 0.15rem;
       min-width: 65px;
+      position: relative;
     }
     @media (min-width: 600px) {
       .date-btn { min-width: 0; width: 100%; }
@@ -485,12 +526,17 @@
     .date-btn .date-icon { font-size: 1.1rem; margin: 0.1rem 0; }
     .date-btn .date { font-size: 0.72rem; opacity: 0.8; }
 
-    #manualDatePicker {
+    /* Hidden datepicker anchored directly inside button for correct popover alignment */
+    .anchored-picker {
       position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
       opacity: 0;
+      width: 1px;
+      height: 1px;
       pointer-events: none;
-      width: 0;
-      height: 0;
+      border: none;
     }
 
     .chart-container {
@@ -555,7 +601,7 @@
 
 <div class="container">
   <header class="hero-banner">
-    <div class="floating-version">v0.15</div>
+    <div class="floating-version">v0.16</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
@@ -579,7 +625,7 @@
 
   <div id="weatherContent" style="display: none;">
     
-    <!-- Simple Answer Verdict Banner -->
+    <!-- Verdict Banner -->
     <div id="verdictBanner" class="verdict-banner verdict-high">
       <div id="verdictTitle" class="verdict-title">--</div>
       <div id="verdictSub" class="verdict-sub">--</div>
@@ -587,9 +633,8 @@
 
     <!-- Date Bar Selector -->
     <div class="date-bar" id="dateBar"></div>
-    <input type="date" id="manualDatePicker">
 
-    <!-- Tee Time Slider with Mobile Responsive Header Layout -->
+    <!-- Interactive Tee Time Slider -->
     <div class="slider-card">
       <div class="slider-header">
         <div class="slider-header-title">
@@ -601,9 +646,10 @@
       <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
     </div>
 
+    <!-- Dynamic Daylight Warning Banner -->
     <div id="daylightBanner" style="display: none;"></div>
 
-    <!-- Rating Card with 5 Re-formatted Callout Boxes -->
+    <!-- Golf Rating Card with Color-Coded Callouts -->
     <div class="card card-centered">
       <h2>Golf Rating</h2>
       <div id="scoreBadge" class="score-badge score-high">
@@ -618,7 +664,7 @@
       <div id="gearCallout" class="callout-box"></div>
     </div>
 
-    <!-- Right Now Overview Card -->
+    <!-- Right Now / Round Overview Card -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       
@@ -649,7 +695,7 @@
           <div class="value-sub" id="recentRainSub">--</div>
         </div>
         <div class="grid-item" id="forecastRainCard">
-          <div class="label">Forecast (4h)</div>
+          <div class="label">Round Rain (4h)</div>
           <div class="value-main">
             <span>☔</span>
             <span id="forecastRain">--</span>
@@ -673,7 +719,7 @@
       </div>
     </div>
 
-    <!-- Consolidated 6-Box Day Summary Card -->
+    <!-- Day Summary Card -->
     <div class="card">
       <h2>Day Summary</h2>
       <div class="summary-grid">
@@ -748,7 +794,11 @@
   let currentData = null;
   let currentCityName = '';
   let selectedDayIndex = 0; 
-  let selectedTeeHour = 8;
+  
+  // Default slider to current hour (capped between 6 and 18)
+  const currentHourNow = new Date().getHours();
+  let selectedTeeHour = Math.max(6, Math.min(18, currentHourNow));
+  
   let debounceTimer = null;
   let savedHomeCourse = null;
 
@@ -770,10 +820,12 @@
   const statusEl = document.getElementById('status');
   const contentEl = document.getElementById('weatherContent');
   const dateBar = document.getElementById('dateBar');
-  const manualDatePicker = document.getElementById('manualDatePicker');
   
   const teeTimeSlider = document.getElementById('teeTimeSlider');
   const teeTimeDisplay = document.getElementById('teeTimeDisplay');
+
+  // Initialize slider position to current hour
+  teeTimeSlider.value = selectedTeeHour;
 
   const verdictBanner = document.getElementById('verdictBanner');
   const verdictTitle = document.getElementById('verdictTitle');
@@ -838,7 +890,6 @@
     pwaModal.style.display = 'none';
   });
 
-  // Slider Input Handler (Updates display + re-renders evaluations dynamically)
   teeTimeSlider.addEventListener('input', (e) => {
     selectedTeeHour = parseInt(e.target.value);
     updateTeeTimeDisplay();
@@ -846,7 +897,6 @@
   });
 
   function updateTeeTimeDisplay() {
-    const startStr = `${String(selectedTeeHour).padStart(2, '0')}:00`;
     const endHour = selectedTeeHour + 4;
     const ampmStart = selectedTeeHour >= 12 ? 'PM' : 'AM';
     const ampmEnd = endHour >= 12 ? 'PM' : 'AM';
@@ -932,6 +982,7 @@
       currentData = data;
       
       buildDateBar();
+      updateTeeTimeDisplay();
       render();
       statusEl.textContent = '';
       contentEl.style.display = 'block';
@@ -941,7 +992,6 @@
     }
   }
 
-  // Improved Fuzzy Search & Wildcard Matching for Courses & Cities
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const query = locationInput.value.trim();
@@ -954,7 +1004,6 @@
 
   async function searchAutocomplete(rawQuery) {
     try {
-      // Strip out 'Royal' prefix if typed or search both term variations
       let cleanQuery = rawQuery.replace(/royal/gi, '').trim();
       if (!cleanQuery) cleanQuery = rawQuery;
 
@@ -963,7 +1012,6 @@
       
       let results = primaryData.results || [];
 
-      // Fallback search if clean query differs
       if (cleanQuery !== rawQuery) {
         const fallbackRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=10&language=en&format=json`);
         const fallbackData = await fallbackRes.json();
@@ -972,13 +1020,11 @@
         }
       }
 
-      // Deduplicate results by ID
       const uniqueResults = Array.from(new Map(results.map(item => [item.id, item])).values());
 
       autocompleteList.innerHTML = '';
       
       if (uniqueResults.length > 0) {
-        // Prioritize items containing 'golf' or exact match
         uniqueResults.sort((a, b) => {
           const aGolf = a.name.toLowerCase().includes('golf');
           const bGolf = b.name.toLowerCase().includes('golf');
@@ -1046,34 +1092,44 @@
       dateBar.appendChild(btn);
     }
 
+    // 7th button anchored with hidden native datepicker inside for precise popover placement
     const moreBtn = document.createElement('button');
     moreBtn.className = `date-btn ${selectedDayIndex >= 6 ? 'active' : ''}`;
     moreBtn.innerHTML = `
       <span class="day">Custom</span>
       <span class="date-icon">📅</span>
       <span class="date">+ More</span>
+      <input type="date" id="anchoredDatePicker" class="anchored-picker">
     `;
-    moreBtn.addEventListener('click', () => {
-      manualDatePicker.showPicker();
-    });
-    dateBar.appendChild(moreBtn);
-  }
-
-  manualDatePicker.addEventListener('change', (e) => {
-    if (!e.target.value) return;
-    const selectedDate = new Date(e.target.value);
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    const diffDays = Math.round((selectedDate - today) / (1000 * 60 * 60 * 24));
     
-    if (diffDays >= 0 && diffDays < 7) {
-      selectedDayIndex = diffDays;
-      buildDateBar();
-      render();
-    } else {
-      alert("Please select a date within the next 7 days for detailed weather forecasting.");
+    moreBtn.addEventListener('click', (e) => {
+      const picker = moreBtn.querySelector('#anchoredDatePicker');
+      if (picker && picker.showPicker) {
+        picker.showPicker();
+      }
+    });
+
+    dateBar.appendChild(moreBtn);
+
+    const anchoredPicker = moreBtn.querySelector('#anchoredDatePicker');
+    if (anchoredPicker) {
+      anchoredPicker.addEventListener('change', (e) => {
+        if (!e.target.value) return;
+        const selectedDate = new Date(e.target.value);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const diffDays = Math.round((selectedDate - today) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays >= 0 && diffDays < 7) {
+          selectedDayIndex = diffDays;
+          buildDateBar();
+          render();
+        } else {
+          alert("Please select a date within the next 7 days for detailed weather forecasting.");
+        }
+      });
     }
-  });
+  }
 
   function calculateGolfScore(tempC, rainMmToday, past24RainMm, windSpeedKmh) {
     let score = 10;
@@ -1098,7 +1154,6 @@
     return Math.round(score * 10) / 10;
   }
 
-  // Render Chart with Restored Current Time, Sunrise & Sunset Line Markers
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, isToday) {
     const svg = document.getElementById('hourlyChart');
     svg.innerHTML = '';
@@ -1183,7 +1238,6 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Restored Current Time Marker Line
     if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
       const nowX = paddingLeft + currentHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1202,7 +1256,6 @@
       svg.appendChild(label);
     }
 
-    // Restored Sunrise Marker Line
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const sunX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1221,7 +1274,6 @@
       svg.appendChild(label);
     }
 
-    // Restored Sunset Marker Line
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const sunX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1236,7 +1288,7 @@
       label.setAttribute('x', sunX);
       label.setAttribute('y', paddingTop - 8);
       label.setAttribute('class', 'sun-text');
-      label.textContent = '🌇 Set';
+      label.textContent = 'จัดการ Set';
       svg.appendChild(label);
     }
   }
@@ -1274,21 +1326,30 @@
     const isToday = selectedDayIndex === 0;
     document.getElementById('dayLabel').textContent = isToday ? 'Right Now' : `Forecast for ${d.time[selectedDayIndex]}`;
 
+    // Calculate 4-Hour Window Based on Selected Tee Time Slider
+    const startIndex = selectedDayIndex * 24; 
+    const teeStartHourIndex = startIndex + selectedTeeHour;
+    
+    const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
+    
+    const windowTemps = h.temperature_2m.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
+
+    const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowMaxWind = Math.max(...windowWinds, 0);
+
     const weatherCode = isToday ? c.weather_code : d.weather_code[selectedDayIndex];
     const weatherInfo = getWeatherInfo(weatherCode);
     document.getElementById('weatherIcon').textContent = weatherInfo.icon;
     document.getElementById('currentCondition').textContent = weatherInfo.text;
 
-    const tempVal = isToday ? c.temperature_2m : d.temperature_2m_max[selectedDayIndex];
-    document.getElementById('currentTemp').textContent = toTemp(tempVal);
-    
-    const feelsLikeVal = isToday ? c.apparent_temperature : tempVal;
-    document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(feelsLikeVal)})`;
+    document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
+    document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
-    const windVal = isToday ? c.wind_speed_10m : d.wind_speed_10m_max[selectedDayIndex];
-    const windVisual = getWindVisuals(windVal);
+    const windVisual = getWindVisuals(windowMaxWind);
     document.getElementById('windIcon').textContent = windVisual.icon;
-    document.getElementById('currentWind').textContent = toSpeed(windVal);
+    document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
     document.getElementById('windSub').textContent = windVisual.label;
 
     const last24hRain = h.precipitation.slice(0, 24).reduce((a, b) => a + b, 0);
@@ -1300,18 +1361,6 @@
     else if (last24hRain > 5) rainSubText = 'Soggy underfoot';
     else if (last24hRain > 1) rainSubText = 'A little damp';
     document.getElementById('recentRainSub').textContent = rainSubText;
-
-    // Calculate 4-Hour Window Based on Selected Tee Time Slider
-    const startIndex = (selectedDayIndex + 1) * 24; 
-    const teeStartHourIndex = startIndex + selectedTeeHour;
-    const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
-    const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
-    
-    const windowTemps = h.temperature_2m.slice(teeStartHourIndex, teeStartHourIndex + 4);
-    const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
-
-    const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
-    const windowMaxWind = Math.max(...windowWinds, windVal);
 
     document.getElementById('forecastRain').textContent = toPrecip(windowRainSum);
     
@@ -1341,42 +1390,27 @@
     const nowDec = nowHour + (now.getMinutes() / 60);
     const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
     const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
-    const hoursUntilSunset = setDec - nowDec;
 
-    if (isToday) {
-      if (nowDec >= setDec) {
-        daylightBanner.className = 'alert-banner alert-danger';
-        daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining today.</span>`;
-        daylightBanner.style.display = 'flex';
-        document.getElementById('daylightLeft').textContent = '0 hrs';
-        daylightCard.className = 'grid-item stat-bad';
-      } else if (nowDec < riseDec) {
-        daylightBanner.className = 'alert-banner alert-warning';
-        daylightBanner.innerHTML = `🌅 <span>Pre-sunrise right now. First tee time after ${sunriseObj.display}!</span>`;
-        daylightBanner.style.display = 'flex';
-        document.getElementById('daylightLeft').textContent = `${(setDec - riseDec).toFixed(1)} hrs total`;
-        daylightCard.className = 'grid-item stat-med';
-      } else if (hoursUntilSunset < 2) {
-        daylightBanner.className = 'alert-banner alert-danger';
-        daylightBanner.innerHTML = `⚠️ <span><strong>Sunset Warning:</strong> Less than 2 hours of daylight left (${hoursUntilSunset.toFixed(1)}h remaining). You likely won't finish 9 holes.</span>`;
-        daylightBanner.style.display = 'flex';
-        document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
-        daylightCard.className = 'grid-item stat-bad';
-      } else if (hoursUntilSunset < 4) {
-        daylightBanner.className = 'alert-banner alert-warning';
-        daylightBanner.innerHTML = `⏳ <span><strong>Limited Daylight Warning:</strong> ~${hoursUntilSunset.toFixed(1)} hours until sunset. You may only have time for 9 holes.</span>`;
-        daylightBanner.style.display = 'flex';
-        document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
-        daylightCard.className = 'grid-item stat-med';
-      } else {
-        daylightBanner.style.display = 'none';
-        document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
-        daylightCard.className = 'grid-item stat-good';
-      }
+    // Dynamic Daylight Calculation Reacting to Selected Tee Time Window
+    const teeEndHour = selectedTeeHour + 4;
+
+    if (teeEndHour > setDec && selectedTeeHour < setDec) {
+      const remainingDaylight = Math.max(0, setDec - selectedTeeHour);
+      daylightBanner.className = 'alert-banner alert-warning';
+      daylightBanner.innerHTML = `⚠️ <span><strong>Sunset Warning:</strong> Your 4-hour round starting at ${selectedTeeHour}:00 PM extends past sunset (${sunsetObj.display}). Only ~${remainingDaylight.toFixed(1)} hours of daylight left!</span>`;
+      daylightBanner.style.display = 'flex';
+      document.getElementById('daylightLeft').textContent = `${remainingDaylight.toFixed(1)} hrs`;
+      daylightCard.className = 'grid-item stat-med';
+    } else if (selectedTeeHour >= setDec) {
+      daylightBanner.className = 'alert-banner alert-danger';
+      daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> Selected tee time (${selectedTeeHour}:00) is after sunset (${sunsetObj.display}). It will be dark!</span>`;
+      daylightBanner.style.display = 'flex';
+      document.getElementById('daylightLeft').textContent = '0 hrs';
+      daylightCard.className = 'grid-item stat-bad';
     } else {
-      const totalDaylight = setDec - riseDec;
       daylightBanner.style.display = 'none';
-      document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
+      const availableDaylight = Math.max(0, setDec - nowDec);
+      document.getElementById('daylightLeft').textContent = isToday ? `${availableDaylight.toFixed(1)} hrs` : `${(setDec - riseDec).toFixed(1)} hrs`;
       daylightCard.className = 'grid-item stat-good';
     }
 
@@ -1424,63 +1458,112 @@
       else verdictSub.textContent = 'Gale force winds expected. Unsafe or unplayable conditions.';
     }
 
-    // Callout Formatting: Bold Header on Line 1, Description on Line 2
+    // Color-Coded Callout Boxes (Green, Yellow, Orange, Red)
+    // 1. Ground Status
     const totalMoisture = last24hRain + windowRainSum;
     if (totalMoisture > 12 || last24hRain > 10) {
+      groundCallout.className = 'callout-box callout-bad';
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Soft underfoot / Wet fairways. Casual water in low spots; minimal ball roll.</span>`;
-    } else if (totalMoisture > 3 || last24hRain > 2) {
+    } else if (totalMoisture > 5 || last24hRain > 3) {
+      groundCallout.className = 'callout-box callout-orange';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Soggy ground. Reduced roll on fairways; damp turf conditions.</span>`;
+    } else if (totalMoisture > 1.5 || last24hRain > 1) {
+      groundCallout.className = 'callout-box callout-med';
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Damp underfoot. Standard playable fairways with moderate roll.</span>`;
     } else {
+      groundCallout.className = 'callout-box callout-good';
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Dry / Firm fairways. Expect great roll and firm greens.</span>`;
     }
 
-    if (windowMaxWind > 35) {
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">High winds. 2–3 clubs difference into wind; flight shaping required.</span>`;
-    } else if (windowMaxWind > 18) {
+    // 2. Wind Impact
+    if (windowMaxWind > 38) {
+      windCallout.className = 'callout-box callout-bad';
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Gale force gusts! 2–3+ clubs difference; ball trajectory heavily affected.</span>`;
+    } else if (windowMaxWind > 25) {
+      windCallout.className = 'callout-box callout-orange';
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Strong winds. 2 clubs difference into wind; flight shaping needed.</span>`;
+    } else if (windowMaxWind > 15) {
+      windCallout.className = 'callout-box callout-med';
       windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Breezy. 1 club difference on exposed holes.</span>`;
     } else {
+      windCallout.className = 'callout-box callout-good';
       windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Light breeze. Minimal impact on ball flight.</span>`;
     }
 
-    let rainOutlookTag = 'No Rain';
-    if (windowRainSum > 5) rainOutlookTag = 'Heavy Rain 🌧️☔';
-    else if (windowRainSum > 1.5) rainOutlookTag = 'Moderate Rain 🌧️';
-    else if (windowRainSum > 0.1) rainOutlookTag = 'Light Rain / Drizzle 🌦️';
-    
-    const teeEndHour = selectedTeeHour + 4;
-    rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">${rainOutlookTag}</span>`;
+    // 3. Rain Outlook
+    if (windowRainSum > 5) {
+      rainOutlookCallout.className = 'callout-box callout-bad';
+      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">Heavy Rain 🌧️☔ (${toPrecip(windowRainSum)})</span>`;
+    } else if (windowRainSum > 1.5) {
+      rainOutlookCallout.className = 'callout-box callout-orange';
+      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">Moderate Rain 🌧️ (${toPrecip(windowRainSum)})</span>`;
+    } else if (windowRainSum > 0.1) {
+      rainOutlookCallout.className = 'callout-box callout-med';
+      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">Light Drizzle 🌦️ (${toPrecip(windowRainSum)})</span>`;
+    } else {
+      rainOutlookCallout.className = 'callout-box callout-good';
+      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">No Rain ☀️ (0.0)</span>`;
+    }
 
-    const tempDiffC = 24 - windowAvgTemp;
+    // 4. Ball Carry Penalty (Triggering accurately below 15°C)
+    const tempDiffC = 22 - windowAvgTemp;
     let distancePenaltyYards = 0;
     if (tempDiffC > 0) {
-      distancePenaltyYards = Math.round((tempDiffC / 5.5) * 2.5);
+      distancePenaltyYards = Math.round((tempDiffC / 5) * 2.5);
     }
-    if (distancePenaltyYards >= 3) {
+
+    if (distancePenaltyYards >= 8) {
+      distancePenaltyCallout.className = 'callout-box callout-bad';
+      distancePenaltyCallout.innerHTML = `<span class="callout-title">Ball Carry Penalty</span><span class="callout-body">Very cold dense air! Expect your ball to carry ~<strong>${distancePenaltyYards} yards shorter</strong> per club. Take 1–2 extra clubs! 🥶</span>`;
+      distancePenaltyCallout.style.display = 'block';
+    } else if (distancePenaltyYards >= 4) {
+      distancePenaltyCallout.className = 'callout-box callout-orange';
       distancePenaltyCallout.innerHTML = `<span class="callout-title">Ball Carry Penalty</span><span class="callout-body">Cold dense air! Expect your ball to carry ~<strong>${distancePenaltyYards} yards shorter</strong> per club. Club up! 🏌️‍♂️</span>`;
+      distancePenaltyCallout.style.display = 'block';
+    } else if (distancePenaltyYards >= 2) {
+      distancePenaltyCallout.className = 'callout-box callout-med';
+      distancePenaltyCallout.innerHTML = `<span class="callout-title">Ball Carry Penalty</span><span class="callout-body">Cool air. Minor distance loss of ~<strong>${distancePenaltyYards} yards</strong> per club.</span>`;
       distancePenaltyCallout.style.display = 'block';
     } else {
       distancePenaltyCallout.style.display = 'none';
     }
 
+    // 5. Gear Checklist
     let gearItems = [];
-    if (windowRainSum > 0.1) {
+    let gearSeverity = 'good';
+
+    if (windowRainSum > 2) {
+      gearItems.push('Umbrella ☔');
+      gearItems.push('Full Waterproof Suit 🧥');
+      gearItems.push('Extra Towels 🧼');
+      gearSeverity = 'bad';
+    } else if (windowRainSum > 0.1) {
       gearItems.push('Umbrella ☔');
       gearItems.push('Waterproof Jacket 🧥');
-      if (windowRainSum > 2) gearItems.push('Extra Towel 🧼');
+      gearSeverity = 'orange';
     }
+
+    if (windowAvgTemp < 6) {
+      gearItems.push('Hand Warmers 🧤');
+      gearItems.push('Thermal Base Layer 🧥');
+      gearItems.push('Woolly Hat / Beanie 🧢');
+      if (gearSeverity !== 'bad') gearSeverity = 'orange';
+    } else if (windowAvgTemp < 12) {
+      gearItems.push('Windproof Pullover / Sweater 🧥');
+      if (gearSeverity === 'good') gearSeverity = 'med';
+    }
+
     if (windowAvgTemp > 20 && weatherCode <= 2) {
       gearItems.push('Suncream 🧴');
       gearItems.push('Sunglasses 🕶️');
     }
-    if (windowAvgTemp < 8) {
-      gearItems.push('Hand Warmers 🧤');
-      gearItems.push('Woolly Hat / Beanie 🧢');
-    }
+
     if (gearItems.length === 0) {
       gearItems.push('Standard Golf Polo 👕');
-      gearItems.push('Light Pullover 🧥');
+      gearItems.push('Light Layer 🧥');
     }
 
+    gearCallout.className = `callout-box callout-${gearSeverity}`;
     let gearListHTML = '<span class="callout-title">Gear Checklist</span><ul class="gear-list">';
     gearItems.forEach(item => { gearListHTML += `<li>${item}</li>`; });
     gearListHTML += '</ul>';
