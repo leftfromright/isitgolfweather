@@ -6,33 +6,42 @@
   <title>Is It Golf Weather?</title>
   <style>
     :root {
-      --bg: #f4f6f8;
+      --bg: #eef4f0;
       --card-bg: #ffffff;
-      --text: #1a202c;
-      --text-muted: #4a5568;
-      --border: #e2e8f0;
-      --accent: #2e7d32;
+      --text: #1a2e22;
+      --text-muted: #4a6352;
+      --border: #c8dcd0;
+      --accent: #1b5e20;
+      --accent-hover: #144718;
       --chart-line: #2e7d32;
-      --chart-bar: rgba(33, 150, 243, 0.45);
-      --sun-line: #fb8c00;
+      --chart-bar: rgba(46, 125, 50, 0.35);
+      --sun-line: #e65100;
+      --badge-bg: #e8f5e9;
+      --shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
     }
 
     [data-theme="dark"] {
-      --bg: #12181b;
-      --card-bg: #1e262c;
-      --text: #f7fafc;
-      --text-muted: #a0aec0;
-      --border: #2d3748;
+      --bg: #0d1611;
+      --card-bg: #14221a;
+      --text: #e8f3ec;
+      --text-muted: #8ba895;
+      --border: #233b2c;
       --accent: #4caf50;
+      --accent-hover: #388e3c;
       --chart-line: #66bb6a;
-      --chart-bar: rgba(100, 181, 246, 0.45);
+      --chart-bar: rgba(102, 187, 106, 0.35);
       --sun-line: #ffb74d;
+      --badge-bg: #1b3e20;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
+      /* Subtle Golf Ball Dimple / Turf Pattern Overlay */
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 16px 16px;
       color: var(--text);
       line-height: 1.5;
       padding: 1rem;
@@ -59,7 +68,13 @@
       padding-bottom: 0.5rem;
     }
 
-    h1 { font-size: 1.4rem; }
+    h1 { 
+      font-size: 1.5rem; 
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
     .controls { display: flex; gap: 0.4rem; }
     button {
@@ -67,10 +82,11 @@
       border: 1px solid var(--border);
       color: var(--text);
       padding: 0.35rem 0.65rem;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       font-size: 0.85rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     button:hover { border-color: var(--accent); }
     button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -82,9 +98,9 @@
     }
     input[type="text"] {
       flex: 1;
-      padding: 0.5rem;
+      padding: 0.6rem;
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 6px;
       background: var(--card-bg);
       color: var(--text);
     }
@@ -98,6 +114,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      box-shadow: var(--shadow);
     }
     .alert-warning {
       background-color: #fff8e1;
@@ -124,17 +141,18 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 1.25rem;
       margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
     }
 
     .card h2 {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       margin-bottom: 0.5rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
     }
 
     .score-badge {
@@ -156,7 +174,7 @@
     [data-theme="dark"] .score-low  { background: #3e1b1b; color: #e57373; border-color: #c62828; }
 
     .temp-large {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -173,7 +191,8 @@
     .grid-item {
       background: var(--bg);
       padding: 0.75rem;
-      border-radius: 4px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
     }
     .grid-item .label { font-size: 0.8rem; color: var(--text-muted); }
     .grid-item .value { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.3rem; }
@@ -190,10 +209,16 @@
     .date-btn {
       flex: 0 0 auto;
       text-align: center;
-      padding: 0.4rem 0.7rem;
+      padding: 0.5rem 0.7rem;
       font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      min-width: 70px;
     }
-    .date-btn .day { font-weight: bold; display: block; }
+    .date-btn .day { font-weight: bold; }
+    .date-btn .date-icon { font-size: 1.1rem; margin: 0.1rem 0; }
     .date-btn .date { font-size: 0.75rem; opacity: 0.8; }
 
     .chart-container {
@@ -216,14 +241,14 @@
 
 <div class="container">
   <header>
-    <h1>Is It Golf Weather?</h1>
+    <h1>⛳ Is It Golf Weather?</h1>
     <div class="controls">
       <button id="unitToggle">°C</button>
       <button id="speedToggle">mph</button>
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.5</div>
+  <div class="version-tag">Version 0.6</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Enter city or town (e.g. Leamington Spa)...">
@@ -395,7 +420,6 @@
         currentCityName = overrideName;
       }
 
-      // Explicitly request timezone=auto so sunrise/sunset match local time
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=1&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
@@ -434,15 +458,21 @@
     if (!currentData || !currentData.daily) return;
     dateBar.innerHTML = '';
     const days = currentData.daily.time;
+    const weatherCodes = currentData.daily.weather_code;
     
     days.forEach((dateStr, idx) => {
       const d = new Date(dateStr);
       const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
       const dateNum = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      const dayWeatherInfo = getWeatherInfo(weatherCodes[idx]);
 
       const btn = document.createElement('button');
       btn.className = `date-btn ${idx === selectedDayIndex ? 'active' : ''}`;
-      btn.innerHTML = `<span class="day">${dayName}</span><span class="date">${dateNum}</span>`;
+      btn.innerHTML = `
+        <span class="day">${dayName}</span>
+        <span class="date-icon">${dayWeatherInfo.icon}</span>
+        <span class="date">${dateNum}</span>
+      `;
       btn.addEventListener('click', () => {
         selectedDayIndex = idx;
         buildDateBar();
@@ -490,10 +520,9 @@
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
     const maxRain = Math.max(...hourlyPrecip, 2);
 
-    const count = 24; // 24 full hours plotted (00:00 to 23:00)
+    const count = 24;
     const stepX = (width - paddingLeft - paddingRight) / (count - 1);
 
-    // Render Y-Axis Temp Labels & Horizontal Gridlines
     const yTicks = [minTemp, Math.round((minTemp + maxTemp) / 2), maxTemp];
     yTicks.forEach(tickVal => {
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -515,7 +544,6 @@
       svg.appendChild(gridline);
     });
 
-    // Bars for Rain
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.3);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
@@ -529,7 +557,6 @@
       svg.appendChild(rect);
     });
 
-    // Line for Temperature
     let points = '';
     hourlyTemps.forEach((temp, i) => {
       const x = paddingLeft + i * stepX;
@@ -551,7 +578,6 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Draw Sunrise Line if within 0-23h range
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const sunX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -570,7 +596,6 @@
       svg.appendChild(label);
     }
 
-    // Draw Sunset Line if within 0-23h range
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const sunX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -632,7 +657,6 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[selectedDayIndex]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    // Parse Sunrise/Sunset with ISO-8601 Strings for robust local time parsing
     const sunriseDate = new Date(d.sunrise[selectedDayIndex]);
     const sunsetDate = new Date(d.sunset[selectedDayIndex]);
     
@@ -640,7 +664,6 @@
     document.getElementById('sunriseTime').textContent = formatTime(sunriseDate);
     document.getElementById('sunsetTime').textContent = formatTime(sunsetDate);
 
-    // Daylight Warning Banner Calculations
     const now = new Date();
     const millisUntilSunset = sunsetDate.getTime() - now.getTime();
     const hoursUntilSunset = millisUntilSunset / (1000 * 60 * 60);
@@ -676,7 +699,6 @@
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
     }
 
-    // Score & Conditions Assessment
     const score = calculateGolfScore(tempVal, d.precipitation_sum[selectedDayIndex], last24hRain, windVal);
     scoreText.textContent = `${score} / 10`;
 
@@ -710,13 +732,11 @@
 
     document.getElementById('assessment').innerHTML = assessmentHTML;
 
-    // Filter hourly data for all 24 hours of selected day
     const startIndex = (selectedDayIndex + 1) * 24; 
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    // Convert Sunrise & Sunset to decimal hours (e.g., 6:30 AM -> 6.5)
     const sunriseHourDec = sunriseDate.getHours() + (sunriseDate.getMinutes() / 60);
     const sunsetHourDec = sunsetDate.getHours() + (sunsetDate.getMinutes() / 60);
 
