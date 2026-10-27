@@ -87,7 +87,7 @@
       .container { max-width: 100%; }
     }
 
-    /* Hero Banner Header Layout */
+    /* Header & Hero Banner */
     .hero-banner {
       background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
       color: #ffffff;
@@ -101,7 +101,6 @@
       position: relative;
     }
 
-    /* Floating Version Badge */
     .floating-version {
       position: absolute;
       top: 0.5rem;
@@ -132,6 +131,8 @@
         flex: 1;
         text-align: center;
       }
+      /* Hide Pin App Button on Mobile */
+      #pwaBtn { display: none; }
     }
 
     .hero-title h1 {
@@ -212,7 +213,6 @@
       color: var(--accent);
     }
 
-    /* Verdict Banner Box */
     .verdict-banner {
       border-radius: 8px;
       padding: 1.1rem 1.25rem;
@@ -267,7 +267,6 @@
       border: 1px solid #ef9a9a;
     }
 
-    /* Modal / PWA Instructions Box */
     .pwa-modal {
       display: none;
       position: fixed;
@@ -307,12 +306,8 @@
       letter-spacing: 0.6px;
     }
 
-    .card-centered {
-      text-align: center;
-    }
-    .card-centered h2 {
-      text-align: center;
-    }
+    .card-centered { text-align: center; }
+    .card-centered h2 { text-align: center; }
 
     .score-badge {
       display: inline-flex;
@@ -361,23 +356,24 @@
       font-weight: 500;
     }
 
-    .grid {
+    /* Responsive 3-Column Grid Layout for Right Now Cards on Mobile */
+    .grid-3col {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
       margin-top: 0.75rem;
     }
 
     .grid-item {
       background: var(--bg);
-      padding: 0.75rem;
+      padding: 0.65rem 0.5rem;
       border-radius: 6px;
       border: 1px solid var(--border);
       transition: background-color 0.2s, border-color 0.2s;
     }
-    .grid-item .label { font-size: 0.8rem; color: var(--text-muted); }
-    .grid-item .value-main { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.35rem; }
-    .grid-item .value-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: normal; }
+    .grid-item .label { font-size: 0.75rem; color: var(--text-muted); }
+    .grid-item .value-main { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
+    .grid-item .value-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; font-weight: normal; }
 
     .grid-item.stat-good {
       background-color: var(--warn-good-bg);
@@ -392,14 +388,12 @@
       border-color: var(--warn-bad-border);
     }
 
-    .sun-grid {
+    /* 6-Item Day Summary Grid */
+    .summary-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
       margin-top: 0.75rem;
-    }
-    .sun-grid .full-width {
-      grid-column: 1 / -1;
     }
 
     #status { margin: 0 0.5rem 1rem 0.5rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
@@ -442,12 +436,12 @@
     .chart-container {
       width: 100%;
       overflow-x: auto;
-      margin-top: 0.75rem;
+      margin-top: 0.5rem;
       padding-bottom: 0.5rem;
     }
     .chart-scroll-wrapper {
       min-width: 550px;
-      height: 190px;
+      height: 180px;
       position: relative;
     }
     svg { width: 100%; height: 100%; overflow: visible; }
@@ -461,21 +455,26 @@
     .now-line { stroke: var(--now-line); stroke-width: 1.5; stroke-dasharray: 2,2; }
     .now-text { fill: var(--now-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
     
-    .sun-icon { width: 18px; height: 18px; vertical-align: middle; }
-    
-    .section-divider {
-      border: 0;
-      height: 1px;
-      background: var(--border);
-      margin: 1.25rem 0 1rem 0;
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      flex-wrap: wrap;
     }
+    .legend-item { display: flex; align-items: center; gap: 0.3rem; }
+    .legend-color { width: 10px; height: 10px; border-radius: 2px; }
+    
+    .sun-icon { width: 16px; height: 16px; vertical-align: middle; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header class="hero-banner">
-    <div class="floating-version">v0.12</div>
+    <div class="floating-version">v0.13</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
@@ -523,7 +522,7 @@
       <div id="gearCallout" class="callout-box"></div>
     </div>
 
-    <!-- Right Now Overview Card with Dual Rain Tiles -->
+    <!-- Right Now Overview Card (3 Cards Fitted on Single Mobile Row) -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       
@@ -535,7 +534,7 @@
         <div id="currentCondition" class="current-condition-text">--</div>
       </div>
       
-      <div class="grid">
+      <div class="grid-3col">
         <div class="grid-item" id="windCard">
           <div class="label">Wind Speed</div>
           <div class="value-main">
@@ -545,7 +544,7 @@
           <div class="value-sub" id="windSub">--</div>
         </div>
         <div class="grid-item" id="recentRainCard">
-          <div class="label">Recent Rain (24h)</div>
+          <div class="label">Recent (24h)</div>
           <div class="value-main">
             <span>🌧️</span>
             <span id="recentRain">--</span>
@@ -553,7 +552,7 @@
           <div class="value-sub" id="recentRainSub">--</div>
         </div>
         <div class="grid-item" id="forecastRainCard">
-          <div class="label">Forecast Rain (4h)</div>
+          <div class="label">Forecast (4h)</div>
           <div class="value-main">
             <span>☔</span>
             <span id="forecastRain">--</span>
@@ -563,20 +562,26 @@
       </div>
     </div>
 
-    <!-- 24-Hour Forecast Chart -->
+    <!-- Clean 24-Hour Forecast Chart with Chart Legend -->
     <div class="card">
-      <h2>24-Hour Forecast (Temp Line, Rain Bars & Sun Events)</h2>
+      <h2>24-Hour Forecast</h2>
       <div class="chart-container">
         <div class="chart-scroll-wrapper">
           <svg id="hourlyChart"></svg>
         </div>
       </div>
+      <div class="chart-legend">
+        <div class="legend-item"><span class="legend-color" style="background: var(--chart-line);"></span> Temp Line</div>
+        <div class="legend-item"><span class="legend-color" style="background: var(--chart-bar);"></span> Rain Bars</div>
+        <div class="legend-item"><span class="legend-color" style="background: var(--sun-line);"></span> Sun Events</div>
+        <div class="legend-item"><span class="legend-color" style="background: var(--now-line);"></span> Current Time</div>
+      </div>
     </div>
 
-    <!-- Merged Consolidated Card: Sun Hours & Day Summary -->
+    <!-- Consolidated 6-Box Day Summary Card (Includes Sun Times) -->
     <div class="card">
-      <h2>Sun & Daylight Hours</h2>
-      <div class="sun-grid">
+      <h2>Day Summary</h2>
+      <div class="summary-grid">
         <div class="grid-item">
           <div class="label">Sunrise</div>
           <div class="value-main">
@@ -597,22 +602,16 @@
             <span id="sunsetTime">--:--</span>
           </div>
         </div>
-        <div class="grid-item full-width" id="daylightCard">
-          <div class="label">Daylight Remaining</div>
+        <div class="grid-item" id="daylightCard">
+          <div class="label">Daylight Left</div>
           <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
         </div>
-      </div>
-
-      <hr class="section-divider">
-
-      <h2>Day Summary</h2>
-      <div class="grid">
         <div class="grid-item">
           <div class="label">High / Low</div>
           <div class="value-main" id="tempRange">--</div>
         </div>
         <div class="grid-item">
-          <div class="label">Total Daily Rain</div>
+          <div class="label">Daily Rain</div>
           <div class="value-main" id="todayRain">--</div>
         </div>
         <div class="grid-item">
@@ -625,7 +624,7 @@
   </div>
 </div>
 
-<!-- Add to Home Screen Instructions Modal -->
+<!-- Add to Home Screen Modal -->
 <div id="pwaModal" class="pwa-modal">
   <div class="pwa-content">
     <h3>📱 Add to Home Screen</h3>
@@ -655,6 +654,8 @@
   let currentCityName = '';
   let selectedDayIndex = 0; 
   let debounceTimer = null;
+
+  const fahrenheitCountries = ['US', 'PR', 'VI', 'GU', 'MP', 'AS', 'BS', 'KY', 'LR'];
 
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
@@ -691,7 +692,6 @@
   const forecastRainCard = document.getElementById('forecastRainCard');
   const daylightCard = document.getElementById('daylightCard');
 
-  // PWA Modal Handler
   pwaBtn.addEventListener('click', () => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS) {
@@ -745,6 +745,15 @@
     try {
       const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
       const data = await res.json();
+      
+      // Auto-set Fahrenheit vs Celsius based on country
+      if (data.countryCode && fahrenheitCountries.includes(data.countryCode.toUpperCase())) {
+        currentUnit = 'F';
+      } else {
+        currentUnit = 'C';
+      }
+      unitToggle.textContent = `°${currentUnit}`;
+
       const city = data.city || data.locality || data.principalSubdivision;
       if (city) return `${city}, ${data.countryCode}`;
     } catch (e) {
@@ -753,14 +762,23 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
-  async function fetchWeather(lat, lon, overrideName = '') {
+  async function fetchWeather(lat, lon, overrideName = '', countryCode = '') {
     statusEl.textContent = 'Fetching weather data...';
     try {
       if (!overrideName) {
         currentCityName = await fetchFriendlyLocationName(lat, lon);
       } else {
         currentCityName = overrideName;
+        if (countryCode && fahrenheitCountries.includes(countryCode.toUpperCase())) {
+          currentUnit = 'F';
+        } else {
+          currentUnit = 'C';
+        }
+        unitToggle.textContent = `°${currentUnit}`;
       }
+
+      // Populate text input with current friendly name
+      locationInput.value = currentCityName;
 
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=1&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
@@ -807,7 +825,7 @@
             locationInput.value = fullName;
             autocompleteList.style.display = 'none';
             selectedDayIndex = 0;
-            fetchWeather(place.latitude, place.longitude, `${place.name}${region}`);
+            fetchWeather(place.latitude, place.longitude, `${place.name}${region}`, place.country_code);
           });
           autocompleteList.appendChild(item);
         });
@@ -882,7 +900,7 @@
     svg.innerHTML = '';
 
     const width = 550;
-    const height = 160;
+    const height = 150;
     const paddingLeft = 35;
     const paddingRight = 15;
     const paddingBottom = 25;
@@ -1116,35 +1134,35 @@
         daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining today.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = '0 hrs';
-        daylightCard.className = 'grid-item full-width stat-bad';
+        daylightCard.className = 'grid-item stat-bad';
       } else if (nowDec < riseDec) {
         daylightBanner.className = 'alert-banner alert-warning';
         daylightBanner.innerHTML = `🌅 <span>Pre-sunrise right now. First tee time after ${sunriseObj.display}!</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${(setDec - riseDec).toFixed(1)} hrs total`;
-        daylightCard.className = 'grid-item full-width stat-med';
+        daylightCard.className = 'grid-item stat-med';
       } else if (hoursUntilSunset < 2) {
         daylightBanner.className = 'alert-banner alert-danger';
         daylightBanner.innerHTML = `⚠️ <span><strong>Sunset Warning:</strong> Less than 2 hours of daylight left (${hoursUntilSunset.toFixed(1)}h remaining). You likely won't finish 9 holes.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
-        daylightCard.className = 'grid-item full-width stat-bad';
+        daylightCard.className = 'grid-item stat-bad';
       } else if (hoursUntilSunset < 4) {
         daylightBanner.className = 'alert-banner alert-warning';
         daylightBanner.innerHTML = `⏳ <span><strong>Limited Daylight Warning:</strong> ~${hoursUntilSunset.toFixed(1)} hours until sunset. You may only have time for 9 holes.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
-        daylightCard.className = 'grid-item full-width stat-med';
+        daylightCard.className = 'grid-item stat-med';
       } else {
         daylightBanner.style.display = 'none';
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
-        daylightCard.className = 'grid-item full-width stat-good';
+        daylightCard.className = 'grid-item stat-good';
       }
     } else {
       const totalDaylight = setDec - riseDec;
       daylightBanner.style.display = 'none';
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
-      daylightCard.className = 'grid-item full-width stat-good';
+      daylightCard.className = 'grid-item stat-good';
     }
 
     // Golf Rating
@@ -1162,7 +1180,6 @@
       scoreIcon.textContent = '🌧️';
     }
 
-    // Dynamic Verdict Banner Logic with Explicit Reason Differentiation
     const isHeavyWind = windMph > 25;
     const isHeavyRain = next4hRainSum > 5 || todayRainSum > 12;
 
@@ -1192,7 +1209,7 @@
       else verdictSub.textContent = 'Gale force winds expected. Unsafe or unplayable conditions.';
     }
 
-    // 1. Ground Status (Accounts for both recent past rain + upcoming rain)
+    // 1. Ground Status
     const totalMoisture = last24hRain + (isToday ? next4hRainSum : todayRainSum);
     if (totalMoisture > 12 || last24hRain > 10) {
       groundCallout.innerHTML = `<strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water in low spots; minimal ball roll.`;
@@ -1202,7 +1219,7 @@
       groundCallout.innerHTML = `<strong>Ground Status:</strong> Dry / Firm fairways. Expect great roll and firm greens.`;
     }
 
-    // 2. Wind Impact Callout
+    // 2. Wind Impact
     if (windVal > 35) {
       windCallout.innerHTML = `<strong>Wind Impact:</strong> High winds. 2–3 clubs difference into wind; flight shaping required.`;
     } else if (windVal > 18) {
@@ -1211,23 +1228,25 @@
       windCallout.innerHTML = `<strong>Wind Impact:</strong> Light breeze. Minimal impact on ball flight.`;
     }
 
-    // 3. Standardized Rain Outlook Box
+    // 3. Rain Outlook Box
+    const activeRainVal = isToday ? next4hRainSum : todayRainSum;
     let rainOutlookTag = 'No Rain';
-    if (next4hRainSum > 5) rainOutlookTag = 'Heavy Rain 🌧️☔';
-    else if (next4hRainSum > 1.5) rainOutlookTag = 'Moderate Rain 🌧️';
-    else if (next4hRainSum > 0.1) rainOutlookTag = 'Light Rain / Drizzle 🌦️';
-    rainOutlookCallout.innerHTML = `<strong>Rain Outlook (Next 4h):</strong> ${rainOutlookTag}`;
+    if (activeRainVal > 5) rainOutlookTag = 'Heavy Rain 🌧️☔';
+    else if (activeRainVal > 1.5) rainOutlookTag = 'Moderate Rain 🌧️';
+    else if (activeRainVal > 0.1) rainOutlookTag = 'Light Rain / Drizzle 🌦️';
+    rainOutlookCallout.innerHTML = `<strong>Rain Outlook (${isToday ? 'Next 4h' : 'Day'}):</strong> ${rainOutlookTag}`;
 
-    // 4. Specific Gear Checklist Box
+    // 4. Strict Context-Aware Gear Checklist
     let gearItems = [];
-    if (next4hRainSum > 0.1 || todayRainSum > 3) {
-      gearItems.push('Umbrella ☔', 'Waterproof Jacket 🧥', 'Extra Towel 🧼');
+    if (activeRainVal > 0.1) {
+      gearItems.push('Umbrella ☔', 'Waterproof Jacket 🧥');
+      if (activeRainVal > 2) gearItems.push('Extra Towel 🧼');
     }
     if (tempVal > 20 && weatherCode <= 2) {
-      gearItems.push('Suncream 🧴', 'Sunglasses 🕶️', 'Water Bottle 💧');
+      gearItems.push('Suncream 🧴', 'Sunglasses 🕶️');
     }
     if (tempVal < 8) {
-      gearItems.push('Hand Warmers 🧤', 'Woolly Hat / Beanie 🧢', 'Base Layers 🧥');
+      gearItems.push('Hand Warmers 🧤', 'Woolly Hat / Beanie 🧢');
     }
     if (gearItems.length === 0) {
       gearItems.push('Standard Golf Polo 👕', 'Light Pullover 🧥');
@@ -1270,11 +1289,11 @@
         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
         () => {
           statusEl.textContent = 'Location denied. Defaulting to Leamington Spa...';
-          fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK');
+          fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK', 'GB');
         }
       );
     } else {
-      fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK');
+      fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK', 'GB');
     }
   }
 
