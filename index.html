@@ -18,6 +18,14 @@
       --sun-line: #e65100;
       --badge-bg: #e8f5e9;
       --shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
+
+      /* Condition Box Warning Colors (Light) */
+      --warn-good-bg: #e8f5e9;
+      --warn-good-border: #a5d6a7;
+      --warn-med-bg: #fff8e1;
+      --warn-med-border: #ffe082;
+      --warn-bad-bg: #ffebee;
+      --warn-bad-border: #ef9a9a;
     }
 
     [data-theme="dark"] {
@@ -33,6 +41,14 @@
       --sun-line: #ffb74d;
       --badge-bg: #1b3e20;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+      /* Condition Box Warning Colors (Dark) */
+      --warn-good-bg: #1b3e20;
+      --warn-good-border: #2e7d32;
+      --warn-med-bg: #3e3310;
+      --warn-med-border: #fbc02d;
+      --warn-bad-bg: #3e1b1b;
+      --warn-bad-border: #c62828;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,11 +68,27 @@
       margin: 0 auto;
     }
 
-    header {
+    /* Hero Header Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+      color: #ffffff;
+      padding: 1.25rem 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 6px 16px rgba(27, 94, 32, 0.25);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.25rem;
+    }
+    .hero-title h1 {
+      font-size: 1.6rem;
+      color: #ffffff;
+      margin: 0;
+    }
+    .hero-title p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 0.15rem;
     }
 
     .version-tag {
@@ -65,14 +97,6 @@
       margin-bottom: 1rem;
       border-bottom: 1px solid var(--border);
       padding-bottom: 0.5rem;
-    }
-
-    h1 { 
-      font-size: 1.5rem; 
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
     }
 
     .controls { display: flex; gap: 0.4rem; }
@@ -90,6 +114,15 @@
     button:hover { border-color: var(--accent); }
     button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+    .hero-banner button {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .hero-banner button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
     .search-box {
       position: relative;
       display: flex;
@@ -105,7 +138,6 @@
       color: var(--text);
     }
 
-    /* Type-Ahead Autocomplete Dropdown */
     .autocomplete-list {
       position: absolute;
       top: 100%;
@@ -201,6 +233,16 @@
     [data-theme="dark"] .score-med  { background: #3e3810; color: #fff176; border-color: #fbc02d; }
     [data-theme="dark"] .score-low  { background: #3e1b1b; color: #e57373; border-color: #c62828; }
 
+    /* Lighthearted Advice Callout */
+    .advice-box {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-left: 4px solid var(--accent);
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
     .temp-large {
       font-size: 2.4rem;
       font-weight: bold;
@@ -221,9 +263,24 @@
       padding: 0.75rem;
       border-radius: 6px;
       border: 1px solid var(--border);
+      transition: background-color 0.2s, border-color 0.2s;
     }
     .grid-item .label { font-size: 0.8rem; color: var(--text-muted); }
     .grid-item .value { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.3rem; }
+
+    /* Dynamic Severity Color States for Weather Grid Boxes */
+    .grid-item.stat-good {
+      background-color: var(--warn-good-bg);
+      border-color: var(--warn-good-border);
+    }
+    .grid-item.stat-med {
+      background-color: var(--warn-med-bg);
+      border-color: var(--warn-med-border);
+    }
+    .grid-item.stat-bad {
+      background-color: var(--warn-bad-bg);
+      border-color: var(--warn-bad-border);
+    }
 
     #status { margin-bottom: 1rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
     
@@ -268,18 +325,22 @@
 <body>
 
 <div class="container">
-  <header>
-    <h1>⛳ Is It Golf Weather?</h1>
+  <!-- Hero Banner Header -->
+  <header class="hero-banner">
+    <div class="hero-title">
+      <h1>⛳ Is It Golf Weather?</h1>
+      <p>Course conditions, ground moisture & playability</p>
+    </div>
     <div class="controls">
       <button id="unitToggle">°C</button>
       <button id="speedToggle">mph</button>
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.7</div>
+  <div class="version-tag">Version 0.8</div>
 
   <div class="search-box">
-    <input type="text" id="locationInput" placeholder="Type city or town..." autocomplete="off">
+    <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
     <button id="geoBtn" title="Use current location">📍 Find Me</button>
     <div id="autocompleteList" class="autocomplete-list"></div>
   </div>
@@ -299,6 +360,7 @@
         <span id="scoreText">-- / 10</span>
       </div>
       <div id="assessment"></div>
+      <div id="adviceBox" class="advice-box"></div>
     </div>
 
     <div class="card">
@@ -310,18 +372,18 @@
       <div id="currentCondition">--</div>
       
       <div class="grid">
-        <div class="grid-item">
+        <div class="grid-item" id="windCard">
           <div class="label">Wind Speed</div>
           <div class="value">
             <span id="windIcon">🍃</span>
             <span id="currentWind">--</span>
           </div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" id="gustCard">
           <div class="label">Wind Gusts</div>
           <div class="value" id="currentGusts">--</div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" id="rainCard">
           <div class="label">Recent Rain (24h)</div>
           <div class="value" id="recentRain">--</div>
         </div>
@@ -394,6 +456,11 @@
   const scoreIcon = document.getElementById('scoreIcon');
   const scoreText = document.getElementById('scoreText');
   const daylightBanner = document.getElementById('daylightBanner');
+  const adviceBox = document.getElementById('adviceBox');
+
+  const windCard = document.getElementById('windCard');
+  const gustCard = document.getElementById('gustCard');
+  const rainCard = document.getElementById('rainCard');
 
   function getWeatherInfo(code) {
     const codes = {
@@ -465,7 +532,6 @@
     }
   }
 
-  // Autocomplete / Type-ahead logic
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const query = locationInput.value.trim();
@@ -675,7 +741,6 @@
     }
   }
 
-  // Time parsing helper: extracts "HH:MM" accurately from ISO string "YYYY-MM-DDTHH:MM"
   function parseTimeFromISO(isoStr) {
     if (!isoStr) return { hour: 0, minute: 0, display: '--:--', iso: '' };
     const timePart = isoStr.split('T')[1] || '';
@@ -718,17 +783,30 @@
     document.getElementById('currentTemp').textContent = toTemp(tempVal);
 
     const windVal = isToday ? c.wind_speed_10m : d.wind_speed_10m_max[selectedDayIndex];
+    const gustsVal = isToday ? c.wind_gusts_10m : windVal * 1.3;
     const windVisual = getWindVisuals(windVal);
     document.getElementById('windIcon').textContent = windVisual.icon;
     document.getElementById('currentWind').textContent = `${toSpeed(windVal)} (${windVisual.label})`;
     document.getElementById('currentGusts').textContent = isToday ? toSpeed(c.wind_gusts_10m) : 'N/A';
 
     const last24hRain = h.precipitation.slice(0, 24).reduce((a, b) => a + b, 0);
+    const todayRainSum = d.precipitation_sum[selectedDayIndex];
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
 
     document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[selectedDayIndex])} / ${toTemp(d.temperature_2m_max[selectedDayIndex])}`;
-    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[selectedDayIndex]);
+    document.getElementById('todayRain').textContent = toPrecip(todayRainSum);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
+
+    // Apply Background Colors to Cards based on Severity Thresholds
+    const windMph = windVal / 1.609;
+    const gustsMph = gustsVal / 1.609;
+
+    // Wind Card
+    windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
+    // Gusts Card
+    gustCard.className = 'grid-item ' + (gustsMph > 32 ? 'stat-bad' : gustsMph > 20 ? 'stat-med' : 'stat-good');
+    // Rain Card
+    rainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
 
     // Sunrise & Sunset Parsing
     const sunriseObj = parseTimeFromISO(d.sunrise[selectedDayIndex]);
@@ -737,11 +815,8 @@
     document.getElementById('sunriseTime').textContent = sunriseObj.display;
     document.getElementById('sunsetTime').textContent = sunsetObj.display;
 
-    // Daylight Banner & Remaining Time Calculations
+    // Daylight Calculations
     const now = new Date();
-    const nowISO = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    
-    // Convert times to decimal hours for current day comparison
     const nowDec = now.getHours() + (now.getMinutes() / 60);
     const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
     const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
@@ -778,7 +853,8 @@
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
     }
 
-    const score = calculateGolfScore(tempVal, d.precipitation_sum[selectedDayIndex], last24hRain, windVal);
+    // Rating & Lighthearted Kit Advice Logic
+    const score = calculateGolfScore(tempVal, todayRainSum, last24hRain, windVal);
     scoreText.textContent = `${score} / 10`;
 
     if (score >= 8.0) {
@@ -808,8 +884,24 @@
     } else {
       assessmentHTML += `<p><strong>Wind Impact:</strong> Light breeze. Minimal impact on flight.</p>`;
     }
-
     document.getElementById('assessment').innerHTML = assessmentHTML;
+
+    // Lighthearted Kit Recommendation
+    let adviceText = '';
+    if (todayRainSum > 12) {
+      adviceText = `<strong>Gear Advice:</strong> You're going to get soaked! 🌊 Pack a full suit of waterproofs, extra gloves, and 3 dry towels. Maybe hit the clubhouse instead?`;
+    } else if (todayRainSum > 3) {
+      adviceText = `<strong>Gear Advice:</strong> Rain imminent! ☔ Bring an umbrella, rain cover for your bag, and a waterproof jacket. Keep your grips dry!`;
+    } else if (tempVal > 22 && weatherCode <= 2) {
+      adviceText = `<strong>Gear Advice:</strong> Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and bring plenty of water.`;
+    } else if (tempVal < 7) {
+      adviceText = `<strong>Gear Advice:</strong> Proper chilly out! 🧤 Layer up, grab some winter mitts, and maybe play a soft low-compression ball.`;
+    } else if (windMph > 22) {
+      adviceText = `<strong>Gear Advice:</strong> It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and knock down your tee shots.`;
+    } else {
+      adviceText = `<strong>Gear Advice:</strong> Decent golfing weather! 🏌️ Standard polo, maybe a light windbreaker in the bag just in case.`;
+    }
+    adviceBox.innerHTML = adviceText;
 
     const startIndex = (selectedDayIndex + 1) * 24; 
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
