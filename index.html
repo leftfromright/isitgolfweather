@@ -39,7 +39,6 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
-      /* Subtle Golf Ball Dimple / Turf Pattern Overlay */
       background-image: radial-gradient(var(--border) 1px, transparent 1px);
       background-size: 16px 16px;
       color: var(--text);
@@ -92,6 +91,7 @@
     button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
     .search-box {
+      position: relative;
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1rem;
@@ -103,6 +103,34 @@
       border-radius: 6px;
       background: var(--card-bg);
       color: var(--text);
+    }
+
+    /* Type-Ahead Autocomplete Dropdown */
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 90px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      margin-top: 4px;
+    }
+    .autocomplete-item {
+      padding: 0.6rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover {
+      background: var(--bg);
+      color: var(--accent);
     }
 
     .alert-banner {
@@ -248,12 +276,12 @@
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.6</div>
+  <div class="version-tag">Version 0.7</div>
 
   <div class="search-box">
-    <input type="text" id="locationInput" placeholder="Enter city or town (e.g. Leamington Spa)...">
-    <button id="searchBtn">Search</button>
+    <input type="text" id="locationInput" placeholder="Type city or town..." autocomplete="off">
     <button id="geoBtn" title="Use current location">📍 Find Me</button>
+    <div id="autocompleteList" class="autocomplete-list"></div>
   </div>
 
   <div id="status">Getting location...</div>
@@ -351,13 +379,14 @@
   let currentData = null;
   let currentCityName = '';
   let selectedDayIndex = 0; 
+  let debounceTimer = null;
 
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
-  const searchBtn = document.getElementById('searchBtn');
   const geoBtn = document.getElementById('geoBtn');
   const locationInput = document.getElementById('locationInput');
+  const autocompleteList = document.getElementById('autocompleteList');
   const statusEl = document.getElementById('status');
   const contentEl = document.getElementById('weatherContent');
   const dateBar = document.getElementById('dateBar');
@@ -436,23 +465,54 @@
     }
   }
 
-  async function searchLocation(query) {
-    if (!query) return;
-    statusEl.textContent = `Searching for "${query}"...`;
+  // Autocomplete / Type-ahead logic
+  locationInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const query = locationInput.value.trim();
+    if (query.length < 2) {
+      autocompleteList.style.display = 'none';
+      return;
+    }
+    debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
+  });
+
+  async function searchAutocomplete(query) {
     try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
       const data = await res.json();
+      autocompleteList.innerHTML = '';
+      
       if (data.results && data.results.length > 0) {
-        const place = data.results[0];
-        const displayName = `${place.name}${place.admin1 ? ', ' + place.admin1 : ''}`;
-        fetchWeather(place.latitude, place.longitude, displayName);
+        data.results.forEach(place => {
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          const region = place.admin1 ? `, ${place.admin1}` : '';
+          const country = place.country ? `, ${place.country}` : '';
+          const fullName = `${place.name}${region}${country}`;
+          item.textContent = fullName;
+          
+          item.addEventListener('click', () => {
+            locationInput.value = fullName;
+            autocompleteList.style.display = 'none';
+            selectedDayIndex = 0;
+            fetchWeather(place.latitude, place.longitude, `${place.name}${region}`);
+          });
+          autocompleteList.appendChild(item);
+        });
+        autocompleteList.style.display = 'block';
       } else {
-        statusEl.textContent = 'Location not found. Try another search.';
+        autocompleteList.style.display = 'none';
       }
-    } catch (err) {
-      statusEl.textContent = 'Failed to find location.';
+    } catch (e) {
+      console.warn("Autocomplete search failed", e);
     }
   }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) {
+      autocompleteList.style.display = 'none';
+    }
+  });
 
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
@@ -615,6 +675,19 @@
     }
   }
 
+  // Time parsing helper: extracts "HH:MM" accurately from ISO string "YYYY-MM-DDTHH:MM"
+  function parseTimeFromISO(isoStr) {
+    if (!isoStr) return { hour: 0, minute: 0, display: '--:--', iso: '' };
+    const timePart = isoStr.split('T')[1] || '';
+    const [h, m] = timePart.split(':').map(Number);
+    return {
+      hour: h || 0,
+      minute: m || 0,
+      display: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
+      iso: isoStr
+    };
+  }
+
   function render() {
     if (!currentData) return;
 
@@ -657,28 +730,34 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[selectedDayIndex]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    const sunriseDate = new Date(d.sunrise[selectedDayIndex]);
-    const sunsetDate = new Date(d.sunset[selectedDayIndex]);
+    // Sunrise & Sunset Parsing
+    const sunriseObj = parseTimeFromISO(d.sunrise[selectedDayIndex]);
+    const sunsetObj = parseTimeFromISO(d.sunset[selectedDayIndex]);
     
-    const formatTime = (dateObj) => dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('sunriseTime').textContent = formatTime(sunriseDate);
-    document.getElementById('sunsetTime').textContent = formatTime(sunsetDate);
+    document.getElementById('sunriseTime').textContent = sunriseObj.display;
+    document.getElementById('sunsetTime').textContent = sunsetObj.display;
 
+    // Daylight Banner & Remaining Time Calculations
     const now = new Date();
-    const millisUntilSunset = sunsetDate.getTime() - now.getTime();
-    const hoursUntilSunset = millisUntilSunset / (1000 * 60 * 60);
+    const nowISO = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}T${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    
+    // Convert times to decimal hours for current day comparison
+    const nowDec = now.getHours() + (now.getMinutes() / 60);
+    const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
+    const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
+    const hoursUntilSunset = setDec - nowDec;
 
     if (isToday) {
-      if (now.getTime() > sunsetDate.getTime()) {
+      if (nowDec >= setDec) {
         daylightBanner.className = 'alert-banner alert-danger';
         daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining today.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = '0 hrs';
-      } else if (now.getTime() < sunriseDate.getTime()) {
+      } else if (nowDec < riseDec) {
         daylightBanner.className = 'alert-banner alert-warning';
-        daylightBanner.innerHTML = `🌅 <span><strong>Pre-Sunrise:</strong> Sun rises at ${formatTime(sunriseDate)}.</span>`;
+        daylightBanner.innerHTML = `🌅 <span><strong>Pre-Sunrise:</strong> Sun rises at ${sunriseObj.display}.</span>`;
         daylightBanner.style.display = 'flex';
-        document.getElementById('daylightLeft').textContent = `${((sunsetDate - sunriseDate) / (1000 * 60 * 60)).toFixed(1)} hrs total`;
+        document.getElementById('daylightLeft').textContent = `${(setDec - riseDec).toFixed(1)} hrs total`;
       } else if (hoursUntilSunset < 2) {
         daylightBanner.className = 'alert-banner alert-danger';
         daylightBanner.innerHTML = `⚠️ <span><strong>Sunset Warning:</strong> Less than 2 hours of daylight left (${hoursUntilSunset.toFixed(1)}h remaining). You likely won't finish 9 holes.</span>`;
@@ -694,7 +773,7 @@
         document.getElementById('daylightLeft').textContent = `${hoursUntilSunset.toFixed(1)} hrs`;
       }
     } else {
-      const totalDaylight = (sunsetDate.getTime() - sunriseDate.getTime()) / (1000 * 60 * 60);
+      const totalDaylight = setDec - riseDec;
       daylightBanner.style.display = 'none';
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
     }
@@ -737,10 +816,7 @@
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    const sunriseHourDec = sunriseDate.getHours() + (sunriseDate.getMinutes() / 60);
-    const sunsetHourDec = sunsetDate.getHours() + (sunsetDate.getMinutes() / 60);
-
-    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec);
+    renderChart(displayTemps, dayPrecip, riseDec, setDec);
   }
 
   unitToggle.addEventListener('click', () => {
@@ -761,18 +837,6 @@
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
     themeToggle.textContent = isDark ? '🌙' : '☀️';
-  });
-
-  searchBtn.addEventListener('click', () => {
-    selectedDayIndex = 0;
-    searchLocation(locationInput.value);
-  });
-
-  locationInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      selectedDayIndex = 0;
-      searchLocation(locationInput.value);
-    }
   });
 
   geoBtn.addEventListener('click', getUserLocation);
