@@ -120,18 +120,6 @@
       position: relative;
     }
 
-    .floating-version {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.75rem;
-      font-size: 0.7rem;
-      background: rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      padding: 0.15rem 0.45rem;
-      border-radius: 10px;
-      font-weight: bold;
-    }
-
     @media (max-width: 600px) {
       .hero-banner {
         border-radius: 0;
@@ -600,7 +588,7 @@
     .tee-line { stroke: var(--tee-line); stroke-width: 2; stroke-dasharray: 3,3; }
     .chart-icon-marker { font-size: 12px; text-anchor: middle; cursor: pointer; }
 
-    /* Expanded Chart Legend */
+    /* Clean Chart Legend */
     .chart-legend {
       display: flex;
       flex-wrap: wrap;
@@ -652,7 +640,6 @@
 
 <div class="container">
   <header class="hero-banner">
-    <div class="floating-version">v0.22</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
@@ -753,7 +740,7 @@
       </div>
     </div>
 
-    <!-- 24-Hour Forecast Chart with Comprehensive Legend -->
+    <!-- 24-Hour Forecast Chart with Correct Legend (No Blue Box on Tee Time) -->
     <div class="card">
       <h2>24-Hour Forecast</h2>
       <div class="chart-wrapper-split">
@@ -769,7 +756,7 @@
       <div class="chart-legend">
         <div class="legend-item"><span class="legend-color" style="background: var(--chart-line);"></span> Temp</div>
         <div class="legend-item"><span class="legend-color" style="background: var(--chart-bar);"></span> Rain</div>
-        <div class="legend-item"><span class="legend-color" style="background: var(--tee-line);"></span> ⛳ Tee Time</div>
+        <div class="legend-item">⛳ Tee Time</div>
         <div class="legend-item">📍 Now</div>
         <div class="legend-item">☀️ Sunrise</div>
         <div class="legend-item">🌙 Sunset</div>
@@ -821,7 +808,7 @@
 
     <!-- Subtle App Footer -->
     <footer class="app-footer">
-      v0.22 • Made by KW • October 2026
+      v1.0 • Made by KW • October 2026
     </footer>
 
   </div>
@@ -857,7 +844,6 @@
   let currentCityName = '';
   let selectedDayIndex = 0; 
   
-  // Auto-Sync Tee Time to Nearest Hour (Item 4)
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(18, currentHourNow));
   
