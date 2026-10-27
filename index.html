@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Is It Golf Weather?</title>
+  
+  <!-- Inline Golf Pin SVG Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
+
   <style>
     :root {
       --bg: #eef4f0;
@@ -14,12 +18,12 @@
       --accent: #1b5e20;
       --accent-hover: #144718;
       --chart-line: #2e7d32;
-      --chart-bar: rgba(46, 125, 50, 0.35);
+      --chart-bar: #1e88e5;
+      --chart-bar-text: #1565c0;
       --sun-line: #e65100;
       --badge-bg: #e8f5e9;
       --shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
 
-      /* Condition Box Warning Colors (Light) */
       --warn-good-bg: #e8f5e9;
       --warn-good-border: #a5d6a7;
       --warn-med-bg: #fff8e1;
@@ -37,12 +41,12 @@
       --accent: #4caf50;
       --accent-hover: #388e3c;
       --chart-line: #66bb6a;
-      --chart-bar: rgba(102, 187, 106, 0.35);
+      --chart-bar: #64b5f6;
+      --chart-bar-text: #90caf9;
       --sun-line: #ffb74d;
       --badge-bg: #1b3e20;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-      /* Condition Box Warning Colors (Dark) */
       --warn-good-bg: #1b3e20;
       --warn-good-border: #2e7d32;
       --warn-med-bg: #3e3310;
@@ -68,7 +72,6 @@
       margin: 0 auto;
     }
 
-    /* Hero Header Banner */
     .hero-banner {
       background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
       color: #ffffff;
@@ -233,14 +236,14 @@
     [data-theme="dark"] .score-med  { background: #3e3810; color: #fff176; border-color: #fbc02d; }
     [data-theme="dark"] .score-low  { background: #3e1b1b; color: #e57373; border-color: #c62828; }
 
-    /* Lighthearted Advice Callout */
-    .advice-box {
-      margin-top: 0.75rem;
-      padding: 0.75rem 1rem;
+    /* Uniform Callout Boxes */
+    .callout-box {
+      margin-top: 0.6rem;
+      padding: 0.65rem 0.9rem;
       background: var(--bg);
       border-left: 4px solid var(--accent);
       border-radius: 4px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
     .temp-large {
@@ -266,9 +269,8 @@
       transition: background-color 0.2s, border-color 0.2s;
     }
     .grid-item .label { font-size: 0.8rem; color: var(--text-muted); }
-    .grid-item .value { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.3rem; }
+    .grid-item .value { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.35rem; }
 
-    /* Dynamic Severity Color States for Weather Grid Boxes */
     .grid-item.stat-good {
       background-color: var(--warn-good-bg);
       border-color: var(--warn-good-border);
@@ -306,30 +308,37 @@
     .date-btn .date-icon { font-size: 1.1rem; margin: 0.1rem 0; }
     .date-btn .date { font-size: 0.75rem; opacity: 0.8; }
 
+    /* Scrollable Chart Container for Mobile */
     .chart-container {
       width: 100%;
-      height: 190px;
+      overflow-x: auto;
       margin-top: 0.75rem;
+      padding-bottom: 0.5rem;
+    }
+    .chart-scroll-wrapper {
+      min-width: 550px;
+      height: 190px;
       position: relative;
     }
     svg { width: 100%; height: 100%; overflow: visible; }
-    .chart-axis { stroke: var(--border); stroke-width: 1; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
     .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
+    .chart-bar-val { fill: var(--chart-bar-text); font-size: 9px; font-weight: bold; text-anchor: middle; }
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
-    .chart-bar { fill: var(--chart-bar); }
+    .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
     .sun-text { fill: var(--sun-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
+    
+    .sun-icon { width: 18px; height: 18px; vertical-align: middle; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Hero Banner Header -->
   <header class="hero-banner">
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
-      <p>Course conditions, ground moisture & playability</p>
+      <p>Course conditions & playability</p>
     </div>
     <div class="controls">
       <button id="unitToggle">°C</button>
@@ -337,7 +346,7 @@
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.8</div>
+  <div class="version-tag">Version 0.9</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
@@ -359,8 +368,11 @@
         <span id="scoreIcon">⛳</span>
         <span id="scoreText">-- / 10</span>
       </div>
-      <div id="assessment"></div>
-      <div id="adviceBox" class="advice-box"></div>
+      
+      <!-- Styled Callout Boxes -->
+      <div id="groundCallout" class="callout-box"></div>
+      <div id="windCallout" class="callout-box"></div>
+      <div id="adviceCallout" class="callout-box"></div>
     </div>
 
     <div class="card">
@@ -379,10 +391,6 @@
             <span id="currentWind">--</span>
           </div>
         </div>
-        <div class="grid-item" id="gustCard">
-          <div class="label">Wind Gusts</div>
-          <div class="value" id="currentGusts">--</div>
-        </div>
         <div class="grid-item" id="rainCard">
           <div class="label">Recent Rain (24h)</div>
           <div class="value" id="recentRain">--</div>
@@ -390,16 +398,29 @@
       </div>
     </div>
 
+    <!-- Enhanced Sunrise / Sunset Card with Vectors -->
     <div class="card">
       <h2>Sun & Daylight Hours</h2>
       <div class="grid">
         <div class="grid-item">
           <div class="label">Sunrise</div>
-          <div class="value">🌅 <span id="sunriseTime">--:--</span></div>
+          <div class="value">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#f57c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v6M4.93 10.93l4.24 4.24M1 18h22M2 22h20M19.07 10.93l-4.24 4.24"/>
+              <circle cx="12" cy="18" r="4"/>
+            </svg>
+            <span id="sunriseTime">--:--</span>
+          </div>
         </div>
         <div class="grid-item">
           <div class="label">Sunset</div>
-          <div class="value">🌇 <span id="sunsetTime">--:--</span></div>
+          <div class="value">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 10V4M4.93 10.93l4.24-4.24M1 18h22M2 22h20M19.07 10.93l-4.24-4.24"/>
+              <circle cx="12" cy="18" r="4"/>
+            </svg>
+            <span id="sunsetTime">--:--</span>
+          </div>
         </div>
         <div class="grid-item">
           <div class="label">Daylight Remaining</div>
@@ -411,7 +432,9 @@
     <div class="card">
       <h2>24-Hour Forecast (Temp Line, Rain Bars & Sun Events)</h2>
       <div class="chart-container">
-        <svg id="hourlyChart"></svg>
+        <div class="chart-scroll-wrapper">
+          <svg id="hourlyChart"></svg>
+        </div>
       </div>
     </div>
 
@@ -456,10 +479,12 @@
   const scoreIcon = document.getElementById('scoreIcon');
   const scoreText = document.getElementById('scoreText');
   const daylightBanner = document.getElementById('daylightBanner');
-  const adviceBox = document.getElementById('adviceBox');
+  
+  const groundCallout = document.getElementById('groundCallout');
+  const windCallout = document.getElementById('windCallout');
+  const adviceCallout = document.getElementById('adviceCallout');
 
   const windCard = document.getElementById('windCard');
-  const gustCard = document.getElementById('gustCard');
   const rainCard = document.getElementById('rainCard');
 
   function getWeatherInfo(code) {
@@ -516,7 +541,7 @@
         currentCityName = overrideName;
       }
 
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=1&forecast_days=7&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=1&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
       
@@ -635,12 +660,12 @@
     const svg = document.getElementById('hourlyChart');
     svg.innerHTML = '';
 
-    const width = svg.clientWidth || 600;
+    const width = 550;
     const height = 160;
     const paddingLeft = 35;
     const paddingRight = 15;
     const paddingBottom = 25;
-    const paddingTop = 20;
+    const paddingTop = 22;
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
@@ -670,17 +695,29 @@
       svg.appendChild(gridline);
     });
 
+    // Render Blue Bars for Rain with Numerical mm Labels
     hourlyPrecip.forEach((rain, i) => {
-      const x = paddingLeft + i * stepX - (stepX * 0.3);
+      const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
       const y = height - paddingBottom - barHeight;
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', x);
-      rect.setAttribute('y', y);
-      rect.setAttribute('width', Math.max(stepX * 0.6, 2));
-      rect.setAttribute('height', barHeight);
-      rect.setAttribute('class', 'chart-bar');
-      svg.appendChild(rect);
+      
+      if (rain > 0) {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', Math.max(stepX * 0.7, 3));
+        rect.setAttribute('height', Math.max(barHeight, 2));
+        rect.setAttribute('class', 'chart-bar');
+        svg.appendChild(rect);
+
+        // Value text above bar
+        const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        valText.setAttribute('x', paddingLeft + i * stepX);
+        valText.setAttribute('y', Math.max(y - 3, paddingTop - 2));
+        valText.setAttribute('class', 'chart-bar-val');
+        valText.textContent = `${rain.toFixed(1)}`;
+        svg.appendChild(valText);
+      }
     });
 
     let points = '';
@@ -783,11 +820,9 @@
     document.getElementById('currentTemp').textContent = toTemp(tempVal);
 
     const windVal = isToday ? c.wind_speed_10m : d.wind_speed_10m_max[selectedDayIndex];
-    const gustsVal = isToday ? c.wind_gusts_10m : windVal * 1.3;
     const windVisual = getWindVisuals(windVal);
     document.getElementById('windIcon').textContent = windVisual.icon;
     document.getElementById('currentWind').textContent = `${toSpeed(windVal)} (${windVisual.label})`;
-    document.getElementById('currentGusts').textContent = isToday ? toSpeed(c.wind_gusts_10m) : 'N/A';
 
     const last24hRain = h.precipitation.slice(0, 24).reduce((a, b) => a + b, 0);
     const todayRainSum = d.precipitation_sum[selectedDayIndex];
@@ -797,15 +832,9 @@
     document.getElementById('todayRain').textContent = toPrecip(todayRainSum);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    // Apply Background Colors to Cards based on Severity Thresholds
+    // Apply Background Warning Colors to Card Grid
     const windMph = windVal / 1.609;
-    const gustsMph = gustsVal / 1.609;
-
-    // Wind Card
     windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
-    // Gusts Card
-    gustCard.className = 'grid-item ' + (gustsMph > 32 ? 'stat-bad' : gustsMph > 20 ? 'stat-med' : 'stat-good');
-    // Rain Card
     rainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
 
     // Sunrise & Sunset Parsing
@@ -853,7 +882,7 @@
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
     }
 
-    // Rating & Lighthearted Kit Advice Logic
+    // Golf Rating & Consistent Callout Formatting
     const score = calculateGolfScore(tempVal, todayRainSum, last24hRain, windVal);
     scoreText.textContent = `${score} / 10`;
 
@@ -868,40 +897,38 @@
       scoreIcon.textContent = '🌧️';
     }
 
-    let assessmentHTML = '';
+    // Ground Status Callout
     if (last24hRain > 10) {
-      assessmentHTML += `<p><strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water possible in low spots; minimal roll.</p>`;
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water possible in low spots; minimal roll.`;
     } else if (last24hRain > 2) {
-      assessmentHTML += `<p><strong>Ground Status:</strong> Damp underfoot. Standard playable conditions.</p>`;
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Damp underfoot. Standard playable conditions.`;
     } else {
-      assessmentHTML += `<p><strong>Ground Status:</strong> Dry / Firm. Good fairway roll.</p>`;
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Dry / Firm. Good fairway roll.`;
     }
 
+    // Wind Impact Callout
     if (windVal > 35) {
-      assessmentHTML += `<p><strong>Wind Impact:</strong> High winds. 2–3 clubs difference into wind.</p>`;
+      windCallout.innerHTML = `<strong>Wind Impact:</strong> High winds. 2–3 clubs difference into wind.`;
     } else if (windVal > 18) {
-      assessmentHTML += `<p><strong>Wind Impact:</strong> Breezy. 1 club difference on exposed holes.</p>`;
+      windCallout.innerHTML = `<strong>Wind Impact:</strong> Breezy. 1 club difference on exposed holes.`;
     } else {
-      assessmentHTML += `<p><strong>Wind Impact:</strong> Light breeze. Minimal impact on flight.</p>`;
+      windCallout.innerHTML = `<strong>Wind Impact:</strong> Light breeze. Minimal impact on flight.`;
     }
-    document.getElementById('assessment').innerHTML = assessmentHTML;
 
-    // Lighthearted Kit Recommendation
-    let adviceText = '';
+    // Gear Advice Callout
     if (todayRainSum > 12) {
-      adviceText = `<strong>Gear Advice:</strong> You're going to get soaked! 🌊 Pack a full suit of waterproofs, extra gloves, and 3 dry towels. Maybe hit the clubhouse instead?`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> You're going to get soaked! 🌊 Pack a full suit of waterproofs, extra gloves, and 3 dry towels. Maybe hit the clubhouse instead?`;
     } else if (todayRainSum > 3) {
-      adviceText = `<strong>Gear Advice:</strong> Rain imminent! ☔ Bring an umbrella, rain cover for your bag, and a waterproof jacket. Keep your grips dry!`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Rain imminent! ☔ Bring an umbrella, rain cover for your bag, and a waterproof jacket. Keep your grips dry!`;
     } else if (tempVal > 22 && weatherCode <= 2) {
-      adviceText = `<strong>Gear Advice:</strong> Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and bring plenty of water.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and bring plenty of water.`;
     } else if (tempVal < 7) {
-      adviceText = `<strong>Gear Advice:</strong> Proper chilly out! 🧤 Layer up, grab some winter mitts, and maybe play a soft low-compression ball.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Proper chilly out! 🧤 Layer up, grab some winter mitts, and play a soft low-compression ball.`;
     } else if (windMph > 22) {
-      adviceText = `<strong>Gear Advice:</strong> It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and knock down your tee shots.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and knock down your tee shots.`;
     } else {
-      adviceText = `<strong>Gear Advice:</strong> Decent golfing weather! 🏌️ Standard polo, maybe a light windbreaker in the bag just in case.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Decent golfing weather! 🏌️ Standard polo, maybe a light windbreaker in the bag just in case.`;
     }
-    adviceBox.innerHTML = adviceText;
 
     const startIndex = (selectedDayIndex + 1) * 24; 
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
