@@ -12,7 +12,6 @@
       --text-muted: #4a5568;
       --border: #e2e8f0;
       --accent: #2e7d32;
-      --accent-hover: #1b5e20;
     }
 
     [data-theme="dark"] {
@@ -22,7 +21,6 @@
       --text-muted: #a0aec0;
       --border: #2d3748;
       --accent: #4caf50;
-      --accent-hover: #388e3c;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +34,7 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
     }
 
@@ -44,29 +42,37 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 1rem;
+      margin-bottom: 0.25rem;
     }
 
-    h1 { font-size: 1.5rem; }
+    .version-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
 
-    .controls { display: flex; gap: 0.5rem; }
+    h1 { font-size: 1.4rem; }
+
+    .controls { display: flex; gap: 0.4rem; }
     button {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.4rem 0.8rem;
+      padding: 0.35rem 0.65rem;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 0.85rem;
     }
     button:hover { border-color: var(--accent); }
+    button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
     .search-box {
       display: flex;
       gap: 0.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
     input[type="text"] {
       flex: 1;
@@ -86,7 +92,7 @@
     }
 
     .card h2 {
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
       margin-bottom: 0.5rem;
       text-transform: uppercase;
@@ -94,14 +100,17 @@
     }
 
     .temp-large {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 1rem;
+      gap: 0.75rem;
       margin-top: 0.75rem;
     }
 
@@ -110,22 +119,37 @@
       padding: 0.75rem;
       border-radius: 4px;
     }
-    .grid-item .label { font-size: 0.85rem; color: var(--text-muted); }
-    .grid-item .value { font-size: 1.1rem; font-weight: bold; }
+    .grid-item .label { font-size: 0.8rem; color: var(--text-muted); }
+    .grid-item .value { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.3rem; }
 
-    .tag {
-      display: inline-block;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+    #status { margin-bottom: 1rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
+    
+    .location-badge {
       font-size: 0.85rem;
-      font-weight: bold;
-      margin-top: 0.5rem;
+      background: var(--bg);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      display: inline-block;
+      margin-top: 0.25rem;
     }
-    .tag-wet { background: #e3f2fd; color: #0d47a1; }
-    .tag-dry { background: #e8f5e9; color: #1b5e20; }
-    .tag-windy { background: #fff3e0; color: #e65100; }
 
-    #status { margin-bottom: 1rem; font-style: italic; color: var(--text-muted); }
+    /* Date Selector */
+    .date-bar {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .date-btn {
+      flex: 0 0 auto;
+      text-align: center;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.8rem;
+    }
+    .date-btn .day { font-weight: bold; display: block; }
+    .date-btn .date { font-size: 0.75rem; opacity: 0.8; }
   </style>
 </head>
 <body>
@@ -135,34 +159,48 @@
     <h1>Is It Golf Weather?</h1>
     <div class="controls">
       <button id="unitToggle">°C</button>
+      <button id="speedToggle">mph</button>
       <button id="themeToggle">🌙</button>
     </div>
   </header>
+  <div class="version-tag">Version 0.2 (Alpha)</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Enter city (e.g. London, Leamington Spa)...">
     <button id="searchBtn">Search</button>
-    <button id="geoBtn" title="Use current location">📍</button>
+    <button id="geoBtn" title="Use current location">📍 Find Me</button>
   </div>
 
-  <div id="status">Locating...</div>
+  <div id="status">Loading location...</div>
 
   <div id="weatherContent" style="display: none;">
-    <!-- Golf Impact / Ground Assessment -->
+    
+    <!-- Upcoming Date Bar -->
+    <div class="date-bar" id="dateBar"></div>
+
+    <!-- Golf Assessment -->
     <div class="card">
       <h2>Golf Conditions & Ground Status</h2>
       <div id="assessment"></div>
     </div>
 
-    <!-- Right Now -->
+    <!-- Weather Overview -->
     <div class="card">
-      <h2>Right Now (<span id="locationName">---</span>)</h2>
-      <div class="temp-large" id="currentTemp">--</div>
+      <h2><span id="dayLabel">Right Now</span> (<span id="locationName">---</span>)</h2>
+      <div id="locationBadge" class="location-badge" style="display:none;"></div>
+      <div class="temp-large">
+        <span id="weatherIcon">☀️</span>
+        <span id="currentTemp">--</span>
+      </div>
       <div id="currentCondition">--</div>
+      
       <div class="grid">
         <div class="grid-item">
           <div class="label">Wind Speed</div>
-          <div class="value" id="currentWind">--</div>
+          <div class="value">
+            <span id="windIcon">🍃</span>
+            <span id="currentWind">--</span>
+          </div>
         </div>
         <div class="grid-item">
           <div class="label">Wind Gusts</div>
@@ -175,9 +213,9 @@
       </div>
     </div>
 
-    <!-- Today's Forecast -->
+    <!-- Day Summary -->
     <div class="card">
-      <h2>Today's Forecast Summary</h2>
+      <h2>Day Summary</h2>
       <div class="grid">
         <div class="grid-item">
           <div class="label">High / Low</div>
@@ -199,42 +237,88 @@
 <script>
   // State
   let currentUnit = 'C'; // 'C' or 'F'
+  let speedUnit = 'mph'; // 'mph', 'kmh', 'ms'
   let currentData = null;
   let currentCityName = '';
+  let preciseCoords = '';
+  let selectedDayIndex = 0; // 0 = today, 1 = tomorrow, etc.
 
   // DOM Elements
   const unitToggle = document.getElementById('unitToggle');
+  const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
   const searchBtn = document.getElementById('searchBtn');
   const geoBtn = document.getElementById('geoBtn');
   const locationInput = document.getElementById('locationInput');
   const statusEl = document.getElementById('status');
   const contentEl = document.getElementById('weatherContent');
+  const locationBadge = document.getElementById('locationBadge');
+  const dateBar = document.getElementById('dateBar');
 
-  // WMO Weather Interpretation Codes
-  function getWeatherDescription(code) {
+  // WMO Weather Interpretation & Icons
+  function getWeatherInfo(code) {
     const codes = {
-      0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-      45: 'Fog', 48: 'Depositing rime fog', 51: 'Light drizzle', 53: 'Moderate drizzle',
-      55: 'Dense drizzle', 61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
-      71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow', 80: 'Slight rain showers',
-      81: 'Moderate rain showers', 82: 'Violent rain showers', 95: 'Thunderstorm'
+      0: { text: 'Clear sky', icon: '☀️' },
+      1: { text: 'Mainly clear', icon: '🌤️' },
+      2: { text: 'Partly cloudy', icon: '⛅' },
+      3: { text: 'Overcast', icon: '☁️' },
+      45: { text: 'Fog', icon: '🌫️' },
+      48: { text: 'Depositing rime fog', icon: '🌫️' },
+      51: { text: 'Light drizzle', icon: '🌦️' },
+      53: { text: 'Moderate drizzle', icon: '🌧️' },
+      55: { text: 'Dense drizzle', icon: '🌧️' },
+      61: { text: 'Slight rain', icon: '🌧️' },
+      63: { text: 'Moderate rain', icon: '🌧️' },
+      65: { text: 'Heavy rain', icon: '🌧️☔' },
+      71: { text: 'Slight snow', icon: '🌨️' },
+      73: { text: 'Moderate snow', icon: '❄️' },
+      75: { text: 'Heavy snow', icon: '❄️' },
+      80: { text: 'Slight showers', icon: '🌦️' },
+      81: { text: 'Moderate showers', icon: '🌧️' },
+      82: { text: 'Violent showers', icon: '⛈️' },
+      95: { text: 'Thunderstorm', icon: '⚡' }
     };
-    return codes[code] || 'Unknown';
+    return codes[code] || { text: 'Unknown', icon: '🌡️' };
   }
 
-  // Fetch Weather from Lat/Lon using Open-Meteo
-  async function fetchWeather(lat, lon, locationName = '') {
+  // Visual Wind Severity Scale
+  function getWindVisuals(speedKmh) {
+    const mph = speedKmh / 1.609;
+    if (mph < 8) {
+      return { icon: '🍃', label: 'Gentle Breeze' };
+    } else if (mph < 18) {
+      return { icon: '💨', label: 'Moderate Wind' };
+    } else if (mph < 28) {
+      return { icon: '💨🚩', label: 'Strong Wind' };
+    } else {
+      return { icon: '⚠️🌪️', label: 'Gale Force' };
+    }
+  }
+
+  // Reverse Geocoding for Browser Location
+  async function reverseGeocode(lat, lon) {
+    try {
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${lat.toFixed(2)},${lon.toFixed(2)}&count=1`);
+      // Open-Meteo search uses names, fallback to raw lat/lon if name lookup fails
+      return `Lat: ${lat.toFixed(3)}, Lon: ${lon.toFixed(3)}`;
+    } catch {
+      return `Lat: ${lat.toFixed(3)}, Lon: ${lon.toFixed(3)}`;
+    }
+  }
+
+  // Fetch Weather
+  async function fetchWeather(lat, lon, locationName = '', coordsText = '') {
     statusEl.textContent = 'Fetching weather data...';
     try {
-      // Requests current metrics + 24h past rain + today's forecast
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&past_days=1&forecast_days=1&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&hourly=precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code&past_days=1&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
       
       currentData = data;
       currentCityName = locationName || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+      preciseCoords = coordsText;
       
+      buildDateBar();
       render();
       statusEl.textContent = '';
       contentEl.style.display = 'block';
@@ -244,7 +328,7 @@
     }
   }
 
-  // Geocoding via Open-Meteo
+  // Geocoding via Search Input
   async function searchLocation(query) {
     if (!query) return;
     statusEl.textContent = `Searching for "${query}"...`;
@@ -254,7 +338,8 @@
       if (data.results && data.results.length > 0) {
         const place = data.results[0];
         const displayName = `${place.name}${place.admin1 ? ', ' + place.admin1 : ''}`;
-        fetchWeather(place.latitude, place.longitude, displayName);
+        const coords = `Lat: ${place.latitude.toFixed(3)}, Lon: ${place.longitude.toFixed(3)}`;
+        fetchWeather(place.latitude, place.longitude, displayName, coords);
       } else {
         statusEl.textContent = 'Location not found. Try another search.';
       }
@@ -263,7 +348,30 @@
     }
   }
 
-  // Render Data
+  // Date Bar Constructor
+  function buildDateBar() {
+    if (!currentData || !currentData.daily) return;
+    dateBar.innerHTML = '';
+    const days = currentData.daily.time;
+    
+    days.forEach((dateStr, idx) => {
+      const d = new Date(dateStr);
+      const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
+      const dateNum = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+      const btn = document.createElement('button');
+      btn.className = `date-btn ${idx === selectedDayIndex ? 'active' : ''}`;
+      btn.innerHTML = `<span class="day">${dayName}</span><span class="date">${dateNum}</span>`;
+      btn.addEventListener('click', () => {
+        selectedDayIndex = idx;
+        buildDateBar();
+        render();
+      });
+      dateBar.appendChild(btn);
+    });
+  }
+
+  // Main Render Logic
   function render() {
     if (!currentData) return;
 
@@ -272,52 +380,91 @@
     const d = currentData.daily;
     const h = currentData.hourly;
 
-    // Unit conversions
+    // Unit conversion helpers
     const toTemp = (valC) => isF ? Math.round((valC * 9/5) + 32) + '°F' : Math.round(valC) + '°C';
-    const toSpeed = (valKmh) => isF ? Math.round(valKmh / 1.609) + ' mph' : Math.round(valKmh) + ' km/h';
+    
+    const toSpeed = (valKmh) => {
+      if (speedUnit === 'mph') return Math.round(valKmh / 1.609) + ' mph';
+      if (speedUnit === 'kmh') return Math.round(valKmh) + ' km/h';
+      if (speedUnit === 'ms') return Math.round(valKmh / 3.6) + ' m/s';
+    };
+
     const toPrecip = (valMm) => isF ? (valMm / 25.4).toFixed(2) + ' in' : valMm.toFixed(1) + ' mm';
 
-    // Calculate last 24h rain from hourly array
-    const last24hRain = h.precipitation.slice(0, 24).reduce((a, b) => a + b, 0);
-
-    // Update Text
+    // Location badge readout
     document.getElementById('locationName').textContent = currentCityName;
-    document.getElementById('currentTemp').textContent = toTemp(c.temperature_2m);
-    document.getElementById('currentCondition').textContent = getWeatherDescription(c.weather_code);
-    document.getElementById('currentWind').textContent = toSpeed(c.wind_speed_10m);
-    document.getElementById('currentGusts').textContent = toSpeed(c.wind_gusts_10m);
+    if (preciseCoords) {
+      locationBadge.textContent = `📍 Localized: ${preciseCoords}`;
+      locationBadge.style.display = 'inline-block';
+    } else {
+      locationBadge.style.display = 'none';
+    }
+
+    // Checking if viewing "Today" vs an upcoming date
+    const isToday = selectedDayIndex === 0;
+    document.getElementById('dayLabel').textContent = isToday ? 'Right Now' : `Forecast for ${d.time[selectedDayIndex]}`;
+
+    // Weather Code & Icon
+    const weatherCode = isToday ? c.weather_code : d.weather_code[selectedDayIndex];
+    const weatherInfo = getWeatherInfo(weatherCode);
+    document.getElementById('weatherIcon').textContent = weatherInfo.icon;
+    document.getElementById('currentCondition').textContent = weatherInfo.text;
+
+    // Temperatures
+    const tempVal = isToday ? c.temperature_2m : d.temperature_2m_max[selectedDayIndex];
+    document.getElementById('currentTemp').textContent = toTemp(tempVal);
+
+    // Wind Logic & Icons
+    const windVal = isToday ? c.wind_speed_10m : d.wind_speed_10m_max[selectedDayIndex];
+    const windVisual = getWindVisuals(windVal);
+    document.getElementById('windIcon').textContent = windVisual.icon;
+    document.getElementById('currentWind').textContent = `${toSpeed(windVal)} (${windVisual.label})`;
+    
+    document.getElementById('currentGusts').textContent = isToday ? toSpeed(c.wind_gusts_10m) : 'N/A';
+
+    // Rain logic
+    const last24hRain = h.precipitation.slice(0, 24).reduce((a, b) => a + b, 0);
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
 
-    document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[0])} / ${toTemp(d.temperature_2m_max[0])}`;
-    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[0]);
-    document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[0]);
+    // Day Summary
+    document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[selectedDayIndex])} / ${toTemp(d.temperature_2m_max[selectedDayIndex])}`;
+    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[selectedDayIndex]);
+    document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    // Ground condition & wind logic
+    // Ground & Golf Assessment
     let assessmentHTML = '';
     
     if (last24hRain > 10) {
-      assessmentHTML += `<p><strong>Ground:</strong> Very wet / Soft underfoot. Expect casual water in low areas and limited ball roll on fairways.</p>`;
+      assessmentHTML += `<p><strong>Ground:</strong> Wet / Soft underfoot. Casual water likely in low spots; minimal fairway roll.</p>`;
     } else if (last24hRain > 2) {
-      assessmentHTML += `<p><strong>Ground:</strong> Damp underfoot. Standard playing conditions with moderate roll.</p>`;
+      assessmentHTML += `<p><strong>Ground:</strong> Damp underfoot. Playable conditions with moderate roll.</p>`;
     } else {
-      assessmentHTML += `<p><strong>Ground:</strong> Dry / Firm. Expect good fairway roll and firm greens.</p>`;
+      assessmentHTML += `<p><strong>Ground:</strong> Dry / Firm. Good fairway roll and firm greens.</p>`;
     }
 
-    if (c.wind_speed_10m > 30) {
-      assessmentHTML += `<p><strong>Wind Impact:</strong> Heavy wind. Will significantly affect club selection (2–3 clubs difference into wind).</p>`;
-    } else if (c.wind_speed_10m > 15) {
-      assessmentHTML += `<p><strong>Wind Impact:</strong> Moderate breeze. Factor in 1 club difference on exposed holes.</p>`;
+    if (windVal > 40) {
+      assessmentHTML += `<p><strong>Wind Impact:</strong> High Winds / Gale warnings. 3+ clubs difference into wind, severe ball flight shaping.</p>`;
+    } else if (windVal > 22) {
+      assessmentHTML += `<p><strong>Wind Impact:</strong> Moderate Wind. Expect 1–2 clubs difference on exposed holes.</p>`;
     } else {
-      assessmentHTML += `<p><strong>Wind Impact:</strong> Light breeze. Minimal impact on ball flight.</p>`;
+      assessmentHTML += `<p><strong>Wind Impact:</strong> Light breeze. Minimal impact on play.</p>`;
     }
 
     document.getElementById('assessment').innerHTML = assessmentHTML;
   }
 
-  // Handlers & Event Listeners
+  // Controls & Event Listeners
   unitToggle.addEventListener('click', () => {
     currentUnit = currentUnit === 'C' ? 'F' : 'C';
     unitToggle.textContent = `°${currentUnit}`;
+    render();
+  });
+
+  speedToggle.addEventListener('click', () => {
+    if (speedUnit === 'mph') speedUnit = 'kmh';
+    else if (speedUnit === 'kmh') speedUnit = 'ms';
+    else speedUnit = 'mph';
+    speedToggle.textContent = speedUnit;
     render();
   });
 
@@ -328,31 +475,40 @@
   });
 
   searchBtn.addEventListener('click', () => {
+    selectedDayIndex = 0;
     searchLocation(locationInput.value);
   });
 
   locationInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') searchLocation(locationInput.value);
+    if (e.key === 'Enter') {
+      selectedDayIndex = 0;
+      searchLocation(locationInput.value);
+    }
   });
 
   geoBtn.addEventListener('click', getUserLocation);
 
   function getUserLocation() {
     if (navigator.geolocation) {
-      statusEl.textContent = 'Getting your location...';
+      statusEl.textContent = 'Requesting browser location...';
       navigator.geolocation.getCurrentPosition(
-        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude, 'Your Location'),
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          statusEl.textContent = 'Location found! Fetching local weather...';
+          fetchWeather(lat, lon, 'Your Location', `Lat: ${lat.toFixed(3)}, Lon: ${lon.toFixed(3)}`);
+        },
         () => {
-          statusEl.textContent = 'Geolocation permission denied. Defaulting to London...';
-          fetchWeather(51.5074, -0.1278, 'London');
+          statusEl.textContent = 'Location access denied or unavailable. Defaulting to London...';
+          fetchWeather(51.5074, -0.1278, 'London (Default)');
         }
       );
     } else {
-      fetchWeather(51.5074, -0.1278, 'London');
+      fetchWeather(51.5074, -0.1278, 'London (Default)');
     }
   }
 
-  // Initial load
+  // Initial Startup
   getUserLocation();
 </script>
 </body>
