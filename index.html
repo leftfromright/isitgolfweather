@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Is It Golf Weather?</title>
   
-  <!-- Inline Golf Pin SVG Favicon -->
+  <!-- Mobile Web App & PWA Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Golf Weather">
+  
+  <!-- Inline Golf Pin SVG Favicon & Apple Touch Icon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
 
   <style>
     :root {
@@ -69,10 +76,10 @@
       transition: background-color 0.2s, color 0.2s;
     }
 
-    /* Full-width container on mobile */
     .container {
       max-width: 650px;
       margin: 0 auto;
+      position: relative;
     }
 
     @media (max-width: 600px) {
@@ -91,6 +98,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
+    }
+
+    /* Floating Version Badge */
+    .floating-version {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 0.15rem 0.45rem;
+      border-radius: 10px;
+      font-weight: bold;
     }
 
     @media (max-width: 600px) {
@@ -99,12 +120,13 @@
         flex-direction: column;
         align-items: stretch;
         gap: 0.8rem;
-        padding: 1rem;
+        padding: 1.2rem 1rem 1rem 1rem;
       }
       .controls {
         display: flex;
         justify-content: space-between;
         width: 100%;
+        gap: 0.3rem;
       }
       .controls button {
         flex: 1;
@@ -113,7 +135,7 @@
     }
 
     .hero-title h1 {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       color: #ffffff;
       margin: 0;
     }
@@ -121,15 +143,6 @@
       font-size: 0.85rem;
       opacity: 0.9;
       margin-top: 0.15rem;
-    }
-
-    .version-tag {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-      padding-left: 0.5rem;
     }
 
     .controls { display: flex; gap: 0.4rem; }
@@ -220,7 +233,6 @@
       font-weight: 500;
     }
 
-    /* Verdict Tier Colors */
     .verdict-vhigh { background: #1b5e20; color: #ffffff; border: 1px solid #144718; }
     .verdict-high  { background: #2e7d32; color: #ffffff; border: 1px solid #1b5e20; }
     .verdict-med   { background: #f57f17; color: #ffffff; border: 1px solid #e65100; }
@@ -254,6 +266,29 @@
       color: #c62828;
       border: 1px solid #ef9a9a;
     }
+
+    /* Modal / PWA Instructions Box */
+    .pwa-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .pwa-content {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+    .pwa-content h3 { margin-bottom: 0.75rem; font-size: 1.1rem; }
+    .pwa-content ol { padding-left: 1.25rem; margin-bottom: 1rem; font-size: 0.9rem; }
+    .pwa-content li { margin-bottom: 0.4rem; }
 
     .card {
       background: var(--card-bg);
@@ -328,7 +363,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 0.75rem;
       margin-top: 0.75rem;
     }
@@ -357,7 +392,6 @@
       border-color: var(--warn-bad-border);
     }
 
-    /* Sun Grid Layout */
     .sun-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -370,7 +404,7 @@
 
     #status { margin: 0 0.5rem 1rem 0.5rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
     
-    /* Responsive Date Bar - Strict Single Row Desktop Grid */
+    /* Strict Desktop Single-Row Date Bar Grid */
     .date-bar {
       display: flex;
       gap: 0.5rem;
@@ -382,6 +416,7 @@
       .date-bar {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-auto-flow: column;
         overflow-x: visible;
         padding: 0 0.5rem 0.5rem 0.5rem;
       }
@@ -427,23 +462,31 @@
     .now-text { fill: var(--now-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
     
     .sun-icon { width: 18px; height: 18px; vertical-align: middle; }
+    
+    .section-divider {
+      border: 0;
+      height: 1px;
+      background: var(--border);
+      margin: 1.25rem 0 1rem 0;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header class="hero-banner">
+    <div class="floating-version">v0.12</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
     </div>
     <div class="controls">
+      <button id="pwaBtn" title="Install or Pin to Home Screen">📱 Pin App</button>
       <button id="unitToggle">°C</button>
       <button id="speedToggle">mph</button>
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.11</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
@@ -455,7 +498,7 @@
 
   <div id="weatherContent" style="display: none;">
     
-    <!-- Simple Answer Verdict Banner Banner -->
+    <!-- Simple Answer Verdict Banner -->
     <div id="verdictBanner" class="verdict-banner verdict-high">
       <div id="verdictTitle" class="verdict-title">--</div>
       <div id="verdictSub" class="verdict-sub">--</div>
@@ -466,7 +509,7 @@
 
     <div id="daylightBanner" style="display: none;"></div>
 
-    <!-- Rating Card -->
+    <!-- Rating Card with 4 Condition Callout Boxes -->
     <div class="card card-centered">
       <h2>Golf Rating</h2>
       <div id="scoreBadge" class="score-badge score-high">
@@ -476,10 +519,11 @@
       
       <div id="groundCallout" class="callout-box"></div>
       <div id="windCallout" class="callout-box"></div>
-      <div id="adviceCallout" class="callout-box"></div>
+      <div id="rainOutlookCallout" class="callout-box"></div>
+      <div id="gearCallout" class="callout-box"></div>
     </div>
 
-    <!-- Right Now Overview Card -->
+    <!-- Right Now Overview Card with Dual Rain Tiles -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       
@@ -500,18 +544,36 @@
           </div>
           <div class="value-sub" id="windSub">--</div>
         </div>
-        <div class="grid-item" id="rainCard">
+        <div class="grid-item" id="recentRainCard">
           <div class="label">Recent Rain (24h)</div>
           <div class="value-main">
             <span>🌧️</span>
             <span id="recentRain">--</span>
           </div>
-          <div class="value-sub" id="rainSub">--</div>
+          <div class="value-sub" id="recentRainSub">--</div>
+        </div>
+        <div class="grid-item" id="forecastRainCard">
+          <div class="label">Forecast Rain (4h)</div>
+          <div class="value-main">
+            <span>☔</span>
+            <span id="forecastRain">--</span>
+          </div>
+          <div class="value-sub" id="forecastRainSub">--</div>
         </div>
       </div>
     </div>
 
-    <!-- Sun Card -->
+    <!-- 24-Hour Forecast Chart -->
+    <div class="card">
+      <h2>24-Hour Forecast (Temp Line, Rain Bars & Sun Events)</h2>
+      <div class="chart-container">
+        <div class="chart-scroll-wrapper">
+          <svg id="hourlyChart"></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Merged Consolidated Card: Sun Hours & Day Summary -->
     <div class="card">
       <h2>Sun & Daylight Hours</h2>
       <div class="sun-grid">
@@ -540,18 +602,9 @@
           <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
         </div>
       </div>
-    </div>
 
-    <div class="card">
-      <h2>24-Hour Forecast (Temp Line, Rain Bars & Sun Events)</h2>
-      <div class="chart-container">
-        <div class="chart-scroll-wrapper">
-          <svg id="hourlyChart"></svg>
-        </div>
-      </div>
-    </div>
+      <hr class="section-divider">
 
-    <div class="card">
       <h2>Day Summary</h2>
       <div class="grid">
         <div class="grid-item">
@@ -559,7 +612,7 @@
           <div class="value-main" id="tempRange">--</div>
         </div>
         <div class="grid-item">
-          <div class="label">Total Expected Rain</div>
+          <div class="label">Total Daily Rain</div>
           <div class="value-main" id="todayRain">--</div>
         </div>
         <div class="grid-item">
@@ -568,6 +621,30 @@
         </div>
       </div>
     </div>
+
+  </div>
+</div>
+
+<!-- Add to Home Screen Instructions Modal -->
+<div id="pwaModal" class="pwa-modal">
+  <div class="pwa-content">
+    <h3>📱 Add to Home Screen</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">To pin <strong>Is It Golf Weather?</strong> to your mobile homescreen:</p>
+    <div id="iosSteps" style="display:none;">
+      <ol>
+        <li>Tap the <strong>Share</strong> icon (square with arrow) at the bottom of Safari.</li>
+        <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+        <li>Tap <strong>Add</strong> in the top right.</li>
+      </ol>
+    </div>
+    <div id="androidSteps" style="display:none;">
+      <ol>
+        <li>Tap the <strong>Three Dots (⋮)</strong> menu icon in Chrome.</li>
+        <li>Tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
+        <li>Confirm by tapping <strong>Add</strong>.</li>
+      </ol>
+    </div>
+    <button id="closePwaBtn" style="width: 100%; margin-top: 0.5rem; background: var(--accent); color: #fff;">Got it!</button>
   </div>
 </div>
 
@@ -583,6 +660,12 @@
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
   const geoBtn = document.getElementById('geoBtn');
+  const pwaBtn = document.getElementById('pwaBtn');
+  const pwaModal = document.getElementById('pwaModal');
+  const closePwaBtn = document.getElementById('closePwaBtn');
+  const iosSteps = document.getElementById('iosSteps');
+  const androidSteps = document.getElementById('androidSteps');
+
   const locationInput = document.getElementById('locationInput');
   const autocompleteList = document.getElementById('autocompleteList');
   const statusEl = document.getElementById('status');
@@ -600,11 +683,30 @@
   
   const groundCallout = document.getElementById('groundCallout');
   const windCallout = document.getElementById('windCallout');
-  const adviceCallout = document.getElementById('adviceCallout');
+  const rainOutlookCallout = document.getElementById('rainOutlookCallout');
+  const gearCallout = document.getElementById('gearCallout');
 
   const windCard = document.getElementById('windCard');
-  const rainCard = document.getElementById('rainCard');
+  const recentRainCard = document.getElementById('recentRainCard');
+  const forecastRainCard = document.getElementById('forecastRainCard');
   const daylightCard = document.getElementById('daylightCard');
+
+  // PWA Modal Handler
+  pwaBtn.addEventListener('click', () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      iosSteps.style.display = 'block';
+      androidSteps.style.display = 'none';
+    } else {
+      androidSteps.style.display = 'block';
+      iosSteps.style.display = 'none';
+    }
+    pwaModal.style.display = 'flex';
+  });
+
+  closePwaBtn.addEventListener('click', () => {
+    pwaModal.style.display = 'none';
+  });
 
   function getWeatherInfo(code) {
     const codes = {
@@ -760,8 +862,8 @@
     else if (rainMmToday > 5) score -= 2.5;
     else if (rainMmToday > 1) score -= 1;
 
-    if (past24RainMm > 15) score -= 2;
-    else if (past24RainMm > 5) score -= 1;
+    if (past24RainMm > 15) score -= 2.5;
+    else if (past24RainMm > 5) score -= 1.2;
 
     if (windMph > 30) score -= 3.5;
     else if (windMph > 20) score -= 2;
@@ -908,7 +1010,7 @@
       label.setAttribute('x', sunX);
       label.setAttribute('y', paddingTop - 8);
       label.setAttribute('class', 'sun-text');
-      label.textContent = '`🌇 Set`';
+      label.textContent = '🌇 Set';
       svg.appendChild(label);
     }
   }
@@ -968,7 +1070,23 @@
     if (last24hRain > 12) rainSubText = 'Recent downpour!';
     else if (last24hRain > 5) rainSubText = 'Soggy underfoot';
     else if (last24hRain > 1) rainSubText = 'A little damp';
-    document.getElementById('rainSub').textContent = rainSubText;
+    document.getElementById('recentRainSub').textContent = rainSubText;
+
+    // Calculate Next 4 Hours Forecast Rain
+    const now = new Date();
+    const nowHour = now.getHours();
+    const startIndex = (selectedDayIndex + 1) * 24; 
+    const currentStartHourIndex = isToday ? startIndex + nowHour : startIndex + 8;
+    const next4hPrecip = h.precipitation.slice(currentStartHourIndex, currentStartHourIndex + 4);
+    const next4hRainSum = next4hPrecip.reduce((a, b) => a + b, 0);
+
+    document.getElementById('forecastRain').textContent = toPrecip(next4hRainSum);
+    
+    let forecastSubText = 'Dry skies';
+    if (next4hRainSum > 5) forecastSubText = 'Heavy rain!';
+    else if (next4hRainSum > 1.5) forecastSubText = 'Moderate rain';
+    else if (next4hRainSum > 0.1) forecastSubText = 'Light drizzle';
+    document.getElementById('forecastRainSub').textContent = forecastSubText;
 
     document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[selectedDayIndex])} / ${toTemp(d.temperature_2m_max[selectedDayIndex])}`;
     document.getElementById('todayRain').textContent = toPrecip(todayRainSum);
@@ -976,7 +1094,8 @@
 
     const windMph = windVal / 1.609;
     windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
-    rainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
+    recentRainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
+    forecastRainCard.className = 'grid-item ' + (next4hRainSum > 5 ? 'stat-bad' : next4hRainSum > 0.5 ? 'stat-med' : 'stat-good');
 
     // Sunrise & Sunset Parsing
     const sunriseObj = parseTimeFromISO(d.sunrise[selectedDayIndex]);
@@ -986,8 +1105,6 @@
     document.getElementById('sunsetTime').textContent = sunsetObj.display;
 
     // Current Time Decimals
-    const now = new Date();
-    const nowHour = now.getHours();
     const nowDec = nowHour + (now.getMinutes() / 60);
     const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
     const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
@@ -1030,7 +1147,7 @@
       daylightCard.className = 'grid-item full-width stat-good';
     }
 
-    // Golf Rating Calculation
+    // Golf Rating
     const score = calculateGolfScore(tempVal, todayRainSum, last24hRain, windVal);
     scoreText.textContent = `${score} / 10`;
 
@@ -1045,7 +1162,10 @@
       scoreIcon.textContent = '🌧️';
     }
 
-    // Dynamic Verdict Banner Logic
+    // Dynamic Verdict Banner Logic with Explicit Reason Differentiation
+    const isHeavyWind = windMph > 25;
+    const isHeavyRain = next4hRainSum > 5 || todayRainSum > 12;
+
     if (score >= 8.5) {
       verdictBanner.className = 'verdict-banner verdict-vhigh';
       verdictTitle.textContent = 'Yes, Perfect! ⛳';
@@ -1057,61 +1177,62 @@
     } else if (score >= 5.0) {
       verdictBanner.className = 'verdict-banner verdict-med';
       verdictTitle.textContent = 'Not Bad 🌥️';
-      verdictSub.textContent = 'Playable round, but factor in damp ground or a bit of wind.';
+      verdictSub.textContent = 'Playable round, but factor in damp ground or moderate breeze.';
     } else if (score >= 3.0) {
       verdictBanner.className = 'verdict-banner verdict-low';
       verdictTitle.textContent = 'Poor 🌧️';
-      verdictSub.textContent = 'High wind or rain expected. Waterproofs & extra towels required.';
+      if (isHeavyRain && isHeavyWind) verdictSub.textContent = 'Heavy rain AND high winds expected. Full waterproofs required.';
+      else if (isHeavyRain) verdictSub.textContent = 'Heavy rain expected during play. Waterproof jacket & umbrella mandatory.';
+      else verdictSub.textContent = 'High wind expected. Ball control will be tough; club up twice.';
     } else {
       verdictBanner.className = 'verdict-banner verdict-vlow';
       verdictTitle.textContent = 'No Chance ⛔';
-      verdictSub.textContent = 'Heavy rain or gale force winds. Time to hit the indoor simulator.';
+      if (isHeavyRain && isHeavyWind) verdictSub.textContent = 'Torrential downpour AND gale force winds. Hit the indoor simulator instead.';
+      else if (isHeavyRain) verdictSub.textContent = 'Torrential rain forecast. Standing water on greens likely.';
+      else verdictSub.textContent = 'Gale force winds expected. Unsafe or unplayable conditions.';
     }
 
-    // Ground Status Callout
-    if (last24hRain > 10) {
-      groundCallout.innerHTML = `<strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water likely; minimal roll.`;
-    } else if (last24hRain > 2) {
-      groundCallout.innerHTML = `<strong>Ground Status:</strong> Damp underfoot. Standard playable conditions.`;
+    // 1. Ground Status (Accounts for both recent past rain + upcoming rain)
+    const totalMoisture = last24hRain + (isToday ? next4hRainSum : todayRainSum);
+    if (totalMoisture > 12 || last24hRain > 10) {
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Soft underfoot / Wet fairways. Casual water in low spots; minimal ball roll.`;
+    } else if (totalMoisture > 3 || last24hRain > 2) {
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Damp underfoot. Standard playable fairways with moderate roll.`;
     } else {
-      groundCallout.innerHTML = `<strong>Ground Status:</strong> Dry / Firm. Good fairway roll.`;
+      groundCallout.innerHTML = `<strong>Ground Status:</strong> Dry / Firm fairways. Expect great roll and firm greens.`;
     }
 
-    // Wind Impact Callout
+    // 2. Wind Impact Callout
     if (windVal > 35) {
-      windCallout.innerHTML = `<strong>Wind Impact:</strong> High winds. 2–3 clubs difference into wind.`;
+      windCallout.innerHTML = `<strong>Wind Impact:</strong> High winds. 2–3 clubs difference into wind; flight shaping required.`;
     } else if (windVal > 18) {
       windCallout.innerHTML = `<strong>Wind Impact:</strong> Breezy. 1 club difference on exposed holes.`;
     } else {
-      windCallout.innerHTML = `<strong>Wind Impact:</strong> Light breeze. Minimal impact on flight.`;
+      windCallout.innerHTML = `<strong>Wind Impact:</strong> Light breeze. Minimal impact on ball flight.`;
     }
 
-    // Calculate Rain Forecast for Next 4 Hours Specifically
-    const startIndex = (selectedDayIndex + 1) * 24; 
-    const currentStartHourIndex = isToday ? startIndex + nowHour : startIndex + 8;
-    const next4hPrecip = h.precipitation.slice(currentStartHourIndex, currentStartHourIndex + 4);
-    const next4hRainSum = next4hPrecip.reduce((a, b) => a + b, 0);
+    // 3. Standardized Rain Outlook Box
+    let rainOutlookTag = 'No Rain';
+    if (next4hRainSum > 5) rainOutlookTag = 'Heavy Rain 🌧️☔';
+    else if (next4hRainSum > 1.5) rainOutlookTag = 'Moderate Rain 🌧️';
+    else if (next4hRainSum > 0.1) rainOutlookTag = 'Light Rain / Drizzle 🌦️';
+    rainOutlookCallout.innerHTML = `<strong>Rain Outlook (Next 4h):</strong> ${rainOutlookTag}`;
 
-    // Gear Advice with Explicit Rain Status Declarations
-    let rainStatusTag = '';
-    if (next4hRainSum > 5) rainStatusTag = '<strong>Rain Outlook (Next 4h): Heavy Rain.</strong> ';
-    else if (next4hRainSum > 1.5) rainStatusTag = '<strong>Rain Outlook (Next 4h): Moderate Rain.</strong> ';
-    else if (next4hRainSum > 0.1) rainStatusTag = '<strong>Rain Outlook (Next 4h): Light Rain.</strong> ';
-    else rainStatusTag = '<strong>Rain Outlook (Next 4h): No Rain.</strong> ';
-
-    if (next4hRainSum > 5) {
-      adviceCallout.innerHTML = `${rainStatusTag}Downpour forecast! 🌧️ Grab an umbrella, waterproof jacket, and everything you've got to keep dry.`;
-    } else if (next4hRainSum > 0.1) {
-      adviceCallout.innerHTML = `${rainStatusTag}A light rain shower is expected ☔—a waterproof jacket should be enough.`;
-    } else if (tempVal > 22 && weatherCode <= 2) {
-      adviceCallout.innerHTML = `${rainStatusTag}Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and stay hydrated.`;
-    } else if (tempVal < 7) {
-      adviceCallout.innerHTML = `${rainStatusTag}Proper chilly out! 🧤 Layer up, grab winter mitts, and play a soft low-compression ball.`;
-    } else if (windMph > 22) {
-      adviceCallout.innerHTML = `${rainStatusTag}It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and play knockdown shots.`;
-    } else {
-      adviceCallout.innerHTML = `${rainStatusTag}Decent golfing weather! 🏌️ Standard polo, maybe a light pullover in the bag.`;
+    // 4. Specific Gear Checklist Box
+    let gearItems = [];
+    if (next4hRainSum > 0.1 || todayRainSum > 3) {
+      gearItems.push('Umbrella ☔', 'Waterproof Jacket 🧥', 'Extra Towel 🧼');
     }
+    if (tempVal > 20 && weatherCode <= 2) {
+      gearItems.push('Suncream 🧴', 'Sunglasses 🕶️', 'Water Bottle 💧');
+    }
+    if (tempVal < 8) {
+      gearItems.push('Hand Warmers 🧤', 'Woolly Hat / Beanie 🧢', 'Base Layers 🧥');
+    }
+    if (gearItems.length === 0) {
+      gearItems.push('Standard Golf Polo 👕', 'Light Pullover 🧥');
+    }
+    gearCallout.innerHTML = `<strong>Gear Checklist:</strong> ${gearItems.join(' • ')}`;
 
     const dayTempsC = h.precipitation ? h.temperature_2m.slice(startIndex, startIndex + 24) : [];
     const dayPrecip = h.precipitation ? h.precipitation.slice(startIndex, startIndex + 24) : [];
