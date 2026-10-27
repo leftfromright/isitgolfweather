@@ -21,6 +21,7 @@
       --chart-bar: #1e88e5;
       --chart-bar-text: #1565c0;
       --sun-line: #e65100;
+      --now-line: #d32f2f;
       --badge-bg: #e8f5e9;
       --shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
 
@@ -44,6 +45,7 @@
       --chart-bar: #64b5f6;
       --chart-bar-text: #90caf9;
       --sun-line: #ffb74d;
+      --now-line: #ef5350;
       --badge-bg: #1b3e20;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
@@ -218,15 +220,24 @@
       letter-spacing: 0.6px;
     }
 
+    /* Centered Rating Card Styling */
+    .card-centered {
+      text-align: center;
+    }
+    .card-centered h2 {
+      text-align: center;
+    }
+
     .score-badge {
-      display: flex;
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.75rem;
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 1.5rem;
       border-radius: 6px;
       font-weight: bold;
-      font-size: 1.25rem;
-      margin-bottom: 0.75rem;
+      font-size: 1.35rem;
+      margin: 0.25rem auto 0.75rem auto;
     }
     .score-high { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
     .score-med  { background: #fffde7; color: #f57f17; border: 1px solid #fff9c4; }
@@ -236,7 +247,6 @@
     [data-theme="dark"] .score-med  { background: #3e3810; color: #fff176; border-color: #fbc02d; }
     [data-theme="dark"] .score-low  { background: #3e1b1b; color: #e57373; border-color: #c62828; }
 
-    /* Uniform Callout Boxes */
     .callout-box {
       margin-top: 0.6rem;
       padding: 0.65rem 0.9rem;
@@ -244,14 +254,26 @@
       border-left: 4px solid var(--accent);
       border-radius: 4px;
       font-size: 0.88rem;
+      text-align: left;
     }
 
+    /* Centered Overview Hero */
+    .overview-hero {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
     .temp-large {
-      font-size: 2.4rem;
+      font-size: 2.6rem;
       font-weight: bold;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
+    }
+    .current-condition-text {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .grid {
@@ -269,7 +291,8 @@
       transition: background-color 0.2s, border-color 0.2s;
     }
     .grid-item .label { font-size: 0.8rem; color: var(--text-muted); }
-    .grid-item .value { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.35rem; }
+    .grid-item .value-main { font-size: 1.05rem; font-weight: bold; display: flex; align-items: center; gap: 0.35rem; }
+    .grid-item .value-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: normal; }
 
     .grid-item.stat-good {
       background-color: var(--warn-good-bg);
@@ -284,8 +307,20 @@
       border-color: var(--warn-bad-border);
     }
 
+    /* Sun Card Specific Grid Layout */
+    .sun-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .sun-grid .full-width {
+      grid-column: 1 / -1;
+    }
+
     #status { margin-bottom: 1rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
     
+    /* Responsive Equal-Width Date Bar */
     .date-bar {
       display: flex;
       gap: 0.5rem;
@@ -293,22 +328,28 @@
       padding-bottom: 0.5rem;
       margin-bottom: 1rem;
     }
+    @media (min-width: 600px) {
+      .date-bar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        overflow-x: visible;
+      }
+    }
     .date-btn {
       flex: 0 0 auto;
       text-align: center;
-      padding: 0.5rem 0.7rem;
+      padding: 0.5rem 0.4rem;
       font-size: 0.8rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.15rem;
-      min-width: 70px;
+      min-width: 65px;
     }
     .date-btn .day { font-weight: bold; }
     .date-btn .date-icon { font-size: 1.1rem; margin: 0.1rem 0; }
     .date-btn .date { font-size: 0.75rem; opacity: 0.8; }
 
-    /* Scrollable Chart Container for Mobile */
     .chart-container {
       width: 100%;
       overflow-x: auto;
@@ -328,6 +369,8 @@
     .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
     .sun-text { fill: var(--sun-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
+    .now-line { stroke: var(--now-line); stroke-width: 1.5; stroke-dasharray: 2,2; }
+    .now-text { fill: var(--now-line); font-size: 9px; font-weight: bold; text-anchor: middle; }
     
     .sun-icon { width: 18px; height: 18px; vertical-align: middle; }
   </style>
@@ -346,7 +389,7 @@
       <button id="themeToggle">🌙</button>
     </div>
   </header>
-  <div class="version-tag">Version 0.9</div>
+  <div class="version-tag">Version 0.10</div>
 
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
@@ -362,49 +405,58 @@
 
     <div id="daylightBanner" style="display: none;"></div>
 
-    <div class="card">
+    <!-- Centered Rating Card -->
+    <div class="card card-centered">
       <h2>Golf Rating</h2>
       <div id="scoreBadge" class="score-badge score-high">
         <span id="scoreIcon">⛳</span>
         <span id="scoreText">-- / 10</span>
       </div>
       
-      <!-- Styled Callout Boxes -->
       <div id="groundCallout" class="callout-box"></div>
       <div id="windCallout" class="callout-box"></div>
       <div id="adviceCallout" class="callout-box"></div>
     </div>
 
+    <!-- Right Now Overview Card with Centered Layout & Two-Line Metrics -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
-      <div class="temp-large">
-        <span id="weatherIcon">☀️</span>
-        <span id="currentTemp">--</span>
+      
+      <div class="overview-hero">
+        <div class="temp-large">
+          <span id="weatherIcon">☀️</span>
+          <span id="currentTemp">--</span>
+        </div>
+        <div id="currentCondition" class="current-condition-text">--</div>
       </div>
-      <div id="currentCondition">--</div>
       
       <div class="grid">
         <div class="grid-item" id="windCard">
           <div class="label">Wind Speed</div>
-          <div class="value">
+          <div class="value-main">
             <span id="windIcon">🍃</span>
             <span id="currentWind">--</span>
           </div>
+          <div class="value-sub" id="windSub">--</div>
         </div>
         <div class="grid-item" id="rainCard">
           <div class="label">Recent Rain (24h)</div>
-          <div class="value" id="recentRain">--</div>
+          <div class="value-main">
+            <span>🌧️</span>
+            <span id="recentRain">--</span>
+          </div>
+          <div class="value-sub" id="rainSub">--</div>
         </div>
       </div>
     </div>
 
-    <!-- Enhanced Sunrise / Sunset Card with Vectors -->
+    <!-- Reorganized Sun Card -->
     <div class="card">
       <h2>Sun & Daylight Hours</h2>
-      <div class="grid">
+      <div class="sun-grid">
         <div class="grid-item">
           <div class="label">Sunrise</div>
-          <div class="value">
+          <div class="value-main">
             <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#f57c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2v6M4.93 10.93l4.24 4.24M1 18h22M2 22h20M19.07 10.93l-4.24 4.24"/>
               <circle cx="12" cy="18" r="4"/>
@@ -414,7 +466,7 @@
         </div>
         <div class="grid-item">
           <div class="label">Sunset</div>
-          <div class="value">
+          <div class="value-main">
             <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 10V4M4.93 10.93l4.24-4.24M1 18h22M2 22h20M19.07 10.93l-4.24-4.24"/>
               <circle cx="12" cy="18" r="4"/>
@@ -422,9 +474,9 @@
             <span id="sunsetTime">--:--</span>
           </div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item full-width">
           <div class="label">Daylight Remaining</div>
-          <div class="value">⏳ <span id="daylightLeft">--</span></div>
+          <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
         </div>
       </div>
     </div>
@@ -443,15 +495,15 @@
       <div class="grid">
         <div class="grid-item">
           <div class="label">High / Low</div>
-          <div class="value" id="tempRange">--</div>
+          <div class="value-main" id="tempRange">--</div>
         </div>
         <div class="grid-item">
           <div class="label">Total Expected Rain</div>
-          <div class="value" id="todayRain">--</div>
+          <div class="value-main" id="todayRain">--</div>
         </div>
         <div class="grid-item">
           <div class="label">Max Wind</div>
-          <div class="value" id="maxWind">--</div>
+          <div class="value-main" id="maxWind">--</div>
         </div>
       </div>
     </div>
@@ -656,7 +708,7 @@
     return Math.round(score * 10) / 10;
   }
 
-  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec) {
+  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, isToday) {
     const svg = document.getElementById('hourlyChart');
     svg.innerHTML = '';
 
@@ -695,7 +747,7 @@
       svg.appendChild(gridline);
     });
 
-    // Render Blue Bars for Rain with Numerical mm Labels
+    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
@@ -710,7 +762,6 @@
         rect.setAttribute('class', 'chart-bar');
         svg.appendChild(rect);
 
-        // Value text above bar
         const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         valText.setAttribute('x', paddingLeft + i * stepX);
         valText.setAttribute('y', Math.max(y - 3, paddingTop - 2));
@@ -741,6 +792,26 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
+    // Current Time Marker Line
+    if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
+      const nowX = paddingLeft + currentHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', nowX);
+      line.setAttribute('x2', nowX);
+      line.setAttribute('y1', paddingTop - 5);
+      line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'now-line');
+      svg.appendChild(line);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', nowX);
+      label.setAttribute('y', paddingTop - 8);
+      label.setAttribute('class', 'now-text');
+      label.textContent = '📍 Now';
+      svg.appendChild(label);
+    }
+
+    // Sunrise Marker
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const sunX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -759,6 +830,7 @@
       svg.appendChild(label);
     }
 
+    // Sunset Marker
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const sunX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -822,17 +894,25 @@
     const windVal = isToday ? c.wind_speed_10m : d.wind_speed_10m_max[selectedDayIndex];
     const windVisual = getWindVisuals(windVal);
     document.getElementById('windIcon').textContent = windVisual.icon;
-    document.getElementById('currentWind').textContent = `${toSpeed(windVal)} (${windVisual.label})`;
+    document.getElementById('currentWind').textContent = toSpeed(windVal);
+    document.getElementById('windSub').textContent = windVisual.label;
 
     const last24hRain = h.precipitation.slice(0, 24).reduce((a, b) => a + b, 0);
     const todayRainSum = d.precipitation_sum[selectedDayIndex];
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
 
+    // Humorous Lighthearted Sub-Label for Recent Rain
+    let rainSubText = 'Bone dry';
+    if (last24hRain > 12) rainSubText = 'Recent downpour!';
+    else if (last24hRain > 5) rainSubText = 'Soggy underfoot';
+    else if (last24hRain > 1) rainSubText = 'A little damp';
+    document.getElementById('rainSub').textContent = rainSubText;
+
     document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[selectedDayIndex])} / ${toTemp(d.temperature_2m_max[selectedDayIndex])}`;
     document.getElementById('todayRain').textContent = toPrecip(todayRainSum);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[selectedDayIndex]);
 
-    // Apply Background Warning Colors to Card Grid
+    // Apply Card Warning Colors
     const windMph = windVal / 1.609;
     windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
     rainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
@@ -844,9 +924,10 @@
     document.getElementById('sunriseTime').textContent = sunriseObj.display;
     document.getElementById('sunsetTime').textContent = sunsetObj.display;
 
-    // Daylight Calculations
+    // Current Time Decimals
     const now = new Date();
-    const nowDec = now.getHours() + (now.getMinutes() / 60);
+    const nowHour = now.getHours();
+    const nowDec = nowHour + (now.getMinutes() / 60);
     const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
     const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
     const hoursUntilSunset = setDec - nowDec;
@@ -854,12 +935,12 @@
     if (isToday) {
       if (nowDec >= setDec) {
         daylightBanner.className = 'alert-banner alert-danger';
-        daylightBanner.innerHTML = `🌇 <span><strong>Sun Has Set:</strong> It is currently dark out. No daylight remaining today.</span>`;
+        daylightBanner.innerHTML = `Booked for night golf? 🌇 <span>It's dark out—no daylight remaining today.</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = '0 hrs';
       } else if (nowDec < riseDec) {
         daylightBanner.className = 'alert-banner alert-warning';
-        daylightBanner.innerHTML = `🌅 <span><strong>Pre-Sunrise:</strong> Sun rises at ${sunriseObj.display}.</span>`;
+        daylightBanner.innerHTML = `🌅 <span>Pre-sunrise right now. First tee time after ${sunriseObj.display}!</span>`;
         daylightBanner.style.display = 'flex';
         document.getElementById('daylightLeft').textContent = `${(setDec - riseDec).toFixed(1)} hrs total`;
       } else if (hoursUntilSunset < 2) {
@@ -882,7 +963,7 @@
       document.getElementById('daylightLeft').textContent = `${totalDaylight.toFixed(1)} hrs total`;
     }
 
-    // Golf Rating & Consistent Callout Formatting
+    // Golf Rating
     const score = calculateGolfScore(tempVal, todayRainSum, last24hRain, windVal);
     scoreText.textContent = `${score} / 10`;
 
@@ -915,27 +996,32 @@
       windCallout.innerHTML = `<strong>Wind Impact:</strong> Light breeze. Minimal impact on flight.`;
     }
 
-    // Gear Advice Callout
-    if (todayRainSum > 12) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> You're going to get soaked! 🌊 Pack a full suit of waterproofs, extra gloves, and 3 dry towels. Maybe hit the clubhouse instead?`;
-    } else if (todayRainSum > 3) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Rain imminent! ☔ Bring an umbrella, rain cover for your bag, and a waterproof jacket. Keep your grips dry!`;
+    // Calculate Rain Forecast for the Next 4 Hours Specifically (18-hole window)
+    const startIndex = (selectedDayIndex + 1) * 24; 
+    const currentStartHourIndex = isToday ? startIndex + nowHour : startIndex + 8; // Default 8 AM if looking ahead
+    const next4hPrecip = h.precipitation.slice(currentStartHourIndex, currentStartHourIndex + 4);
+    const next4hRainSum = next4hPrecip.reduce((a, b) => a + b, 0);
+
+    // Gear Advice Calibrated to Next 4 Hours
+    if (next4hRainSum > 5) {
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Downpour forecast! 🌧️ Grab an umbrella, waterproof jacket, and everything you've got to keep dry.`;
+    } else if (next4hRainSum > 0.5) {
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Light rain forecast ☔—a waterproof jacket should be enough for your round.`;
     } else if (tempVal > 22 && weatherCode <= 2) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and bring plenty of water.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Glorious sunshine! 🧴 Slap on sunscreen, grab your sunglasses, and stay hydrated.`;
     } else if (tempVal < 7) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Proper chilly out! 🧤 Layer up, grab some winter mitts, and play a soft low-compression ball.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Proper chilly out! 🧤 Layer up, grab winter mitts, and play a soft low-compression ball.`;
     } else if (windMph > 22) {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and knock down your tee shots.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> It's blowing a gale out there! 💨 Hold onto your hat, club up twice, and play knockdown shots.`;
     } else {
-      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Decent golfing weather! 🏌️ Standard polo, maybe a light windbreaker in the bag just in case.`;
+      adviceCallout.innerHTML = `<strong>Gear Advice:</strong> Decent golfing weather! 🏌️ Standard polo, maybe a light pullover in the bag.`;
     }
 
-    const startIndex = (selectedDayIndex + 1) * 24; 
-    const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
-    const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
+    const dayTempsC = h.precipitation ? h.temperature_2m.slice(startIndex, startIndex + 24) : [];
+    const dayPrecip = h.precipitation ? h.precipitation.slice(startIndex, startIndex + 24) : [];
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    renderChart(displayTemps, dayPrecip, riseDec, setDec);
+    renderChart(displayTemps, dayPrecip, riseDec, setDec, nowDec, isToday);
   }
 
   unitToggle.addEventListener('click', () => {
