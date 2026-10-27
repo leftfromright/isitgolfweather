@@ -237,7 +237,6 @@
       color: var(--accent);
     }
 
-    /* Verdict Banner Box */
     .verdict-banner {
       border-radius: 8px;
       padding: 1.1rem 1.25rem;
@@ -326,10 +325,36 @@
       font-weight: 800;
       white-space: nowrap;
     }
+    
+    /* Clean Range Slider without progress fill tint */
     input[type="range"] {
       width: 100%;
-      accent-color: var(--accent);
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      outline: none;
       cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .card {
@@ -530,17 +555,33 @@
       border: none;
     }
 
-    .chart-container {
+    /* Split Chart Container with Fixed Frozen Y-Axis */
+    .chart-wrapper-split {
+      display: flex;
       width: 100%;
-      overflow-x: auto;
       margin-top: 0.5rem;
-      padding-bottom: 0.5rem;
-    }
-    .chart-scroll-wrapper {
-      min-width: 550px;
-      height: 180px;
       position: relative;
+      background: var(--card-bg);
+      border-radius: 6px;
     }
+    .chart-y-fixed {
+      width: 35px;
+      height: 180px;
+      flex-shrink: 0;
+      z-index: 10;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border);
+    }
+    .chart-container-scrollable {
+      flex: 1;
+      overflow-x: auto;
+      height: 180px;
+    }
+    .chart-scroll-inner {
+      min-width: 520px;
+      height: 180px;
+    }
+
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
     .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
@@ -558,7 +599,7 @@
       gap: 1.25rem;
       font-size: 0.78rem;
       color: var(--text-muted);
-      margin-top: 0.25rem;
+      margin-top: 0.5rem;
     }
     .legend-item { display: flex; align-items: center; gap: 0.35rem; }
     .legend-color { width: 10px; height: 10px; border-radius: 2px; }
@@ -592,7 +633,7 @@
 
 <div class="container">
   <header class="hero-banner">
-    <div class="floating-version">v0.17</div>
+    <div class="floating-version">v0.18</div>
     <div class="hero-title">
       <h1>⛳ Is It Golf Weather?</h1>
       <p>Course conditions & playability</p>
@@ -693,12 +734,17 @@
       </div>
     </div>
 
-    <!-- 24-Hour Forecast Chart -->
+    <!-- 24-Hour Forecast Chart with Frozen Y-Axis -->
     <div class="card">
       <h2>24-Hour Forecast</h2>
-      <div class="chart-container">
-        <div class="chart-scroll-wrapper">
-          <svg id="hourlyChart"></svg>
+      <div class="chart-wrapper-split">
+        <div class="chart-y-fixed">
+          <svg id="yAxisSvg"></svg>
+        </div>
+        <div class="chart-container-scrollable">
+          <div class="chart-scroll-inner">
+            <svg id="hourlyChart"></svg>
+          </div>
         </div>
       </div>
       <div class="chart-legend">
@@ -1113,27 +1159,22 @@
     }
   }
 
-  // Properly Penalized Golf Scoring Logic (Cold, Rain, Wind)
   function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
     let score = 10;
     const windMph = windSpeedKmh / 1.609;
 
-    // Rain Penalty
     if (windowRainMm > 10) score -= 4.5;
     else if (windowRainMm > 4) score -= 3.0;
     else if (windowRainMm > 1) score -= 1.5;
     else if (windowRainMm > 0.1) score -= 0.5;
 
-    // Soft/Soggy Ground Penalty
     if (past24RainMm > 15) score -= 2.5;
     else if (past24RainMm > 5) score -= 1.2;
 
-    // Wind Penalty
     if (windMph > 30) score -= 4.0;
     else if (windMph > 20) score -= 2.5;
     else if (windMph > 12) score -= 1.2;
 
-    // Cold Temperature Penalty (Benchmark 20C / 68F)
     if (tempC < 4) score -= 3.5;
     else if (tempC < 8) score -= 2.5;
     else if (tempC < 14) score -= 1.5;
@@ -1143,13 +1184,16 @@
     return Math.round(score * 10) / 10;
   }
 
+  // Render Chart with Frozen Y-Axis & Corrected Sunset Label
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, isToday) {
+    const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
+    ySvg.innerHTML = '';
     svg.innerHTML = '';
 
-    const width = 550;
+    const width = 520;
     const height = 150;
-    const paddingLeft = 35;
+    const paddingLeft = 10;
     const paddingRight = 15;
     const paddingBottom = 25;
     const paddingTop = 20;
@@ -1161,17 +1205,18 @@
     const count = 24;
     const stepX = (width - paddingLeft - paddingRight) / (count - 1);
 
+    // Frozen Y-Axis Labels
     const ySteps = 5;
     for (let i = 0; i < ySteps; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / (ySteps - 1)));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
       
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', paddingLeft - 6);
+      label.setAttribute('x', 28);
       label.setAttribute('y', yPos + 3);
       label.setAttribute('class', 'chart-y-text');
       label.textContent = `${tickVal}°`;
-      svg.appendChild(label);
+      ySvg.appendChild(label);
 
       const gridline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       gridline.setAttribute('x1', paddingLeft);
@@ -1277,7 +1322,7 @@
       label.setAttribute('x', sunX);
       label.setAttribute('y', paddingTop - 8);
       label.setAttribute('class', 'sun-text');
-      label.textContent = '🌇 Set';
+      label.textContent = '🌇 Set'; // Corrected Sunset Text
       svg.appendChild(label);
     }
   }
@@ -1315,13 +1360,15 @@
     const isToday = selectedDayIndex === 0;
     document.getElementById('dayLabel').textContent = isToday ? 'Right Now' : `Forecast for ${d.time[selectedDayIndex]}`;
 
-    // Compute Window starting at Tee Time Slider
+    // Compute 4-Hour Playing Window starting at Tee Time
     const startIndex = selectedDayIndex * 24; 
     const teeStartHourIndex = startIndex + selectedTeeHour;
     
     const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
-    
+    const startRain = windowPrecip[0] || 0;
+    const laterRain = windowPrecip.slice(1).reduce((a,b) => a + b, 0);
+
     const windowTemps = h.temperature_2m.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
 
@@ -1380,7 +1427,6 @@
     const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
     const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
 
-    // Dynamic Daylight Warning System strictly based on chosen Tee Time
     const daylightRemainingFromTeeTime = setDec - selectedTeeHour;
 
     if (daylightRemainingFromTeeTime <= 0) {
@@ -1425,14 +1471,27 @@
     const isHeavyWind = windMph > 25;
     const isHeavyRain = windowRainSum > 5 || todayRainSum > 12;
 
+    // Smart Verdict Banner accounting for incoming rain mid-round
     if (score >= 8.5) {
-      verdictBanner.className = 'verdict-banner verdict-vhigh';
-      verdictTitle.textContent = 'Yes, Perfect! ⛳';
-      verdictSub.textContent = 'Firm fairways, gentle breeze, and dry skies. Get out on the course!';
+      if (startRain === 0 && laterRain > 0.1) {
+        verdictBanner.className = 'verdict-banner verdict-high';
+        verdictTitle.textContent = 'Good (Rain Later) 🌦️';
+        verdictSub.textContent = `Dry at tee-off (${selectedTeeHour}:00), but rain is expected within 1–2 hours. Pack a jacket!`;
+      } else {
+        verdictBanner.className = 'verdict-banner verdict-vhigh';
+        verdictTitle.textContent = 'Yes, Perfect! ⛳';
+        verdictSub.textContent = 'Firm fairways, gentle breeze, and dry skies. Get out on the course!';
+      }
     } else if (score >= 7.0) {
-      verdictBanner.className = 'verdict-banner verdict-high';
-      verdictTitle.textContent = 'Yes, Good! 👍';
-      verdictSub.textContent = 'Great conditions for a round. Pack standard layers and enjoy.';
+      if (startRain === 0 && laterRain > 0.2) {
+        verdictBanner.className = 'verdict-banner verdict-med';
+        verdictTitle.textContent = 'Playable (Drizzle Forecast) 🌦️';
+        verdictSub.textContent = 'Clear start, but rain arriving mid-round. Umbrella mandatory.';
+      } else {
+        verdictBanner.className = 'verdict-banner verdict-high';
+        verdictTitle.textContent = 'Yes, Good! 👍';
+        verdictSub.textContent = 'Great conditions for a round. Pack standard layers and enjoy.';
+      }
     } else if (score >= 5.0) {
       verdictBanner.className = 'verdict-banner verdict-med';
       verdictTitle.textContent = 'Not Bad 🌥️';
