@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v1.1</title>
+  <title>Is It Golf Weather? v1.2</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -105,9 +105,9 @@
       padding: 0.3rem 0.5rem;
     }
 
-    /* Screen 1: Dynamic 100dvh Container */
+    /* Screen 1: Zero-scroll fit for mobile browser UI */
     .screen-main {
-      height: calc(100dvh - 0.6rem);
+      height: calc(100svh - 0.6rem);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -157,7 +157,7 @@
       font-size: 0.7rem;
     }
 
-    /* Compact Search Box */
+    /* Search Box */
     .search-box {
       position: relative;
       display: flex;
@@ -210,21 +210,22 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
 
-    /* Central Prominent Dial Section */
+    /* Dynamically Scaling Dial Container */
     .dial-section {
-      flex: 1;
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       position: relative;
-      min-height: 0; /* Allows flex-shrink on small screens */
+      min-height: 180px;
+      padding: 0.2rem 0;
     }
 
     .dial-container {
       position: relative;
       height: 100%;
-      max-height: 270px;
+      max-height: 220px;
       aspect-ratio: 1 / 1;
       display: flex;
       align-items: center;
@@ -262,38 +263,38 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0.5rem;
+      padding: 0.4rem;
     }
 
     .dial-score-num {
-      font-size: 2.6rem;
+      font-size: 2.3rem;
       font-weight: 900;
       letter-spacing: -1px;
       line-height: 0.95;
     }
 
     .dial-temp-badge {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 800;
       color: var(--accent);
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.08rem 0.4rem;
+      padding: 0.05rem 0.35rem;
       border-radius: 10px;
-      margin: 0.2rem 0 0.25rem 0;
+      margin: 0.15rem 0 0.2rem 0;
     }
 
     .dial-verdict-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 800;
       margin-bottom: 0.1rem;
     }
 
     .dial-verdict-sub {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       line-height: 1.15;
-      max-width: 165px;
+      max-width: 155px;
     }
 
     /* Date Bar */
@@ -314,12 +315,12 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.25rem 0.1rem;
+      padding: 0.2rem 0.1rem;
       border-radius: 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       cursor: pointer;
     }
     .date-btn.active {
@@ -328,14 +329,14 @@
       border-color: var(--accent);
     }
     .date-btn .day { font-weight: bold; }
-    .date-btn .date-icon { font-size: 0.8rem; margin: 0.05rem 0; }
+    .date-btn .date-icon { font-size: 0.78rem; margin: 0.02rem 0; }
 
     /* Tee Time Slider Card */
     .slider-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 0.4rem 0.65rem;
+      padding: 0.35rem 0.6rem;
       box-shadow: var(--shadow);
       flex-shrink: 0;
     }
@@ -344,12 +345,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.15rem;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: bold;
       color: var(--text-muted);
     }
     .slider-value {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--accent);
       font-weight: 800;
     }
@@ -367,8 +368,8 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: var(--accent);
       cursor: pointer;
@@ -376,10 +377,10 @@
 
     .daylight-warning {
       display: none;
-      margin-top: 0.25rem;
-      padding: 0.25rem 0.4rem;
+      margin-top: 0.2rem;
+      padding: 0.2rem 0.35rem;
       border-radius: 5px;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 600;
       text-align: center;
     }
@@ -397,14 +398,14 @@
     /* Scroll Indicator Bar */
     .scroll-indicator-bar {
       width: 100%;
-      margin-top: 0.25rem;
-      padding: 0.45rem 0;
+      margin-top: 0.2rem;
+      padding: 0.4rem 0;
       background: var(--accent);
       color: #ffffff;
       border: none;
       border-radius: 7px;
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -557,7 +558,7 @@
   <header class="compact-header">
     <div class="compact-title">
       <h1>⛳ Golf Weather</h1>
-      <span class="version-tag">v1.1</span>
+      <span class="version-tag">v1.2</span>
     </div>
     <div class="controls-mini">
       <button id="unitToggle">°C</button>
@@ -716,7 +717,7 @@
       </div>
 
       <footer class="beta-footer">
-        Is It Golf Weather? v1.1 • Made by KW
+        Is It Golf Weather? v1.2 • Made by KW
       </footer>
 
     </div>
@@ -1144,29 +1145,6 @@
     const windowMaxWind = Math.max(...windowWinds, 0);
     const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
 
-    const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
-    
-    dialScore.textContent = `${score}`;
-    dialTemp.textContent = toTemp(windowAvgTemp);
-    updateDialGauge(score);
-
-    if (score >= 8.5) {
-      dialVerdict.textContent = 'Yes, Perfect! ⛳';
-      dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
-    } else if (score >= 7.0) {
-      dialVerdict.textContent = 'Yes, Good! 👍';
-      dialSub.textContent = 'Solid playing weather. Pack a standard light layer.';
-    } else if (score >= 5.0) {
-      dialVerdict.textContent = 'Not Bad 🌥️';
-      dialSub.textContent = 'Playable round, but factor in cool winds or soggy ground.';
-    } else if (score >= 3.0) {
-      dialVerdict.textContent = 'Poor 🌧️';
-      dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
-    } else {
-      dialVerdict.textContent = 'No Chance ⛔';
-      dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
-    }
-
     // Sunrise / Sunset Hour Decimals
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
@@ -1180,7 +1158,48 @@
     }
 
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
+    let score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
+    
+    // Sunset checks for dial verdict
+    const isPastSunset = selectedTeeHour >= sunsetHourDec;
+    const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
 
+    if (isPastSunset) {
+      score = 1.0;
+      dialScore.textContent = `${score}`;
+      dialTemp.textContent = toTemp(windowAvgTemp);
+      updateDialGauge(score);
+      dialVerdict.textContent = 'Too Dark / Sunset 🌙';
+      dialSub.textContent = `Sunset is at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}. Select an earlier tee time.`;
+    } else {
+      dialScore.textContent = `${score}`;
+      dialTemp.textContent = toTemp(windowAvgTemp);
+      updateDialGauge(score);
+
+      if (score >= 8.5) {
+        if (isTightDaylight) {
+          dialVerdict.textContent = '9 Holes Only 🌇';
+          dialSub.textContent = `Great weather, but only ~${daylightRemaining.toFixed(1)}h daylight remaining before sunset.`;
+        } else {
+          dialVerdict.textContent = 'Yes, Perfect! ⛳';
+          dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
+        }
+      } else if (score >= 7.0) {
+        dialVerdict.textContent = 'Yes, Good! 👍';
+        dialSub.textContent = 'Solid playing weather. Pack a standard light layer.';
+      } else if (score >= 5.0) {
+        dialVerdict.textContent = 'Not Bad 🌥️';
+        dialSub.textContent = 'Playable round, but factor in cool winds or soggy ground.';
+      } else if (score >= 3.0) {
+        dialVerdict.textContent = 'Poor 🌧️';
+        dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
+      } else {
+        dialVerdict.textContent = 'No Chance ⛔';
+        dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
+      }
+    }
+
+    // Daylight Slider Warning Box
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-red';
