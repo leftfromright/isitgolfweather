@@ -47,7 +47,7 @@
     html, body {
       width: 100%;
       height: 100dvh;
-      overflow: hidden; /* Prevents viewport scroll on mobile */
+      overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
@@ -68,12 +68,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 0.5rem;
-    }
-    .compact-title {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      padding-bottom: 0.4rem;
     }
     .compact-title h1 {
       font-size: 1.1rem;
@@ -96,12 +91,12 @@
       font-size: 0.78rem;
     }
 
-    /* Compact Search Box */
+    /* Search Box & Typeahead */
     .search-box {
       position: relative;
       display: flex;
       gap: 0.4rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
     input[type="text"] {
       flex: 1;
@@ -138,7 +133,7 @@
       margin-top: 4px;
     }
     .autocomplete-item {
-      padding: 0.55rem 0.75rem;
+      padding: 0.6rem 0.75rem;
       cursor: pointer;
       font-size: 0.85rem;
       border-bottom: 1px solid var(--border);
@@ -147,6 +142,7 @@
       gap: 0.4rem;
     }
     .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: var(--bg); }
 
     /* Centered Main Dial Section */
     .dial-section {
@@ -156,7 +152,7 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      margin: 0.25rem 0;
+      margin: 0.2rem 0;
     }
 
     .dial-container {
@@ -171,7 +167,7 @@
     .dial-svg {
       width: 100%;
       height: 100%;
-      transform: rotate(-90deg); /* Start arc from top */
+      transform: rotate(-90deg);
     }
 
     .dial-bg-track {
@@ -186,9 +182,9 @@
       stroke: var(--gauge-good);
       stroke-width: 14;
       stroke-linecap: round;
-      stroke-dasharray: 691; /* 2 * PI * 110 radius */
+      stroke-dasharray: 691;
       stroke-dashoffset: 691;
-      transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+      transition: stroke-dashoffset 0.4s ease-out, stroke 0.3s ease;
     }
 
     .dial-content {
@@ -199,28 +195,28 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 1.5rem;
+      padding: 1.25rem;
     }
 
     .dial-score-num {
-      font-size: 2.4rem;
+      font-size: 2.5rem;
       font-weight: 900;
       letter-spacing: -1px;
       line-height: 1;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
 
     .dial-verdict-title {
       font-size: 1.15rem;
       font-weight: 800;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.3rem;
     }
 
     .dial-verdict-sub {
       font-size: 0.78rem;
       color: var(--text-muted);
       line-height: 1.25;
-      max-width: 190px;
+      max-width: 195px;
     }
 
     /* Date Bar */
@@ -228,8 +224,8 @@
       display: flex;
       gap: 0.4rem;
       overflow-x: auto;
-      padding-bottom: 0.4rem;
-      margin-bottom: 0.5rem;
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.4rem;
       scrollbar-width: none;
     }
     .date-bar::-webkit-scrollbar { display: none; }
@@ -261,7 +257,7 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 0.75rem 1rem;
+      padding: 0.7rem 1rem;
       box-shadow: var(--shadow);
     }
     .slider-header {
@@ -306,12 +302,15 @@
       margin-top: 1rem;
     }
 
-    .beta-footer {
+    /* Scroll for More Indicator Bar */
+    .scroll-indicator-bar {
       text-align: center;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
+      font-weight: 600;
       color: var(--text-muted);
-      opacity: 0.7;
-      margin-top: 0.4rem;
+      opacity: 0.8;
+      padding: 0.4rem 0 0.1rem 0;
+      letter-spacing: 0.3px;
     }
   </style>
 </head>
@@ -330,7 +329,7 @@
     </div>
   </header>
 
-  <!-- Location Bar -->
+  <!-- Location Search Bar -->
   <div class="search-box">
     <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
     <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
@@ -342,13 +341,11 @@
 
   <div id="mainContent" style="display: none; flex: 1; flex-direction: column; justify-content: space-between;">
     
-    <!-- Central Dial Display -->
+    <!-- Central Dynamic Dial Display -->
     <div class="dial-section">
       <div class="dial-container">
         <svg class="dial-svg" viewBox="0 0 240 240">
-          <!-- Background Circle Track -->
           <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
-          <!-- Animated Score Arc -->
           <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
         </svg>
 
@@ -372,9 +369,10 @@
       <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
     </div>
 
-    <footer class="beta-footer">
-      beta • Made by KW • October 2026
-    </footer>
+    <!-- Replaced Footer: Scroll for More Bar -->
+    <div class="scroll-indicator-bar">
+      scroll for more info 🧲
+    </div>
   </div>
 </div>
 
@@ -390,9 +388,9 @@
   let debounceTimer = null;
   let savedHomeCourse = null;
 
-  const circumference = 2 * Math.PI * 110; // 691.15px
+  const circumference = 2 * Math.PI * 110;
 
-  // DOM Caching
+  // DOM Elements
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
@@ -437,6 +435,52 @@
       localStorage.setItem('golf_home_course', JSON.stringify(savedHomeCourse));
       homeCourseBtn.style.color = '#fbc02d';
     }
+  });
+
+  // Location Typeahead Listener
+  locationInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const query = locationInput.value.trim();
+    if (query.length < 2) {
+      autocompleteList.style.display = 'none';
+      return;
+    }
+    debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
+  });
+
+  async function searchAutocomplete(rawQuery) {
+    try {
+      let cleanQuery = rawQuery.replace(/royal/gi, '').trim() || rawQuery;
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=6&language=en&format=json`);
+      const data = await res.json();
+      
+      autocompleteList.innerHTML = '';
+      if (data.results && data.results.length > 0) {
+        data.results.forEach(place => {
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          const isGolf = place.name.toLowerCase().includes('golf') ? '⛳ ' : '📍 ';
+          const region = place.admin1 ? `, ${place.admin1}` : '';
+          const fullName = `${place.name}${region}, ${place.country_code}`;
+          
+          item.innerHTML = `<span>${isGolf}</span> <span>${fullName}</span>`;
+          item.addEventListener('click', () => {
+            locationInput.value = fullName;
+            autocompleteList.style.display = 'none';
+            selectedDayIndex = 0;
+            fetchWeather(place.latitude, place.longitude, `${place.name}${region}`);
+          });
+          autocompleteList.appendChild(item);
+        });
+        autocompleteList.style.display = 'block';
+      } else {
+        autocompleteList.style.display = 'none';
+      }
+    } catch (e) { console.warn("Autocomplete failed", e); }
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) autocompleteList.style.display = 'none';
   });
 
   teeTimeSlider.addEventListener('input', (e) => {
@@ -519,7 +563,7 @@
       btn.addEventListener('click', () => {
         selectedDayIndex = idx;
         buildDateBar();
-        render();
+        render(); // Immediately re-evaluates weather window for selected date
       });
       dateBar.appendChild(btn);
     }
@@ -553,7 +597,6 @@
     const offset = circumference - (fraction * circumference);
     dialArc.style.strokeDashoffset = offset;
 
-    // Color code dial arc
     if (score >= 8.0) dialArc.style.stroke = 'var(--gauge-good)';
     else if (score >= 5.0) dialArc.style.stroke = 'var(--gauge-med)';
     else dialArc.style.stroke = 'var(--gauge-bad)';
