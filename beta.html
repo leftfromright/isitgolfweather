@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v1.2</title>
+  <title>Is It Golf Weather? v1.3</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -105,9 +105,9 @@
       padding: 0.3rem 0.5rem;
     }
 
-    /* Screen 1: Zero-scroll fit for mobile browser UI */
+    /* Screen 1: Compact Viewport Fit */
     .screen-main {
-      height: calc(100svh - 0.6rem);
+      height: calc(100vh - 0.6rem);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -125,20 +125,20 @@
     .compact-title {
       display: flex;
       align-items: baseline;
-      gap: 0.3rem;
+      gap: 0.35rem;
     }
     .compact-title h1 {
-      font-size: 0.98rem;
+      font-size: 1.05rem;
       font-weight: 800;
       letter-spacing: -0.3px;
     }
     .version-tag {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       font-weight: 700;
       color: var(--accent);
       background: var(--card-bg);
       border: 1px solid var(--border);
-      padding: 0.05rem 0.25rem;
+      padding: 0.05rem 0.3rem;
       border-radius: 4px;
     }
     
@@ -150,11 +150,11 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.15rem 0.35rem;
+      padding: 0.2rem 0.4rem;
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
     }
 
     /* Search Box */
@@ -162,7 +162,7 @@
       position: relative;
       display: flex;
       gap: 0.25rem;
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.15rem;
       flex-shrink: 0;
     }
     input[type="text"] {
@@ -172,12 +172,12 @@
       border-radius: 7px;
       background: var(--card-bg);
       color: var(--text);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       outline: none;
     }
     .icon-btn {
       padding: 0.35rem 0.5rem;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 7px;
@@ -210,7 +210,7 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
 
-    /* Dynamically Scaling Dial Container */
+    /* Full Width Dynamic Dial */
     .dial-section {
       flex: 1 1 auto;
       display: flex;
@@ -218,15 +218,15 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      min-height: 180px;
-      padding: 0.2rem 0;
+      min-height: 0;
+      padding: 0.1rem 0;
     }
 
     .dial-container {
       position: relative;
-      height: 100%;
-      max-height: 220px;
-      aspect-ratio: 1 / 1;
+      width: min(340px, calc(100vw - 1.5rem));
+      height: min(340px, calc(100vw - 1.5rem));
+      max-height: 48vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,46 +263,46 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0.4rem;
+      padding: 0.8rem;
     }
 
     .dial-score-num {
-      font-size: 2.3rem;
+      font-size: clamp(2.2rem, 7vw, 3rem);
       font-weight: 900;
       letter-spacing: -1px;
       line-height: 0.95;
     }
 
     .dial-temp-badge {
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       font-weight: 800;
       color: var(--accent);
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.05rem 0.35rem;
+      padding: 0.08rem 0.45rem;
       border-radius: 10px;
-      margin: 0.15rem 0 0.2rem 0;
+      margin: 0.2rem 0 0.25rem 0;
     }
 
     .dial-verdict-title {
-      font-size: 0.95rem;
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
       font-weight: 800;
       margin-bottom: 0.1rem;
     }
 
     .dial-verdict-sub {
-      font-size: 0.68rem;
+      font-size: clamp(0.68rem, 2.5vw, 0.78rem);
       color: var(--text-muted);
       line-height: 1.15;
-      max-width: 155px;
+      max-width: 180px;
     }
 
-    /* Date Bar */
+    /* Restored Full Size Date Bar */
     .date-bar {
       display: flex;
-      gap: 0.25rem;
+      gap: 0.3rem;
       overflow-x: auto;
-      padding-bottom: 0.1rem;
+      padding-bottom: 0.15rem;
       margin-bottom: 0.2rem;
       scrollbar-width: none;
       flex-shrink: 0;
@@ -311,16 +311,16 @@
 
     .date-btn {
       flex: 1;
-      min-width: 48px;
+      min-width: 56px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.2rem 0.1rem;
-      border-radius: 6px;
+      padding: 0.35rem 0.2rem;
+      border-radius: 7px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       cursor: pointer;
     }
     .date-btn.active {
@@ -329,7 +329,7 @@
       border-color: var(--accent);
     }
     .date-btn .day { font-weight: bold; }
-    .date-btn .date-icon { font-size: 0.78rem; margin: 0.02rem 0; }
+    .date-btn .date-icon { font-size: 0.9rem; margin: 0.05rem 0; }
 
     /* Tee Time Slider Card */
     .slider-card {
@@ -345,12 +345,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.15rem;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: bold;
       color: var(--text-muted);
     }
     .slider-value {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--accent);
       font-weight: 800;
     }
@@ -368,8 +368,8 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       background: var(--accent);
       cursor: pointer;
@@ -399,13 +399,13 @@
     .scroll-indicator-bar {
       width: 100%;
       margin-top: 0.2rem;
-      padding: 0.4rem 0;
+      padding: 0.42rem 0;
       background: var(--accent);
       color: #ffffff;
       border: none;
       border-radius: 7px;
       text-align: center;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -558,7 +558,7 @@
   <header class="compact-header">
     <div class="compact-title">
       <h1>⛳ Golf Weather</h1>
-      <span class="version-tag">v1.2</span>
+      <span class="version-tag">v1.3</span>
     </div>
     <div class="controls-mini">
       <button id="unitToggle">°C</button>
@@ -579,7 +579,7 @@
 
   <div id="mainContent" style="display: none; flex-direction: column;">
     
-    <!-- Screen 1: Above The Fold View -->
+    <!-- Screen 1: Compact Viewport Fit -->
     <div class="screen-main">
       <!-- Central Dynamic Dial Display -->
       <div class="dial-section">
@@ -717,7 +717,7 @@
       </div>
 
       <footer class="beta-footer">
-        Is It Golf Weather? v1.2 • Made by KW
+        Is It Golf Weather? v1.3 • Made by KW
       </footer>
 
     </div>
