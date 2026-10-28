@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? (Beta Layout)</title>
+  <title>Is It Golf Weather? v1.1</title>
   
   <!-- Mobile Web App Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -103,29 +103,43 @@
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0.35rem 0.6rem;
+      padding: 0.4rem 0.65rem;
     }
 
-    /* Screen 1: Guaranteed 100dvh zero-scroll fit */
+    /* Screen 1: Zero-scroll fit with full-size dial */
     .screen-main {
-      height: calc(100dvh - 0.7rem);
+      height: calc(100dvh - 0.8rem);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
     }
 
-    /* Compact Header */
+    /* Compact Header with Version Badge */
     .compact-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 0.15rem;
+      padding-bottom: 0.2rem;
+    }
+    .compact-title {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
     }
     .compact-title h1 {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       letter-spacing: -0.3px;
+    }
+    .version-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.05rem 0.3rem;
+      border-radius: 4px;
     }
     
     .controls-mini {
@@ -148,7 +162,7 @@
       position: relative;
       display: flex;
       gap: 0.3rem;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
     input[type="text"] {
       flex: 1;
@@ -195,7 +209,7 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
 
-    /* Centered Main Dial Section */
+    /* Main Prominent Dial Section */
     .dial-section {
       flex: 1;
       display: flex;
@@ -203,12 +217,13 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      margin: 0.1rem 0;
     }
 
     .dial-container {
       position: relative;
-      width: min(195px, 48vw);
-      height: min(195px, 48vw);
+      width: min(240px, 60vw);
+      height: min(240px, 60vw);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -245,19 +260,29 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0.6rem;
+      padding: 0.8rem;
     }
 
     .dial-score-num {
-      font-size: 1.9rem;
+      font-size: 2.3rem;
       font-weight: 900;
       letter-spacing: -1px;
       line-height: 1;
-      margin-bottom: 0.1rem;
+    }
+
+    .dial-temp-badge {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.1rem 0.45rem;
+      border-radius: 12px;
+      margin: 0.15rem 0 0.25rem 0;
     }
 
     .dial-verdict-title {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 800;
       margin-bottom: 0.15rem;
     }
@@ -266,7 +291,7 @@
       font-size: 0.7rem;
       color: var(--text-muted);
       line-height: 1.15;
-      max-width: 150px;
+      max-width: 160px;
     }
 
     /* Date Bar */
@@ -345,7 +370,6 @@
       cursor: pointer;
     }
 
-    /* Daylight Warning Chip */
     .daylight-warning {
       display: none;
       margin-top: 0.3rem;
@@ -524,10 +548,11 @@
 <body>
 
 <div class="app-container">
-  <!-- Top Compact Header -->
+  <!-- Top Compact Header with Version -->
   <header class="compact-header">
     <div class="compact-title">
       <h1>⛳ Golf Weather</h1>
+      <span class="version-tag">v1.1</span>
     </div>
     <div class="controls-mini">
       <button id="unitToggle">°C</button>
@@ -560,6 +585,7 @@
 
           <div class="dial-content">
             <div id="dialScore" class="dial-score-num">--</div>
+            <div id="dialTemp" class="dial-temp-badge">--°C</div>
             <div id="dialVerdict" class="dial-verdict-title">--</div>
             <div id="dialSub" class="dial-verdict-sub">--</div>
           </div>
@@ -598,7 +624,7 @@
         <div id="gearCallout" class="callout-box"></div>
       </div>
 
-      <!-- Weather Overview Card (Identical to Index Layout) -->
+      <!-- Weather Overview Card -->
       <div class="card">
         <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
         
@@ -653,7 +679,7 @@
         </div>
       </div>
 
-      <!-- Day Summary Grid (Index Icons & Styling) -->
+      <!-- Day Summary Grid -->
       <div class="card">
         <h2>Day Summary</h2>
         <div class="summary-grid">
@@ -685,7 +711,7 @@
       </div>
 
       <footer class="beta-footer">
-        beta • Made by KW • October 2026
+        Is It Golf Weather? v1.1 • Made by KW
       </footer>
 
     </div>
@@ -726,6 +752,7 @@
 
   const dialArc = document.getElementById('dialArc');
   const dialScore = document.getElementById('dialScore');
+  const dialTemp = document.getElementById('dialTemp');
   const dialVerdict = document.getElementById('dialVerdict');
   const dialSub = document.getElementById('dialSub');
 
@@ -966,6 +993,7 @@
 
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
+    // Y Axis
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -978,6 +1006,7 @@
       ySvg.appendChild(label);
     }
 
+    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
@@ -993,6 +1022,7 @@
       }
     });
 
+    // Temp Polyline
     let points = '';
     hourlyTemps.forEach((temp, i) => {
       const x = paddingLeft + i * stepX;
@@ -1014,6 +1044,55 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
+    // Sunrise Vertical Line
+    if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
+      const srX = paddingLeft + sunriseHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', srX); line.setAttribute('x2', srX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'sun-line');
+      svg.appendChild(line);
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', srX); icon.setAttribute('y', paddingTop - 3);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '☀️';
+      svg.appendChild(icon);
+    }
+
+    // Sunset Vertical Line
+    if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
+      const ssX = paddingLeft + sunsetHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', ssX); line.setAttribute('x2', ssX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'sun-line');
+      svg.appendChild(line);
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', ssX); icon.setAttribute('y', paddingTop - 3);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '🌙';
+      svg.appendChild(icon);
+    }
+
+    // Now Marker
+    if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
+      const nowX = paddingLeft + currentHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', nowX); line.setAttribute('x2', nowX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'now-line');
+      svg.appendChild(line);
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', nowX); icon.setAttribute('y', paddingTop - 3);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '📍';
+      svg.appendChild(icon);
+    }
+
+    // Tee Time Marker
     if (teeHourDec >= 0) {
       const teeX = paddingLeft + teeHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1063,6 +1142,7 @@
     const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
     
     dialScore.textContent = `${score}`;
+    dialTemp.textContent = toTemp(windowAvgTemp);
     updateDialGauge(score);
 
     if (score >= 8.5) {
@@ -1082,14 +1162,19 @@
       dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
     }
 
-    // Daylight & Sunset warning calculation for 9 or 18 holes
-    const sunsetISO = d.sunset[currentDayIdx];
-    let sunsetHour = 18; // Default 6 PM
-    if (sunsetISO) {
-      const parts = sunsetISO.split('T')[1].split(':');
-      sunsetHour = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    // Sunrise / Sunset Hour Decimals
+    let sunriseHourDec = 6;
+    let sunsetHourDec = 18;
+    if (d.sunrise[currentDayIdx]) {
+      const parts = d.sunrise[currentDayIdx].split('T')[1].split(':');
+      sunriseHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
     }
-    const daylightRemaining = sunsetHour - selectedTeeHour;
+    if (d.sunset[currentDayIdx]) {
+      const parts = d.sunset[currentDayIdx].split('T')[1].split(':');
+      sunsetHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    }
+
+    const daylightRemaining = sunsetHourDec - selectedTeeHour;
 
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
@@ -1103,7 +1188,7 @@
       daylightWarning.style.display = 'none';
     }
 
-    // Weather Overview Hero (From Index)
+    // Weather Overview Hero
     const weatherCode = isToday ? c.weather_code : d.weather_code[currentDayIdx];
     const weatherInfo = getWeatherInfo(weatherCode);
     document.getElementById('weatherIcon').textContent = weatherInfo.icon;
@@ -1184,7 +1269,7 @@
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    renderChart(displayTemps, dayPrecip, 6, 18, 12, selectedTeeHour, selectedDayIndex === 0);
+    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, selectedTeeHour, isToday);
   }
 
   unitToggle.addEventListener('click', () => {
