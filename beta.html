@@ -1,3 +1,14 @@
+Here is beta.html v1.3, restructured to fix the layout scaling, icon accuracy, and dial sizing:
+Key Adjustments:
+ * Screen Height Fit (Restored Pre-Scroll Sizing):
+   * Re-engineered .screen-main using height: 100vh with tight flex paddings so the entire top section—including the large dial, full-size date boxes, tee time slider, and scroll bar—fits cleanly on mobile viewports without vertical overflow.
+ * Prominent Dial (Full Width):
+   * Scaled the dial container width to calc(100vw - 2.5rem) (with a max of 340px). It now stretches across the phone screen with minimal side padding.
+ * Restored Date Box Sizes:
+   * Restored date selector buttons (min-width: 58px, padding: 0.4rem 0.2rem, font-size: 0.75rem) so day labels and weather icons are crisp and readable.
+ * Correct Sunrise & Sunset Icons:
+   * Fixed dial icon markers and verdict text to use ☀️ for sunrise/daylight warnings and 🌙 for darkness/sunset warnings.
+Code (beta.html v1.3):
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1332,3 +1343,4 @@
 </script>
 </body>
 </html>
+
