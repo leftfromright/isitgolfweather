@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Is It Golf Weather? (Beta Layout)</title>
   
   <!-- Mobile Web App Meta Tags -->
@@ -94,7 +94,7 @@
       width: 100%;
       min-height: 100vh;
       overflow-x: hidden;
-      overflow-y: auto; /* Enable page scroll for details */
+      overflow-y: auto;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
@@ -103,15 +103,16 @@
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0.75rem 0.85rem;
+      padding: 0.35rem 0.6rem;
     }
 
-    /* Screen 1: Full-Height Dynamic Viewport Area */
+    /* Screen 1: Guaranteed 100dvh zero-scroll fit */
     .screen-main {
-      min-height: calc(100dvh - 1.5rem);
+      height: calc(100dvh - 0.7rem);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      overflow: hidden;
     }
 
     /* Compact Header */
@@ -119,49 +120,49 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 0.4rem;
+      padding-bottom: 0.15rem;
     }
     .compact-title h1 {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 800;
       letter-spacing: -0.3px;
     }
     
     .controls-mini {
       display: flex;
-      gap: 0.35rem;
+      gap: 0.25rem;
     }
     .controls-mini button {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.25rem 0.5rem;
+      padding: 0.2rem 0.4rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
     }
 
     /* Search Box & Typeahead */
     .search-box {
       position: relative;
       display: flex;
-      gap: 0.4rem;
-      margin-bottom: 0.4rem;
+      gap: 0.3rem;
+      margin-bottom: 0.25rem;
     }
     input[type="text"] {
       flex: 1;
-      padding: 0.5rem 0.7rem;
+      padding: 0.4rem 0.6rem;
       border: 1px solid var(--border);
       border-radius: 8px;
       background: var(--card-bg);
       color: var(--text);
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       outline: none;
     }
     .icon-btn {
-      padding: 0.5rem 0.65rem;
-      font-size: 0.95rem;
+      padding: 0.4rem 0.55rem;
+      font-size: 0.85rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -178,15 +179,15 @@
       border-radius: 8px;
       box-shadow: var(--shadow);
       z-index: 1000;
-      max-height: 200px;
+      max-height: 180px;
       overflow-y: auto;
       display: none;
       margin-top: 4px;
     }
     .autocomplete-item {
-      padding: 0.6rem 0.75rem;
+      padding: 0.5rem 0.65rem;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -202,13 +203,12 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      margin: 0.2rem 0;
     }
 
     .dial-container {
       position: relative;
-      width: min(280px, 68vw);
-      height: min(280px, 68vw);
+      width: min(195px, 48vw);
+      height: min(195px, 48vw);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -245,53 +245,53 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 1.25rem;
+      padding: 0.6rem;
     }
 
     .dial-score-num {
-      font-size: 2.5rem;
+      font-size: 1.9rem;
       font-weight: 900;
       letter-spacing: -1px;
       line-height: 1;
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.1rem;
     }
 
     .dial-verdict-title {
-      font-size: 1.15rem;
+      font-size: 0.95rem;
       font-weight: 800;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.15rem;
     }
 
     .dial-verdict-sub {
-      font-size: 0.78rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
-      line-height: 1.25;
-      max-width: 195px;
+      line-height: 1.15;
+      max-width: 150px;
     }
 
     /* Date Bar */
     .date-bar {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.3rem;
       overflow-x: auto;
-      padding-bottom: 0.3rem;
-      margin-bottom: 0.4rem;
+      padding-bottom: 0.15rem;
+      margin-bottom: 0.25rem;
       scrollbar-width: none;
     }
     .date-bar::-webkit-scrollbar { display: none; }
 
     .date-btn {
       flex: 1;
-      min-width: 58px;
+      min-width: 50px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.4rem 0.2rem;
-      border-radius: 8px;
+      padding: 0.3rem 0.15rem;
+      border-radius: 7px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       cursor: pointer;
     }
     .date-btn.active {
@@ -300,34 +300,34 @@
       border-color: var(--accent);
     }
     .date-btn .day { font-weight: bold; }
-    .date-btn .date-icon { font-size: 1rem; margin: 0.1rem 0; }
+    .date-btn .date-icon { font-size: 0.85rem; margin: 0.05rem 0; }
 
     /* Bottom Slider Card */
     .slider-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 0.7rem 1rem;
+      border-radius: 9px;
+      padding: 0.5rem 0.75rem;
       box-shadow: var(--shadow);
     }
     .slider-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.35rem;
-      font-size: 0.82rem;
+      margin-bottom: 0.2rem;
+      font-size: 0.78rem;
       font-weight: bold;
       color: var(--text-muted);
     }
     .slider-value {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       color: var(--accent);
       font-weight: 800;
     }
 
     input[type="range"] {
       width: 100%;
-      height: 6px;
+      height: 5px;
       background: var(--border);
       border-radius: 3px;
       outline: none;
@@ -338,28 +338,50 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: var(--accent);
       cursor: pointer;
     }
 
-    /* Taller, Prominent Scroll Indicator Bar */
+    /* Daylight Warning Chip */
+    .daylight-warning {
+      display: none;
+      margin-top: 0.3rem;
+      padding: 0.3rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .daylight-warning.warn-orange {
+      background-color: var(--warn-orange-bg);
+      border: 1px solid var(--warn-orange-border);
+      color: var(--warn-orange-text);
+    }
+    .daylight-warning.warn-red {
+      background-color: var(--warn-bad-bg);
+      border: 1px solid var(--warn-bad-border);
+      color: var(--warn-bad-text);
+    }
+
+    /* Full Width Bottom Scroll Indicator Bar */
     .scroll-indicator-bar {
-      margin: 0.6rem 0 0.2rem 0;
-      padding: 0.6rem 0;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
+      width: 100%;
+      margin-top: 0.35rem;
+      padding: 0.5rem 0;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
       border-radius: 8px;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      color: var(--accent);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
       box-shadow: var(--shadow);
       cursor: pointer;
     }
@@ -369,8 +391,8 @@
     }
     @keyframes bounce {
       0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(4px); }
-      60% { transform: translateY(2px); }
+      40% { transform: translateY(3px); }
+      60% { transform: translateY(1px); }
     }
 
     /* Details Section (Below the fold) */
@@ -385,59 +407,85 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1.1rem;
+      padding: 1rem;
       box-shadow: var(--shadow);
     }
     .card h2 {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .overview-hero {
+      text-align: center;
+      margin-bottom: 0.75rem;
+    }
+    .temp-large {
+      font-size: 2rem;
+      font-weight: bold;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .feels-like-tag {
       font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
+      font-weight: normal;
+    }
+    .current-condition-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .callout-box {
-      margin-top: 0.5rem;
-      padding: 0.65rem 0.85rem;
+      margin-top: 0.45rem;
+      padding: 0.6rem 0.8rem;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       border-left: 4px solid var(--accent);
       background: var(--bg);
     }
-    .callout-title { font-weight: bold; display: block; margin-bottom: 0.15rem; }
+    .callout-title { font-weight: bold; display: block; margin-bottom: 0.1rem; }
     
     .callout-good { background-color: var(--warn-good-bg); border-left-color: var(--warn-good-border); color: var(--warn-good-text); }
     .callout-med { background-color: var(--warn-med-bg); border-left-color: var(--warn-med-border); color: var(--warn-med-text); }
     .callout-orange { background-color: var(--warn-orange-bg); border-left-color: var(--warn-orange-border); color: var(--warn-orange-text); }
     .callout-bad { background-color: var(--warn-bad-bg); border-left-color: var(--warn-bad-border); color: var(--warn-bad-text); }
 
-    .gear-list { margin-top: 0.3rem; padding-left: 1.2rem; font-size: 0.82rem; }
-
-    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-top: 0.45rem; }
     .grid-item {
       background: var(--bg);
-      padding: 0.6rem 0.4rem;
+      padding: 0.55rem 0.35rem;
       border-radius: 6px;
       border: 1px solid var(--border);
     }
-    .grid-item .label { font-size: 0.72rem; color: var(--text-muted); }
-    .grid-item .value-main { font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
-    .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .grid-item .label { font-size: 0.7rem; color: var(--text-muted); }
+    .grid-item .value-main { font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
+    .grid-item .value-sub { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.1rem; }
 
-    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
+    .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); }
+    .grid-item.stat-med { background-color: var(--warn-med-bg); border-color: var(--warn-med-border); }
+    .grid-item.stat-orange { background-color: var(--warn-orange-bg); border-color: var(--warn-orange-border); }
+    .grid-item.stat-bad { background-color: var(--warn-bad-bg); border-color: var(--warn-bad-border); }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-top: 0.45rem; }
 
     /* Chart Styles */
     .chart-wrapper-split {
       display: flex;
       width: 100%;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
       background: var(--card-bg);
       border-radius: 6px;
       overflow: hidden;
     }
-    .chart-y-fixed { width: 32px; height: 145px; flex-shrink: 0; background: var(--card-bg); border-right: 1px solid var(--border); }
-    .chart-container-scrollable { flex: 1; overflow-x: auto; height: 145px; }
-    .chart-scroll-inner { min-width: 480px; height: 145px; }
+    .chart-y-fixed { width: 32px; height: 135px; flex-shrink: 0; background: var(--card-bg); border-right: 1px solid var(--border); }
+    .chart-container-scrollable { flex: 1; overflow-x: auto; height: 135px; }
+    .chart-scroll-inner { min-width: 480px; height: 135px; }
     
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
@@ -454,22 +502,22 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.6rem 1rem;
-      font-size: 0.75rem;
+      gap: 0.5rem 0.8rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin-top: 0.5rem;
+      margin-top: 0.45rem;
     }
-    .legend-item { display: flex; align-items: center; gap: 0.3rem; }
-    .legend-color { width: 9px; height: 9px; border-radius: 2px; }
+    .legend-item { display: flex; align-items: center; gap: 0.25rem; }
+    .legend-color { width: 8px; height: 8px; border-radius: 2px; }
 
-    #status { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; }
+    #status { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-top: 0.8rem; }
 
     .beta-footer {
       text-align: center;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       opacity: 0.75;
-      padding: 1.5rem 0 0.5rem 0;
+      padding: 1.2rem 0 0.4rem 0;
     }
   </style>
 </head>
@@ -521,19 +569,20 @@
       <!-- Date Bar Selector -->
       <div class="date-bar" id="dateBar"></div>
 
-      <!-- Bottom Tee Time Slider -->
+      <!-- Bottom Tee Time Slider & Daylight Warning -->
       <div class="slider-card">
         <div class="slider-header">
           <span>⛳ Tee Time</span>
           <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
         </div>
         <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
+        <div id="daylightWarning" class="daylight-warning"></div>
       </div>
 
-      <!-- Prominent Taller Scroll Indicator Bar -->
-      <div class="scroll-indicator-bar" id="scrollIndicator">
+      <!-- Full-Width Bottom Scroll Indicator Bar -->
+      <button class="scroll-indicator-bar" id="scrollIndicator">
         <span>Scroll for detailed breakdown</span> <span class="bounce-icon">👇</span>
-      </div>
+      </button>
     </div>
 
     <!-- Screen 2: Detailed Cards Below the Fold -->
@@ -549,9 +598,19 @@
         <div id="gearCallout" class="callout-box"></div>
       </div>
 
-      <!-- Weather Overview Grid -->
+      <!-- Weather Overview Card (Identical to Index Layout) -->
       <div class="card">
-        <h2>Round Overview — <span id="locationName">---</span></h2>
+        <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
+        
+        <div class="overview-hero">
+          <div class="temp-large">
+            <span id="weatherIcon">☀️</span>
+            <span id="currentTemp">--</span>
+            <span id="feelsLikeTemp" class="feels-like-tag">(Feels like --)</span>
+          </div>
+          <div id="currentCondition" class="current-condition-text">--</div>
+        </div>
+
         <div class="grid-3col">
           <div class="grid-item" id="windCard">
             <div class="label">Wind Speed</div>
@@ -594,19 +653,19 @@
         </div>
       </div>
 
-      <!-- Day Summary Grid -->
+      <!-- Day Summary Grid (Index Icons & Styling) -->
       <div class="card">
         <h2>Day Summary</h2>
         <div class="summary-grid">
           <div class="grid-item">
             <div class="label">Sunrise</div>
-            <div class="value-main">🌅 <span id="sunriseTime">--:--</span></div>
+            <div class="value-main">☀️ <span id="sunriseTime">--:--</span></div>
           </div>
           <div class="grid-item">
             <div class="label">Sunset</div>
-            <div class="value-main">🌇 <span id="sunsetTime">--:--</span></div>
+            <div class="value-main">🌙 <span id="sunsetTime">--:--</span></div>
           </div>
-          <div class="grid-item">
+          <div class="grid-item" id="daylightCard">
             <div class="label">Daylight Left</div>
             <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
           </div>
@@ -614,11 +673,11 @@
             <div class="label">High / Low</div>
             <div class="value-main" id="tempRange">--</div>
           </div>
-          <div class="grid-item">
+          <div class="grid-item" id="dailyRainCard">
             <div class="label">Daily Rain</div>
             <div class="value-main" id="todayRain">--</div>
           </div>
-          <div class="grid-item">
+          <div class="grid-item" id="maxWindCard">
             <div class="label">Max Wind</div>
             <div class="value-main" id="maxWind">--</div>
           </div>
@@ -663,6 +722,7 @@
   
   const teeTimeSlider = document.getElementById('teeTimeSlider');
   const teeTimeDisplay = document.getElementById('teeTimeDisplay');
+  const daylightWarning = document.getElementById('daylightWarning');
 
   const dialArc = document.getElementById('dialArc');
   const dialScore = document.getElementById('dialScore');
@@ -674,6 +734,13 @@
   const rainOutlookCallout = document.getElementById('rainOutlookCallout');
   const distancePenaltyCallout = document.getElementById('distancePenaltyCallout');
   const gearCallout = document.getElementById('gearCallout');
+
+  const windCard = document.getElementById('windCard');
+  const recentRainCard = document.getElementById('recentRainCard');
+  const forecastRainCard = document.getElementById('forecastRainCard');
+  const daylightCard = document.getElementById('daylightCard');
+  const dailyRainCard = document.getElementById('dailyRainCard');
+  const maxWindCard = document.getElementById('maxWindCard');
 
   const scrollIndicator = document.getElementById('scrollIndicator');
   const detailsSection = document.getElementById('detailsSection');
@@ -887,11 +954,11 @@
     svg.innerHTML = '';
 
     const width = 480;
-    const height = 135;
+    const height = 125;
     const paddingLeft = 10;
     const paddingRight = 15;
-    const paddingBottom = 20;
-    const paddingTop = 18;
+    const paddingBottom = 18;
+    const paddingTop = 16;
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
@@ -899,7 +966,6 @@
 
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
-    // Y Axis
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -912,7 +978,6 @@
       ySvg.appendChild(label);
     }
 
-    // Precip Bars
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
@@ -928,7 +993,6 @@
       }
     });
 
-    // Temp Line
     let points = '';
     hourlyTemps.forEach((temp, i) => {
       const x = paddingLeft + i * stepX;
@@ -950,7 +1014,6 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Markers
     if (teeHourDec >= 0) {
       const teeX = paddingLeft + teeHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -975,12 +1038,16 @@
     const currentDayIdx = pastOffset + selectedDayIndex;
     const h = currentData.hourly;
     const d = currentData.daily;
+    const c = currentData.current;
 
     const toTemp = (valC) => isF ? Math.round((valC * 9/5) + 32) + '°F' : Math.round(valC) + '°C';
     const toSpeed = (valKmh) => speedUnit === 'mph' ? Math.round(valKmh / 1.609) + ' mph' : Math.round(valKmh) + ' km/h';
     const toPrecip = (valMm) => isF ? (valMm / 25.4).toFixed(2) + ' in' : valMm.toFixed(1) + ' mm';
 
     document.getElementById('locationName').textContent = currentCityName;
+
+    const isToday = selectedDayIndex === 0;
+    document.getElementById('dayLabel').textContent = isToday ? 'Right Now' : `Forecast for ${d.time[currentDayIdx]}`;
 
     const startIndex = currentDayIdx * 24; 
     const teeStartHourIndex = startIndex + selectedTeeHour;
@@ -1014,6 +1081,35 @@
       dialVerdict.textContent = 'No Chance ⛔';
       dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
     }
+
+    // Daylight & Sunset warning calculation for 9 or 18 holes
+    const sunsetISO = d.sunset[currentDayIdx];
+    let sunsetHour = 18; // Default 6 PM
+    if (sunsetISO) {
+      const parts = sunsetISO.split('T')[1].split(':');
+      sunsetHour = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    }
+    const daylightRemaining = sunsetHour - selectedTeeHour;
+
+    if (daylightRemaining < 2.0) {
+      daylightWarning.style.display = 'block';
+      daylightWarning.className = 'daylight-warning warn-red';
+      daylightWarning.textContent = `⚠️ Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
+    } else if (daylightRemaining < 4.0) {
+      daylightWarning.style.display = 'block';
+      daylightWarning.className = 'daylight-warning warn-orange';
+      daylightWarning.textContent = `🌇 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Enough for 9 holes (~2h), tight for 18.`;
+    } else {
+      daylightWarning.style.display = 'none';
+    }
+
+    // Weather Overview Hero (From Index)
+    const weatherCode = isToday ? c.weather_code : d.weather_code[currentDayIdx];
+    const weatherInfo = getWeatherInfo(weatherCode);
+    document.getElementById('weatherIcon').textContent = weatherInfo.icon;
+    document.getElementById('currentCondition').textContent = weatherInfo.text;
+    document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
+    document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
     // Callouts Update
     const totalMoisture = last24hRain + windowRainSum;
@@ -1061,11 +1157,28 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
-    const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1] : '--:--';
-    const sunsetStr = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1] : '--:--';
+    const windMph = windowMaxWind / 1.609;
+    windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
+    recentRainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
+    forecastRainCard.className = 'grid-item ' + (windowRainSum > 5 ? 'stat-bad' : windowRainSum > 0.5 ? 'stat-med' : 'stat-good');
+
+    const todayRainSum = d.precipitation_sum[currentDayIdx];
+    if (todayRainSum > 10.0) dailyRainCard.className = 'grid-item stat-bad';
+    else if (todayRainSum > 4.0) dailyRainCard.className = 'grid-item stat-orange';
+    else if (todayRainSum > 1.0) dailyRainCard.className = 'grid-item stat-med';
+    else dailyRainCard.className = 'grid-item stat-good';
+
+    const maxDayWindMph = d.wind_speed_10m_max[currentDayIdx] / 1.609;
+    if (maxDayWindMph > 30) maxWindCard.className = 'grid-item stat-bad';
+    else if (maxDayWindMph > 20) maxWindCard.className = 'grid-item stat-orange';
+    else if (maxDayWindMph > 12) maxWindCard.className = 'grid-item stat-med';
+    else maxWindCard.className = 'grid-item stat-good';
+
+    const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
+    const sunsetStr = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
     document.getElementById('sunriseTime').textContent = sunriseStr;
     document.getElementById('sunsetTime').textContent = sunsetStr;
-    document.getElementById('daylightLeft').textContent = '10.5 hrs';
+    document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining.toFixed(1))} hrs`;
 
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
