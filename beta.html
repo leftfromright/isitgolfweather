@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Is It Golf Weather? (Beta Layout)</title>
   
   <!-- Mobile Web App Meta Tags -->
@@ -26,6 +26,29 @@
       --gauge-good: #2e7d32;
       --gauge-med: #f57f17;
       --gauge-bad: #c62828;
+
+      --chart-line: #2e7d32;
+      --chart-bar: #1e88e5;
+      --chart-bar-text: #1565c0;
+      --sun-line: #e65100;
+      --now-line: #d32f2f;
+      --tee-line: #1565c0;
+
+      --warn-good-bg: #e8f5e9;
+      --warn-good-border: #2e7d32;
+      --warn-good-text: #1b5e20;
+
+      --warn-med-bg: #fff8e1;
+      --warn-med-border: #fbc02d;
+      --warn-med-text: #826100;
+
+      --warn-orange-bg: #fff3e0;
+      --warn-orange-border: #f57c00;
+      --warn-orange-text: #b75400;
+
+      --warn-bad-bg: #ffebee;
+      --warn-bad-border: #c62828;
+      --warn-bad-text: #b71c1c;
     }
 
     [data-theme="dark"] {
@@ -40,14 +63,38 @@
       --gauge-good: #66bb6a;
       --gauge-med: #fbc02d;
       --gauge-bad: #ef5350;
+
+      --chart-line: #66bb6a;
+      --chart-bar: #64b5f6;
+      --chart-bar-text: #90caf9;
+      --sun-line: #ffb74d;
+      --now-line: #ef5350;
+      --tee-line: #90caf9;
+
+      --warn-good-bg: #1b3e20;
+      --warn-good-border: #2e7d32;
+      --warn-good-text: #a5d6a7;
+
+      --warn-med-bg: #3e3310;
+      --warn-med-border: #fbc02d;
+      --warn-med-text: #ffe082;
+
+      --warn-orange-bg: #3e2610;
+      --warn-orange-border: #f57c00;
+      --warn-orange-text: #ffcc80;
+
+      --warn-bad-bg: #3e1b1b;
+      --warn-bad-border: #c62828;
+      --warn-bad-text: #ef9a9a;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     html, body {
       width: 100%;
-      height: 100dvh;
-      overflow: hidden;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto; /* Enable page scroll for details */
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
@@ -55,11 +102,15 @@
 
     .app-container {
       max-width: 500px;
-      height: 100dvh;
       margin: 0 auto;
+      padding: 0.75rem 0.85rem;
+    }
+
+    /* Screen 1: Full-Height Dynamic Viewport Area */
+    .screen-main {
+      min-height: calc(100dvh - 1.5rem);
       display: flex;
       flex-direction: column;
-      padding: 0.75rem 0.85rem;
       justify-content: space-between;
     }
 
@@ -142,7 +193,6 @@
       gap: 0.4rem;
     }
     .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover { background: var(--bg); }
 
     /* Centered Main Dial Section */
     .dial-section {
@@ -295,22 +345,131 @@
       cursor: pointer;
     }
 
-    #status {
+    /* Taller, Prominent Scroll Indicator Bar */
+    .scroll-indicator-bar {
+      margin: 0.6rem 0 0.2rem 0;
+      padding: 0.6rem 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
       text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 1rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+    }
+    .bounce-icon {
+      animation: bounce 1.8s infinite;
+      display: inline-block;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(4px); }
+      60% { transform: translateY(2px); }
     }
 
-    /* Scroll for More Indicator Bar */
-    .scroll-indicator-bar {
+    /* Details Section (Below the fold) */
+    .details-section {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .callout-box {
+      margin-top: 0.5rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      border-left: 4px solid var(--accent);
+      background: var(--bg);
+    }
+    .callout-title { font-weight: bold; display: block; margin-bottom: 0.15rem; }
+    
+    .callout-good { background-color: var(--warn-good-bg); border-left-color: var(--warn-good-border); color: var(--warn-good-text); }
+    .callout-med { background-color: var(--warn-med-bg); border-left-color: var(--warn-med-border); color: var(--warn-med-text); }
+    .callout-orange { background-color: var(--warn-orange-bg); border-left-color: var(--warn-orange-border); color: var(--warn-orange-text); }
+    .callout-bad { background-color: var(--warn-bad-bg); border-left-color: var(--warn-bad-border); color: var(--warn-bad-text); }
+
+    .gear-list { margin-top: 0.3rem; padding-left: 1.2rem; font-size: 0.82rem; }
+
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
+    .grid-item {
+      background: var(--bg);
+      padding: 0.6rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .grid-item .label { font-size: 0.72rem; color: var(--text-muted); }
+    .grid-item .value-main { font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
+    .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
+
+    /* Chart Styles */
+    .chart-wrapper-split {
+      display: flex;
+      width: 100%;
+      margin-top: 0.5rem;
+      background: var(--card-bg);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .chart-y-fixed { width: 32px; height: 145px; flex-shrink: 0; background: var(--card-bg); border-right: 1px solid var(--border); }
+    .chart-container-scrollable { flex: 1; overflow-x: auto; height: 145px; }
+    .chart-scroll-inner { min-width: 480px; height: 145px; }
+    
+    svg { width: 100%; height: 100%; overflow: visible; }
+    .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
+    .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
+    .chart-bar-val { fill: var(--chart-bar-text); font-size: 9px; font-weight: bold; text-anchor: middle; }
+    .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
+    .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
+    .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
+    .now-line { stroke: var(--now-line); stroke-width: 1.5; stroke-dasharray: 2,2; }
+    .tee-line { stroke: var(--tee-line); stroke-width: 2; stroke-dasharray: 3,3; }
+    .chart-icon-marker { font-size: 12px; text-anchor: middle; cursor: pointer; }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.3rem; }
+    .legend-color { width: 9px; height: 9px; border-radius: 2px; }
+
+    #status { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem; }
+
+    .beta-footer {
       text-align: center;
       font-size: 0.72rem;
-      font-weight: 600;
       color: var(--text-muted);
-      opacity: 0.8;
-      padding: 0.4rem 0 0.1rem 0;
-      letter-spacing: 0.3px;
+      opacity: 0.75;
+      padding: 1.5rem 0 0.5rem 0;
     }
   </style>
 </head>
@@ -339,40 +498,139 @@
 
   <div id="status">Getting location...</div>
 
-  <div id="mainContent" style="display: none; flex: 1; flex-direction: column; justify-content: space-between;">
+  <div id="mainContent" style="display: none; flex-direction: column;">
     
-    <!-- Central Dynamic Dial Display -->
-    <div class="dial-section">
-      <div class="dial-container">
-        <svg class="dial-svg" viewBox="0 0 240 240">
-          <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
-          <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
-        </svg>
+    <!-- Screen 1: Above The Fold View -->
+    <div class="screen-main">
+      <!-- Central Dynamic Dial Display -->
+      <div class="dial-section">
+        <div class="dial-container">
+          <svg class="dial-svg" viewBox="0 0 240 240">
+            <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
+            <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
+          </svg>
 
-        <div class="dial-content">
-          <div id="dialScore" class="dial-score-num">--</div>
-          <div id="dialVerdict" class="dial-verdict-title">--</div>
-          <div id="dialSub" class="dial-verdict-sub">--</div>
+          <div class="dial-content">
+            <div id="dialScore" class="dial-score-num">--</div>
+            <div id="dialVerdict" class="dial-verdict-title">--</div>
+            <div id="dialSub" class="dial-verdict-sub">--</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Date Bar Selector -->
-    <div class="date-bar" id="dateBar"></div>
+      <!-- Date Bar Selector -->
+      <div class="date-bar" id="dateBar"></div>
 
-    <!-- Bottom Tee Time Slider -->
-    <div class="slider-card">
-      <div class="slider-header">
-        <span>⛳ Tee Time</span>
-        <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
+      <!-- Bottom Tee Time Slider -->
+      <div class="slider-card">
+        <div class="slider-header">
+          <span>⛳ Tee Time</span>
+          <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
+        </div>
+        <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
       </div>
-      <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
+
+      <!-- Prominent Taller Scroll Indicator Bar -->
+      <div class="scroll-indicator-bar" id="scrollIndicator">
+        <span>Scroll for detailed breakdown</span> <span class="bounce-icon">👇</span>
+      </div>
     </div>
 
-    <!-- Replaced Footer: Scroll for More Bar -->
-    <div class="scroll-indicator-bar">
-      scroll for more info 🧲
+    <!-- Screen 2: Detailed Cards Below the Fold -->
+    <div class="details-section" id="detailsSection">
+      
+      <!-- Detailed Callout Breakdown -->
+      <div class="card">
+        <h2>Course Condition Breakdown</h2>
+        <div id="groundCallout" class="callout-box"></div>
+        <div id="windCallout" class="callout-box"></div>
+        <div id="rainOutlookCallout" class="callout-box"></div>
+        <div id="distancePenaltyCallout" class="callout-box"></div>
+        <div id="gearCallout" class="callout-box"></div>
+      </div>
+
+      <!-- Weather Overview Grid -->
+      <div class="card">
+        <h2>Round Overview — <span id="locationName">---</span></h2>
+        <div class="grid-3col">
+          <div class="grid-item" id="windCard">
+            <div class="label">Wind Speed</div>
+            <div class="value-main"><span id="windIcon">🍃</span> <span id="currentWind">--</span></div>
+            <div class="value-sub" id="windSub">--</div>
+          </div>
+          <div class="grid-item" id="recentRainCard">
+            <div class="label">Recent (24h)</div>
+            <div class="value-main"><span>🌧️</span> <span id="recentRain">--</span></div>
+            <div class="value-sub" id="recentRainSub">--</div>
+          </div>
+          <div class="grid-item" id="forecastRainCard">
+            <div class="label">Round Rain (4h)</div>
+            <div class="value-main"><span>☔</span> <span id="forecastRain">--</span></div>
+            <div class="value-sub" id="forecastRainSub">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 24-Hour Forecast Chart -->
+      <div class="card">
+        <h2>24-Hour Forecast</h2>
+        <div class="chart-wrapper-split">
+          <div class="chart-y-fixed">
+            <svg id="yAxisSvg"></svg>
+          </div>
+          <div class="chart-container-scrollable">
+            <div class="chart-scroll-inner">
+              <svg id="hourlyChart"></svg>
+            </div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-color" style="background: var(--chart-line);"></span> Temp</div>
+          <div class="legend-item"><span class="legend-color" style="background: var(--chart-bar);"></span> Rain</div>
+          <div class="legend-item">⛳ Tee Time</div>
+          <div class="legend-item">📍 Now</div>
+          <div class="legend-item">☀️ Sunrise</div>
+          <div class="legend-item">🌙 Sunset</div>
+        </div>
+      </div>
+
+      <!-- Day Summary Grid -->
+      <div class="card">
+        <h2>Day Summary</h2>
+        <div class="summary-grid">
+          <div class="grid-item">
+            <div class="label">Sunrise</div>
+            <div class="value-main">🌅 <span id="sunriseTime">--:--</span></div>
+          </div>
+          <div class="grid-item">
+            <div class="label">Sunset</div>
+            <div class="value-main">🌇 <span id="sunsetTime">--:--</span></div>
+          </div>
+          <div class="grid-item">
+            <div class="label">Daylight Left</div>
+            <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
+          </div>
+          <div class="grid-item">
+            <div class="label">High / Low</div>
+            <div class="value-main" id="tempRange">--</div>
+          </div>
+          <div class="grid-item">
+            <div class="label">Daily Rain</div>
+            <div class="value-main" id="todayRain">--</div>
+          </div>
+          <div class="grid-item">
+            <div class="label">Max Wind</div>
+            <div class="value-main" id="maxWind">--</div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="beta-footer">
+        beta • Made by KW • October 2026
+      </footer>
+
     </div>
+
   </div>
 </div>
 
@@ -411,7 +669,20 @@
   const dialVerdict = document.getElementById('dialVerdict');
   const dialSub = document.getElementById('dialSub');
 
+  const groundCallout = document.getElementById('groundCallout');
+  const windCallout = document.getElementById('windCallout');
+  const rainOutlookCallout = document.getElementById('rainOutlookCallout');
+  const distancePenaltyCallout = document.getElementById('distancePenaltyCallout');
+  const gearCallout = document.getElementById('gearCallout');
+
+  const scrollIndicator = document.getElementById('scrollIndicator');
+  const detailsSection = document.getElementById('detailsSection');
+
   teeTimeSlider.value = selectedTeeHour;
+
+  scrollIndicator.addEventListener('click', () => {
+    detailsSection.scrollIntoView({ behavior: 'smooth' });
+  });
 
   try {
     const saved = localStorage.getItem('golf_home_course');
@@ -437,7 +708,6 @@
     }
   });
 
-  // Location Typeahead Listener
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const query = locationInput.value.trim();
@@ -509,6 +779,14 @@
     return codes[code] || { text: 'Cloudy', icon: '🌥️' };
   }
 
+  function getWindVisuals(speedKmh) {
+    const mph = speedKmh / 1.609;
+    if (mph < 8) return { icon: '🍃', label: 'Gentle Breeze' };
+    if (mph < 18) return { icon: '💨', label: 'Moderate Wind' };
+    if (mph < 28) return { icon: '💨🚩', label: 'Strong Wind' };
+    return { icon: '⚠️🌪️', label: 'Gale Force' };
+  }
+
   async function fetchFriendlyLocationName(lat, lon) {
     try {
       const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
@@ -563,7 +841,7 @@
       btn.addEventListener('click', () => {
         selectedDayIndex = idx;
         buildDateBar();
-        render(); // Immediately re-evaluates weather window for selected date
+        render();
       });
       dateBar.appendChild(btn);
     }
@@ -602,12 +880,107 @@
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
+  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
+    const ySvg = document.getElementById('yAxisSvg');
+    const svg = document.getElementById('hourlyChart');
+    ySvg.innerHTML = '';
+    svg.innerHTML = '';
+
+    const width = 480;
+    const height = 135;
+    const paddingLeft = 10;
+    const paddingRight = 15;
+    const paddingBottom = 20;
+    const paddingTop = 18;
+
+    const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
+    const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
+    const maxRain = Math.max(...hourlyPrecip, 2);
+
+    const stepX = (width - paddingLeft - paddingRight) / 23;
+
+    // Y Axis
+    for (let i = 0; i < 4; i++) {
+      const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
+      const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
+      
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', 26);
+      label.setAttribute('y', yPos + 3);
+      label.setAttribute('class', 'chart-y-text');
+      label.textContent = `${tickVal}°`;
+      ySvg.appendChild(label);
+    }
+
+    // Precip Bars
+    hourlyPrecip.forEach((rain, i) => {
+      const x = paddingLeft + i * stepX - (stepX * 0.35);
+      const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
+      const y = height - paddingBottom - barHeight;
+      if (rain > 0) {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', Math.max(stepX * 0.7, 3));
+        rect.setAttribute('height', Math.max(barHeight, 2));
+        rect.setAttribute('class', 'chart-bar');
+        svg.appendChild(rect);
+      }
+    });
+
+    // Temp Line
+    let points = '';
+    hourlyTemps.forEach((temp, i) => {
+      const x = paddingLeft + i * stepX;
+      const y = height - paddingBottom - ((temp - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
+      points += `${x},${y} `;
+
+      if (i % 4 === 0 || i === 23) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', height - 3);
+        text.setAttribute('class', 'chart-text');
+        text.textContent = `${i}:00`;
+        svg.appendChild(text);
+      }
+    });
+
+    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    polyline.setAttribute('points', points.trim());
+    polyline.setAttribute('class', 'chart-line');
+    svg.appendChild(polyline);
+
+    // Markers
+    if (teeHourDec >= 0) {
+      const teeX = paddingLeft + teeHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', teeX); line.setAttribute('x2', teeX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'tee-line');
+      svg.appendChild(line);
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', teeX); icon.setAttribute('y', paddingTop - 3);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '⛳';
+      svg.appendChild(icon);
+    }
+  }
+
   function render() {
     if (!currentData) return;
 
+    const isF = currentUnit === 'F';
     const pastOffset = 7;
     const currentDayIdx = pastOffset + selectedDayIndex;
     const h = currentData.hourly;
+    const d = currentData.daily;
+
+    const toTemp = (valC) => isF ? Math.round((valC * 9/5) + 32) + '°F' : Math.round(valC) + '°C';
+    const toSpeed = (valKmh) => speedUnit === 'mph' ? Math.round(valKmh / 1.609) + ' mph' : Math.round(valKmh) + ' km/h';
+    const toPrecip = (valMm) => isF ? (valMm / 25.4).toFixed(2) + ' in' : valMm.toFixed(1) + ' mm';
+
+    document.getElementById('locationName').textContent = currentCityName;
 
     const startIndex = currentDayIdx * 24; 
     const teeStartHourIndex = startIndex + selectedTeeHour;
@@ -641,6 +1014,64 @@
       dialVerdict.textContent = 'No Chance ⛔';
       dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
     }
+
+    // Callouts Update
+    const totalMoisture = last24hRain + windowRainSum;
+    if (totalMoisture > 5) {
+      groundCallout.className = 'callout-box callout-orange';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Soggy ground (${toPrecip(last24hRain)} in 24h). Reduced fairway roll.`;
+    } else {
+      groundCallout.className = 'callout-box callout-good';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Dry / Firm fairways. Great roll expected!`;
+    }
+
+    const windVisual = getWindVisuals(windowMaxWind);
+    document.getElementById('windIcon').textContent = windVisual.icon;
+    document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
+    document.getElementById('windSub').textContent = windVisual.label;
+
+    if (windowMaxWind > 25) {
+      windCallout.className = 'callout-box callout-orange';
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Strong winds (${toSpeed(windowMaxWind)}). Take 1-2 extra clubs into wind.`;
+    } else {
+      windCallout.className = 'callout-box callout-good';
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Light breeze. Minimal ball flight change.`;
+    }
+
+    rainOutlookCallout.className = windowRainSum > 1.5 ? 'callout-box callout-orange' : 'callout-box callout-good';
+    rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Dry skies overhead.'}`;
+
+    const tempDiffC = 22 - windowAvgTemp;
+    let penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
+    if (penaltyYards >= 4) {
+      distancePenaltyCallout.className = 'callout-box callout-orange';
+      distancePenaltyCallout.innerHTML = `<span class="callout-title">Carry Penalty</span>Cold air! Ball carries ~<strong>${penaltyYards} yards shorter</strong> per club.`;
+      distancePenaltyCallout.style.display = 'block';
+    } else {
+      distancePenaltyCallout.style.display = 'none';
+    }
+
+    let gear = windowRainSum > 0.1 ? 'Waterproof Jacket, Umbrella ☔' : 'Standard Polo & Light Layer 👕';
+    gearCallout.className = 'callout-box callout-good';
+    gearCallout.innerHTML = `<span class="callout-title">Gear Checklist</span>${gear}`;
+
+    document.getElementById('recentRain').textContent = toPrecip(last24hRain);
+    document.getElementById('forecastRain').textContent = toPrecip(windowRainSum);
+    document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[currentDayIdx])} / ${toTemp(d.temperature_2m_max[currentDayIdx])}`;
+    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
+    document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
+
+    const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1] : '--:--';
+    const sunsetStr = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1] : '--:--';
+    document.getElementById('sunriseTime').textContent = sunriseStr;
+    document.getElementById('sunsetTime').textContent = sunsetStr;
+    document.getElementById('daylightLeft').textContent = '10.5 hrs';
+
+    const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
+    const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
+    const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
+
+    renderChart(displayTemps, dayPrecip, 6, 18, 12, selectedTeeHour, selectedDayIndex === 0);
   }
 
   unitToggle.addEventListener('click', () => {
