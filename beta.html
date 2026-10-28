@@ -1,20 +1,9 @@
-Here is beta.html v1.3, restructured to fix the layout scaling, icon accuracy, and dial sizing:
-Key Adjustments:
- * Screen Height Fit (Restored Pre-Scroll Sizing):
-   * Re-engineered .screen-main using height: 100vh with tight flex paddings so the entire top section—including the large dial, full-size date boxes, tee time slider, and scroll bar—fits cleanly on mobile viewports without vertical overflow.
- * Prominent Dial (Full Width):
-   * Scaled the dial container width to calc(100vw - 2.5rem) (with a max of 340px). It now stretches across the phone screen with minimal side padding.
- * Restored Date Box Sizes:
-   * Restored date selector buttons (min-width: 58px, padding: 0.4rem 0.2rem, font-size: 0.75rem) so day labels and weather icons are crisp and readable.
- * Correct Sunrise & Sunset Icons:
-   * Fixed dial icon markers and verdict text to use ☀️ for sunrise/daylight warnings and 🌙 for darkness/sunset warnings.
-Code (beta.html v1.3):
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v1.3</title>
+  <title>Is It Golf Weather? v1.4</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -113,19 +102,19 @@ Code (beta.html v1.3):
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0.3rem 0.5rem;
+      padding: 0.35rem 0.6rem;
     }
 
     /* Screen 1: Compact Viewport Fit */
     .screen-main {
-      height: calc(100vh - 0.6rem);
+      height: calc(100vh - 0.7rem);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
     }
 
-    /* Compact Header */
+    /* Header with Touch-Friendly Controls */
     .compact-header {
       display: flex;
       justify-content: space-between;
@@ -139,85 +128,89 @@ Code (beta.html v1.3):
       gap: 0.35rem;
     }
     .compact-title h1 {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 800;
       letter-spacing: -0.3px;
     }
     .version-tag {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 700;
       color: var(--accent);
       background: var(--card-bg);
       border: 1px solid var(--border);
-      padding: 0.05rem 0.3rem;
+      padding: 0.05rem 0.35rem;
       border-radius: 4px;
     }
     
     .controls-mini {
       display: flex;
-      gap: 0.2rem;
+      gap: 0.3rem;
     }
     .controls-mini button {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.2rem 0.4rem;
-      border-radius: 5px;
+      padding: 0.3rem 0.5rem;
+      border-radius: 7px;
       cursor: pointer;
       font-weight: bold;
-      font-size: 0.72rem;
+      font-size: 0.8rem;
+      min-height: 36px;
     }
 
     /* Search Box */
     .search-box {
       position: relative;
       display: flex;
-      gap: 0.25rem;
+      gap: 0.3rem;
       margin-bottom: 0.15rem;
       flex-shrink: 0;
     }
     input[type="text"] {
       flex: 1;
-      padding: 0.35rem 0.55rem;
+      padding: 0.45rem 0.65rem;
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-radius: 8px;
       background: var(--card-bg);
       color: var(--text);
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       outline: none;
+      min-height: 38px;
     }
     .icon-btn {
-      padding: 0.35rem 0.5rem;
-      font-size: 0.82rem;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.95rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 7px;
+      border-radius: 8px;
       cursor: pointer;
+      min-height: 38px;
+      min-width: 38px;
     }
 
     .autocomplete-list {
       position: absolute;
       top: 100%;
       left: 0;
-      right: 70px;
+      right: 80px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 8px;
       box-shadow: var(--shadow);
       z-index: 1000;
-      max-height: 160px;
+      max-height: 180px;
       overflow-y: auto;
       display: none;
       margin-top: 3px;
     }
     .autocomplete-item {
-      padding: 0.45rem 0.6rem;
+      padding: 0.55rem 0.7rem;
       cursor: pointer;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
     }
     .autocomplete-item:last-child { border-bottom: none; }
 
@@ -235,9 +228,9 @@ Code (beta.html v1.3):
 
     .dial-container {
       position: relative;
-      width: min(340px, calc(100vw - 1.5rem));
-      height: min(340px, calc(100vw - 1.5rem));
-      max-height: 48vh;
+      width: min(340px, calc(100vw - 1.2rem));
+      height: min(340px, calc(100vw - 1.2rem));
+      max-height: 46vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -277,41 +270,42 @@ Code (beta.html v1.3):
       padding: 0.8rem;
     }
 
+    /* Larger Dial Typography */
     .dial-score-num {
-      font-size: clamp(2.2rem, 7vw, 3rem);
+      font-size: clamp(2.6rem, 8.5vw, 3.4rem);
       font-weight: 900;
-      letter-spacing: -1px;
+      letter-spacing: -1.5px;
       line-height: 0.95;
     }
 
     .dial-temp-badge {
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 800;
       color: var(--accent);
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.08rem 0.45rem;
-      border-radius: 10px;
+      padding: 0.1rem 0.55rem;
+      border-radius: 12px;
       margin: 0.2rem 0 0.25rem 0;
     }
 
     .dial-verdict-title {
-      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      font-size: clamp(1.05rem, 4vw, 1.25rem);
       font-weight: 800;
-      margin-bottom: 0.1rem;
+      margin-bottom: 0.12rem;
     }
 
     .dial-verdict-sub {
-      font-size: clamp(0.68rem, 2.5vw, 0.78rem);
+      font-size: clamp(0.72rem, 2.8vw, 0.82rem);
       color: var(--text-muted);
-      line-height: 1.15;
-      max-width: 180px;
+      line-height: 1.18;
+      max-width: 195px;
     }
 
-    /* Restored Full Size Date Bar */
+    /* Enlarged Date Bar for Easy Tapping */
     .date-bar {
       display: flex;
-      gap: 0.3rem;
+      gap: 0.35rem;
       overflow-x: auto;
       padding-bottom: 0.15rem;
       margin-bottom: 0.2rem;
@@ -322,16 +316,18 @@ Code (beta.html v1.3):
 
     .date-btn {
       flex: 1;
-      min-width: 56px;
+      min-width: 62px;
+      min-height: 52px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.35rem 0.2rem;
-      border-radius: 7px;
+      padding: 0.55rem 0.25rem;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 0.72rem;
+      justify-content: center;
+      font-size: 0.8rem;
       cursor: pointer;
     }
     .date-btn.active {
@@ -340,14 +336,14 @@ Code (beta.html v1.3):
       border-color: var(--accent);
     }
     .date-btn .day { font-weight: bold; }
-    .date-btn .date-icon { font-size: 0.9rem; margin: 0.05rem 0; }
+    .date-btn .date-icon { font-size: 1.05rem; margin: 0.08rem 0; }
 
     /* Tee Time Slider Card */
     .slider-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.35rem 0.6rem;
+      border-radius: 9px;
+      padding: 0.45rem 0.75rem;
       box-shadow: var(--shadow);
       flex-shrink: 0;
     }
@@ -355,22 +351,22 @@ Code (beta.html v1.3):
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.15rem;
-      font-size: 0.75rem;
+      margin-bottom: 0.2rem;
+      font-size: 0.82rem;
       font-weight: bold;
       color: var(--text-muted);
     }
     .slider-value {
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       color: var(--accent);
       font-weight: 800;
     }
 
     input[type="range"] {
       width: 100%;
-      height: 4px;
+      height: 6px;
       background: var(--border);
-      border-radius: 2px;
+      border-radius: 3px;
       outline: none;
       cursor: pointer;
       -webkit-appearance: none;
@@ -379,8 +375,8 @@ Code (beta.html v1.3):
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 15px;
-      height: 15px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: var(--accent);
       cursor: pointer;
@@ -388,10 +384,10 @@ Code (beta.html v1.3):
 
     .daylight-warning {
       display: none;
-      margin-top: 0.2rem;
-      padding: 0.2rem 0.35rem;
+      margin-top: 0.25rem;
+      padding: 0.25rem 0.4rem;
       border-radius: 5px;
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       font-weight: 600;
       text-align: center;
     }
@@ -410,21 +406,22 @@ Code (beta.html v1.3):
     .scroll-indicator-bar {
       width: 100%;
       margin-top: 0.2rem;
-      padding: 0.42rem 0;
+      padding: 0.5rem 0;
       background: var(--accent);
       color: #ffffff;
       border: none;
-      border-radius: 7px;
+      border-radius: 8px;
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       box-shadow: var(--shadow);
       cursor: pointer;
       flex-shrink: 0;
+      min-height: 38px;
     }
     .bounce-icon {
       animation: bounce 1.8s infinite;
@@ -452,7 +449,7 @@ Code (beta.html v1.3):
       box-shadow: var(--shadow);
     }
     .card h2 {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       margin-bottom: 0.5rem;
       text-transform: uppercase;
@@ -464,7 +461,7 @@ Code (beta.html v1.3):
       margin-bottom: 0.75rem;
     }
     .temp-large {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
       display: flex;
       align-items: baseline;
@@ -472,21 +469,21 @@ Code (beta.html v1.3):
       gap: 0.35rem;
     }
     .feels-like-tag {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       font-weight: normal;
     }
     .current-condition-text {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
       font-weight: 500;
     }
 
     .callout-box {
       margin-top: 0.45rem;
-      padding: 0.6rem 0.8rem;
+      padding: 0.65rem 0.85rem;
       border-radius: 6px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       border-left: 4px solid var(--accent);
       background: var(--bg);
     }
@@ -497,23 +494,23 @@ Code (beta.html v1.3):
     .callout-orange { background-color: var(--warn-orange-bg); border-left-color: var(--warn-orange-border); color: var(--warn-orange-text); }
     .callout-bad { background-color: var(--warn-bad-bg); border-left-color: var(--warn-bad-border); color: var(--warn-bad-text); }
 
-    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-top: 0.45rem; }
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
     .grid-item {
       background: var(--bg);
-      padding: 0.55rem 0.35rem;
+      padding: 0.6rem 0.4rem;
       border-radius: 6px;
       border: 1px solid var(--border);
     }
-    .grid-item .label { font-size: 0.7rem; color: var(--text-muted); }
-    .grid-item .value-main { font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
-    .grid-item .value-sub { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .grid-item .label { font-size: 0.72rem; color: var(--text-muted); }
+    .grid-item .value-main { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
+    .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
 
     .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); }
     .grid-item.stat-med { background-color: var(--warn-med-bg); border-color: var(--warn-med-border); }
     .grid-item.stat-orange { background-color: var(--warn-orange-bg); border-color: var(--warn-orange-border); }
     .grid-item.stat-bad { background-color: var(--warn-bad-bg); border-color: var(--warn-bad-border); }
 
-    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.45rem; margin-top: 0.45rem; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
 
     /* Chart Styles */
     .chart-wrapper-split {
@@ -544,18 +541,18 @@ Code (beta.html v1.3):
       flex-wrap: wrap;
       justify-content: center;
       gap: 0.5rem 0.8rem;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       margin-top: 0.45rem;
     }
     .legend-item { display: flex; align-items: center; gap: 0.25rem; }
     .legend-color { width: 8px; height: 8px; border-radius: 2px; }
 
-    #status { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-top: 0.8rem; }
+    #status { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem; }
 
     .beta-footer {
       text-align: center;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       opacity: 0.75;
       padding: 1.2rem 0 0.4rem 0;
@@ -569,7 +566,7 @@ Code (beta.html v1.3):
   <header class="compact-header">
     <div class="compact-title">
       <h1>⛳ Golf Weather</h1>
-      <span class="version-tag">v1.3</span>
+      <span class="version-tag">v1.4</span>
     </div>
     <div class="controls-mini">
       <button id="unitToggle">°C</button>
@@ -728,7 +725,7 @@ Code (beta.html v1.3):
       </div>
 
       <footer class="beta-footer">
-        Is It Golf Weather? v1.3 • Made by KW
+        Is It Golf Weather? v1.4 • Made by KW
       </footer>
 
     </div>
@@ -1343,4 +1340,3 @@ Code (beta.html v1.3):
 </script>
 </body>
 </html>
-
