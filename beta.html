@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Is It Golf Weather? (Beta Layout)</title>
+  
+  <!-- Mobile Web App Meta Tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Golf Weather Beta">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
+
+  <style>
+    :root {
+      --bg: #eef4f0;
+      --card-bg: #ffffff;
+      --text: #1a2e22;
+      --text-muted: #4a6352;
+      --border: #c8dcd0;
+      --accent: #1b5e20;
+      --shadow: 0 4px 16px rgba(27, 94, 32, 0.08);
+
+      --gauge-good: #2e7d32;
+      --gauge-med: #f57f17;
+      --gauge-bad: #c62828;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0d1611;
+      --card-bg: #14221a;
+      --text: #e8f3ec;
+      --text-muted: #8ba895;
+      --border: #233b2c;
+      --accent: #4caf50;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+      --gauge-good: #66bb6a;
+      --gauge-med: #fbc02d;
+      --gauge-bad: #ef5350;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body {
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden; /* Prevents viewport scroll on mobile */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .app-container {
+      max-width: 500px;
+      height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding: 0.75rem 0.85rem;
+      justify-content: space-between;
+    }
+
+    /* Compact Header */
+    .compact-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.5rem;
+    }
+    .compact-title {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .compact-title h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    
+    .controls-mini {
+      display: flex;
+      gap: 0.35rem;
+    }
+    .controls-mini button {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.78rem;
+    }
+
+    /* Compact Search Box */
+    .search-box {
+      position: relative;
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 0.5rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.88rem;
+      outline: none;
+    }
+    .icon-btn {
+      padding: 0.5rem 0.65rem;
+      font-size: 0.95rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 80px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      margin-top: 4px;
+    }
+    .autocomplete-item {
+      padding: 0.55rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+
+    /* Centered Main Dial Section */
+    .dial-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0.25rem 0;
+    }
+
+    .dial-container {
+      position: relative;
+      width: min(280px, 68vw);
+      height: min(280px, 68vw);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dial-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg); /* Start arc from top */
+    }
+
+    .dial-bg-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 14;
+      opacity: 0.4;
+    }
+
+    .dial-value-arc {
+      fill: none;
+      stroke: var(--gauge-good);
+      stroke-width: 14;
+      stroke-linecap: round;
+      stroke-dasharray: 691; /* 2 * PI * 110 radius */
+      stroke-dashoffset: 691;
+      transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+    }
+
+    .dial-content {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .dial-score-num {
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .dial-verdict-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+    }
+
+    .dial-verdict-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.25;
+      max-width: 190px;
+    }
+
+    /* Date Bar */
+    .date-bar {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
+      scrollbar-width: none;
+    }
+    .date-bar::-webkit-scrollbar { display: none; }
+
+    .date-btn {
+      flex: 1;
+      min-width: 58px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.2rem;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .date-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+    .date-btn .day { font-weight: bold; }
+    .date-btn .date-icon { font-size: 1rem; margin: 0.1rem 0; }
+
+    /* Bottom Slider Card */
+    .slider-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      box-shadow: var(--shadow);
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+      font-size: 0.82rem;
+      font-weight: bold;
+      color: var(--text-muted);
+    }
+    .slider-value {
+      font-size: 0.95rem;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    #status {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
+    .beta-footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      opacity: 0.7;
+      margin-top: 0.4rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Top Compact Header -->
+  <header class="compact-header">
+    <div class="compact-title">
+      <h1>⛳ Golf Weather</h1>
+    </div>
+    <div class="controls-mini">
+      <button id="unitToggle">°C</button>
+      <button id="speedToggle">mph</button>
+      <button id="themeToggle">🌙</button>
+    </div>
+  </header>
+
+  <!-- Location Bar -->
+  <div class="search-box">
+    <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
+    <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
+    <button id="geoBtn" class="icon-btn" title="Use current location">📍</button>
+    <div id="autocompleteList" class="autocomplete-list"></div>
+  </div>
+
+  <div id="status">Getting location...</div>
+
+  <div id="mainContent" style="display: none; flex: 1; flex-direction: column; justify-content: space-between;">
+    
+    <!-- Central Dial Display -->
+    <div class="dial-section">
+      <div class="dial-container">
+        <svg class="dial-svg" viewBox="0 0 240 240">
+          <!-- Background Circle Track -->
+          <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
+          <!-- Animated Score Arc -->
+          <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
+        </svg>
+
+        <div class="dial-content">
+          <div id="dialScore" class="dial-score-num">--</div>
+          <div id="dialVerdict" class="dial-verdict-title">--</div>
+          <div id="dialSub" class="dial-verdict-sub">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Bar Selector -->
+    <div class="date-bar" id="dateBar"></div>
+
+    <!-- Bottom Tee Time Slider -->
+    <div class="slider-card">
+      <div class="slider-header">
+        <span>⛳ Tee Time</span>
+        <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
+      </div>
+      <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
+    </div>
+
+    <footer class="beta-footer">
+      beta • Made by KW • October 2026
+    </footer>
+  </div>
+</div>
+
+<script>
+  let currentUnit = 'C'; 
+  let speedUnit = 'mph'; 
+  let currentData = null;
+  let currentCityName = '';
+  let selectedDayIndex = 0; 
+  
+  const currentHourNow = new Date().getHours();
+  let selectedTeeHour = Math.max(6, Math.min(18, currentHourNow));
+  let debounceTimer = null;
+  let savedHomeCourse = null;
+
+  const circumference = 2 * Math.PI * 110; // 691.15px
+
+  // DOM Caching
+  const unitToggle = document.getElementById('unitToggle');
+  const speedToggle = document.getElementById('speedToggle');
+  const themeToggle = document.getElementById('themeToggle');
+  const geoBtn = document.getElementById('geoBtn');
+  const homeCourseBtn = document.getElementById('homeCourseBtn');
+
+  const locationInput = document.getElementById('locationInput');
+  const autocompleteList = document.getElementById('autocompleteList');
+  const statusEl = document.getElementById('status');
+  const mainContent = document.getElementById('mainContent');
+  const dateBar = document.getElementById('dateBar');
+  
+  const teeTimeSlider = document.getElementById('teeTimeSlider');
+  const teeTimeDisplay = document.getElementById('teeTimeDisplay');
+
+  const dialArc = document.getElementById('dialArc');
+  const dialScore = document.getElementById('dialScore');
+  const dialVerdict = document.getElementById('dialVerdict');
+  const dialSub = document.getElementById('dialSub');
+
+  teeTimeSlider.value = selectedTeeHour;
+
+  try {
+    const saved = localStorage.getItem('golf_home_course');
+    if (saved) {
+      savedHomeCourse = JSON.parse(saved);
+      homeCourseBtn.style.color = '#fbc02d';
+    }
+  } catch (e) { console.warn(e); }
+
+  homeCourseBtn.addEventListener('click', () => {
+    if (savedHomeCourse && locationInput.value === savedHomeCourse.name) {
+      if (confirm(`Remove "${savedHomeCourse.name}" as saved Home Course?`)) {
+        savedHomeCourse = null;
+        localStorage.removeItem('golf_home_course');
+        homeCourseBtn.style.color = 'inherit';
+      }
+    } else if (savedHomeCourse && locationInput.value !== savedHomeCourse.name) {
+      fetchWeather(savedHomeCourse.lat, savedHomeCourse.lon, savedHomeCourse.name);
+    } else if (currentCityName) {
+      savedHomeCourse = { name: currentCityName, lat: currentData.latitude, lon: currentData.longitude };
+      localStorage.setItem('golf_home_course', JSON.stringify(savedHomeCourse));
+      homeCourseBtn.style.color = '#fbc02d';
+    }
+  });
+
+  teeTimeSlider.addEventListener('input', (e) => {
+    selectedTeeHour = parseInt(e.target.value);
+    updateTeeTimeDisplay();
+    render();
+  });
+
+  function updateTeeTimeDisplay() {
+    const ampm = selectedTeeHour >= 12 ? 'PM' : 'AM';
+    teeTimeDisplay.textContent = `${(selectedTeeHour % 12 || 12)}:00 ${ampm}`;
+  }
+
+  function getWeatherInfo(code) {
+    const codes = {
+      0: { text: 'Clear sky', icon: '☀️' },
+      1: { text: 'Mainly clear', icon: '🌤️' },
+      2: { text: 'Partly cloudy', icon: '⛅' },
+      3: { text: 'Overcast', icon: '☁️' },
+      51: { text: 'Drizzle', icon: '🌦️' },
+      61: { text: 'Slight rain', icon: '🌧️' },
+      63: { text: 'Moderate rain', icon: '🌧️' },
+      65: { text: 'Heavy rain', icon: '🌧️☔' },
+      95: { text: 'Thunderstorm', icon: '⚡' }
+    };
+    return codes[code] || { text: 'Cloudy', icon: '🌥️' };
+  }
+
+  async function fetchFriendlyLocationName(lat, lon) {
+    try {
+      const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+      const data = await res.json();
+      const city = data.city || data.locality || data.principalSubdivision;
+      if (city) return `${city}, ${data.countryCode}`;
+    } catch (e) { console.warn(e); }
+    return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
+  }
+
+  async function fetchWeather(lat, lon, overrideName = '') {
+    statusEl.textContent = 'Fetching weather...';
+    try {
+      if (!overrideName) currentCityName = await fetchFriendlyLocationName(lat, lon);
+      else currentCityName = overrideName;
+
+      locationInput.value = currentCityName;
+
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
+      const res = await fetch(url);
+      currentData = await res.json();
+      
+      buildDateBar();
+      updateTeeTimeDisplay();
+      render();
+      statusEl.style.display = 'none';
+      mainContent.style.display = 'flex';
+    } catch (err) {
+      statusEl.textContent = 'Error loading weather.';
+    }
+  }
+
+  function buildDateBar() {
+    if (!currentData || !currentData.daily) return;
+    dateBar.innerHTML = '';
+
+    const pastOffset = 7;
+    const days = currentData.daily.time.slice(pastOffset);
+    const weatherCodes = currentData.daily.weather_code.slice(pastOffset);
+    
+    for (let idx = 0; idx < Math.min(6, days.length); idx++) {
+      const d = new Date(days[idx]);
+      const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
+      const dayWeatherInfo = getWeatherInfo(weatherCodes[idx]);
+
+      const btn = document.createElement('button');
+      btn.className = `date-btn ${idx === selectedDayIndex ? 'active' : ''}`;
+      btn.innerHTML = `
+        <span class="day">${dayName}</span>
+        <span class="date-icon">${dayWeatherInfo.icon}</span>
+      `;
+      btn.addEventListener('click', () => {
+        selectedDayIndex = idx;
+        buildDateBar();
+        render();
+      });
+      dateBar.appendChild(btn);
+    }
+  }
+
+  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
+    if (tempC <= 0) return 1.0; 
+    let score = 10;
+    const windMph = windSpeedKmh / 1.609;
+
+    if (windowRainMm > 10) score -= 4.5;
+    else if (windowRainMm > 4) score -= 3.0;
+    else if (windowRainMm > 1) score -= 1.8;
+    else if (windowRainMm > 0.1) score -= 0.8;
+
+    if (past24RainMm > 15) score -= 2.8;
+    else if (past24RainMm > 5) score -= 1.5;
+
+    if (windMph > 30) score -= 4.5;
+    else if (windMph > 20) score -= 2.8;
+    else if (windMph > 12) score -= 1.5;
+
+    if (tempC < 4) score -= 3.5;
+    else if (tempC < 8) score -= 2.2;
+
+    return Math.max(1, Math.min(10, Math.round(score * 10) / 10));
+  }
+
+  function updateDialGauge(score) {
+    const fraction = score / 10;
+    const offset = circumference - (fraction * circumference);
+    dialArc.style.strokeDashoffset = offset;
+
+    // Color code dial arc
+    if (score >= 8.0) dialArc.style.stroke = 'var(--gauge-good)';
+    else if (score >= 5.0) dialArc.style.stroke = 'var(--gauge-med)';
+    else dialArc.style.stroke = 'var(--gauge-bad)';
+  }
+
+  function render() {
+    if (!currentData) return;
+
+    const pastOffset = 7;
+    const currentDayIdx = pastOffset + selectedDayIndex;
+    const h = currentData.hourly;
+
+    const startIndex = currentDayIdx * 24; 
+    const teeStartHourIndex = startIndex + selectedTeeHour;
+    
+    const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
+    const windowTemps = h.temperature_2m.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
+    const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowMaxWind = Math.max(...windowWinds, 0);
+    const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
+
+    const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
+    
+    dialScore.textContent = `${score}`;
+    updateDialGauge(score);
+
+    if (score >= 8.5) {
+      dialVerdict.textContent = 'Yes, Perfect! ⛳';
+      dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
+    } else if (score >= 7.0) {
+      dialVerdict.textContent = 'Yes, Good! 👍';
+      dialSub.textContent = 'Solid playing weather. Pack a standard light layer.';
+    } else if (score >= 5.0) {
+      dialVerdict.textContent = 'Not Bad 🌥️';
+      dialSub.textContent = 'Playable round, but factor in cool winds or soggy ground.';
+    } else if (score >= 3.0) {
+      dialVerdict.textContent = 'Poor 🌧️';
+      dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
+    } else {
+      dialVerdict.textContent = 'No Chance ⛔';
+      dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
+    }
+  }
+
+  unitToggle.addEventListener('click', () => {
+    currentUnit = currentUnit === 'C' ? 'F' : 'C';
+    unitToggle.textContent = `°${currentUnit}`;
+    render();
+  });
+
+  speedToggle.addEventListener('click', () => {
+    speedUnit = speedUnit === 'mph' ? 'kmh' : 'mph';
+    speedToggle.textContent = speedUnit;
+    render();
+  });
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    themeToggle.textContent = isDark ? '🌙' : '☀️';
+  });
+
+  geoBtn.addEventListener('click', getUserLocation);
+
+  function getUserLocation() {
+    if (navigator.geolocation) {
+      statusEl.textContent = 'Locating...';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK')
+      );
+    } else {
+      fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK');
+    }
+  }
+
+  getUserLocation();
+</script>
+</body>
+</html>
