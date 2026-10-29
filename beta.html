@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v2.3</title>
+  <title>Is It Golf Weather? v2.4</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -270,7 +270,7 @@
     }
 
     .dial-score-num {
-      font-size: clamp(2.5rem, 8vw, 3.3rem);
+      font-size: clamp(2.3rem, 7.5vw, 3.1rem);
       font-weight: 900;
       letter-spacing: -1.5px;
       line-height: 0.95;
@@ -300,13 +300,13 @@
       max-width: 200px;
     }
 
-    /* Date Bar */
+    /* Taller Date Calendar Buttons */
     .date-bar {
       display: flex;
-      gap: 0.3rem;
+      gap: 0.35rem;
       overflow-x: auto;
-      padding-bottom: 0.2rem;
-      margin-bottom: 0.15rem;
+      padding-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
       scrollbar-width: none;
       flex-shrink: 0;
     }
@@ -314,18 +314,18 @@
 
     .date-btn {
       flex: 1;
-      min-width: 58px;
-      min-height: 54px;
+      min-width: 62px;
+      min-height: 62px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.35rem 0.2rem;
-      border-radius: 8px;
+      padding: 0.45rem 0.25rem;
+      border-radius: 9px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       cursor: pointer;
       position: relative;
     }
@@ -334,9 +334,9 @@
       color: #ffffff;
       border-color: var(--accent);
     }
-    .date-btn .day { font-weight: bold; font-size: 0.74rem; }
-    .date-btn .date-icon { font-size: 0.95rem; margin: 0.02rem 0; }
-    .date-btn .date-temps { font-size: 0.65rem; opacity: 0.9; font-weight: 600; }
+    .date-btn .day { font-weight: bold; font-size: 0.78rem; }
+    .date-btn .date-icon { font-size: 1.05rem; margin: 0.05rem 0; }
+    .date-btn .date-temps { font-size: 0.68rem; opacity: 0.95; font-weight: 700; }
 
     #hiddenDatePicker {
       position: absolute;
@@ -597,17 +597,16 @@
         width: 310px;
         height: 310px;
       }
-      /* Bigger Date Buttons on Desktop */
+      /* Taller Date Buttons on Desktop */
       .date-btn {
-        min-height: 66px;
-        font-size: 0.85rem;
-        padding: 0.45rem 0.3rem;
+        min-height: 78px;
+        font-size: 0.88rem;
+        padding: 0.55rem 0.35rem;
       }
-      .date-btn .day { font-size: 0.85rem; }
-      .date-btn .date-icon { font-size: 1.15rem; }
-      .date-btn .date-temps { font-size: 0.75rem; }
+      .date-btn .day { font-size: 0.88rem; }
+      .date-btn .date-icon { font-size: 1.25rem; }
+      .date-btn .date-temps { font-size: 0.78rem; }
 
-      /* Always show details on desktop; hide expand toggle button */
       .expand-toggle-btn {
         display: none !important;
       }
@@ -629,7 +628,7 @@
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ Golf Weather</h1>
-          <span class="version-tag" id="versionTag">v2.3</span>
+          <span class="version-tag" id="versionTag">v2.4</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -653,7 +652,7 @@
           </svg>
 
           <div class="dial-content">
-            <div id="dialScore" class="dial-score-num">--</div>
+            <div id="dialScore" class="dial-score-num">--%</div>
             <div id="dialTemp" class="dial-temp-badge">--°C</div>
             <div id="dialVerdict" class="dial-verdict-title">--</div>
             <div id="dialSub" class="dial-verdict-sub">--</div>
@@ -682,15 +681,7 @@
     <!-- Secondary Breakdown Section -->
     <div id="detailsSection" class="details-section">
       
-      <div class="card">
-        <h2>Course Condition Breakdown</h2>
-        <div id="groundCallout" class="callout-box"></div>
-        <div id="windCallout" class="callout-box"></div>
-        <div id="rainOutlookCallout" class="callout-box"></div>
-        <div id="distancePenaltyCallout" class="callout-box"></div>
-        <div id="gearCallout" class="callout-box"></div>
-      </div>
-
+      <!-- 1. Right Now / Weather Overview -->
       <div class="card">
         <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
         
@@ -722,6 +713,7 @@
         </div>
       </div>
 
+      <!-- 2. 24-Hour Forecast Chart -->
       <div class="card">
         <h2>24-Hour Forecast</h2>
         <div class="chart-container-scrollable">
@@ -739,6 +731,7 @@
         </div>
       </div>
 
+      <!-- 3. Day Summary -->
       <div class="card">
         <h2>Day Summary</h2>
         <div class="summary-grid">
@@ -769,6 +762,16 @@
         </div>
       </div>
 
+      <!-- 4. Course Condition Breakdown (Now at Very Bottom) -->
+      <div class="card">
+        <h2>Course Condition Breakdown</h2>
+        <div id="groundCallout" class="callout-box"></div>
+        <div id="windCallout" class="callout-box"></div>
+        <div id="rainOutlookCallout" class="callout-box"></div>
+        <div id="distancePenaltyCallout" class="callout-box"></div>
+        <div id="gearCallout" class="callout-box"></div>
+      </div>
+
     </div>
 
   </div>
@@ -779,7 +782,7 @@
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>Is It Golf Weather?</h3>
-    <p>Version 2.3 • Made by KW</p>
+    <p>Version 2.4 • Made by KW</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -918,12 +921,10 @@
     debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
   });
 
-  // Dedicated Golf Club & Location Geocoding
   async function searchAutocomplete(rawQuery) {
     try {
       let cleanQuery = rawQuery.replace(/royal/gi, '').trim() || rawQuery;
       
-      // Dual fetch: Direct search + explicit Golf Club search query
       const queryNormal = fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=5&language=en&format=json`).then(r=>r.json());
       const queryGolf = fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery + " golf club")}&count=5&language=en&format=json`).then(r=>r.json());
 
@@ -946,7 +947,6 @@
       addResults(resGolf);
       addResults(resNormal);
 
-      // Rank golf clubs at the top of the list
       combined.sort((a, b) => {
         const aIsGolf = a.name.toLowerCase().includes('golf') ? 1 : 0;
         const bIsGolf = b.name.toLowerCase().includes('golf') ? 1 : 0;
@@ -1116,36 +1116,62 @@
     dateBar.appendChild(moreBtn);
   }
 
-  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing) {
-    if (isSnowing || tempC <= -2) return 1.0;
-    let score = 10;
+  // 100% Granular Scoring Matrix (5-Tier x 20% per Condition)
+  function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing) {
+    if (isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
+    
     const windMph = windSpeedKmh / 1.609;
 
-    if (windowRainMm > 10) score -= 4.5;
-    else if (windowRainMm > 4) score -= 3.0;
-    else if (windowRainMm > 1) score -= 1.8;
-    else if (windowRainMm > 0.1) score -= 0.8;
+    // 1. Ground Status (20% Max)
+    let groundPts = 20;
+    if (past7DaysRainMm > 35 || tempC <= 0) groundPts = 0;
+    else if (past7DaysRainMm > 20 || past24RainMm > 12) groundPts = 5;
+    else if (past7DaysRainMm > 10 || past24RainMm > 4) groundPts = 10;
+    else if (past7DaysRainMm >= 5) groundPts = 15;
 
-    if (past24RainMm > 15 || past7DaysRainMm > 35) score -= 2.8;
-    else if (past24RainMm > 5 || past7DaysRainMm > 15) score -= 1.5;
+    // 2. Wind Impact (20% Max)
+    let windPts = 20;
+    if (windMph > 28) windPts = 0;
+    else if (windMph >= 22) windPts = 5;
+    else if (windMph >= 15) windPts = 10;
+    else if (windMph >= 8) windPts = 15;
 
-    if (windMph > 30) score -= 4.5;
-    else if (windMph > 20) score -= 2.8;
-    else if (windMph > 12) score -= 1.5;
+    // 3. Rain Outlook (20% Max)
+    let rainPts = 20;
+    if (windowRainMm > 5.0) rainPts = 0;
+    else if (windowRainMm > 2.0) rainPts = 5;
+    else if (windowRainMm > 0.5) rainPts = 10;
+    else if (windowRainMm > 0.0) rainPts = 15;
 
-    if (tempC < 2) score -= 3.5;
-    else if (tempC < 7) score -= 2.0;
+    // 4. Carry Distance & Temp (20% Max)
+    let tempPts = 20;
+    if (tempC < 3) tempPts = 0;
+    else if (tempC <= 7) tempPts = 5;
+    else if (tempC <= 12) tempPts = 10;
+    else if (tempC <= 17) tempPts = 15;
 
-    return Math.max(1, Math.min(10, Math.round(score * 10) / 10));
+    // 5. Gear & Comfort (20% Max)
+    let gearPts = 20;
+    if (tempC < 3 || windowRainMm > 5.0) gearPts = 0;
+    else if (tempC <= 5 || windowRainMm > 2.0) gearPts = 5;
+    else if (tempC <= 10 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
+    else if (tempC <= 15 || windMph >= 10) gearPts = 15;
+
+    const totalPct = groundPts + windPts + rainPts + tempPts + gearPts;
+
+    return {
+      score: totalPct,
+      scores: [groundPts, windPts, rainPts, tempPts, gearPts]
+    };
   }
 
-  function updateDialGauge(score) {
-    const fraction = score / 10;
+  function updateDialGauge(percentage) {
+    const fraction = Math.max(0, Math.min(100, percentage)) / 100;
     const offset = circumference - (fraction * circumference);
     dialArc.style.strokeDashoffset = offset;
 
-    if (score >= 8.0) dialArc.style.stroke = 'var(--gauge-good)';
-    else if (score >= 5.0) dialArc.style.stroke = 'var(--gauge-med)';
+    if (percentage >= 80) dialArc.style.stroke = 'var(--gauge-good)';
+    else if (percentage >= 50) dialArc.style.stroke = 'var(--gauge-med)';
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
@@ -1323,34 +1349,31 @@
     }
 
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
-    let rawScore = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
-    
-    let isGroundGood = !hasSnowCover && windowAvgTemp > 0 && past7DaysRain <= 10 && last24hRain <= 4;
-    let isWindGood = (windowMaxWind / 1.609) < 15;
-    let isRainGood = windowRainSum <= 0.5;
-    let isTempGood = (22 - windowAvgTemp) <= 0 || Math.round(((22 - windowAvgTemp) / 5) * 2.5) < 4;
-    let isGearGood = windowAvgTemp > 10 && windowRainSum <= 0.1;
+    const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
+    let rawScorePct = evalObj.score;
+    const subScores = evalObj.scores;
 
-    const allBoxesGreen = isGroundGood && isWindGood && isRainGood && isTempGood && isGearGood;
-    let finalScore = allBoxesGreen ? rawScore : Math.min(rawScore, 8.2);
+    // Strict Rule Check: Are all 5 boxes full marks (20%)?
+    const allBoxesGreen = subScores.every(s => s === 20);
+    let finalPct = allBoxesGreen ? rawScorePct : Math.min(rawScorePct, 82);
 
     const isPastSunset = selectedTeeHour >= sunsetHourDec;
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
     const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
 
     if (isPastSunset) {
-      finalScore = 1.0;
-      dialScore.textContent = `${finalScore}`;
+      finalPct = 0;
+      dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
-      updateDialGauge(finalScore);
+      updateDialGauge(finalPct);
       dialVerdict.textContent = 'Too Dark / Sunset 🌙';
       dialSub.textContent = `Sunset is at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}. Select an earlier tee time.`;
     } else {
-      dialScore.textContent = `${finalScore}`;
+      dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
-      updateDialGauge(finalScore);
+      updateDialGauge(finalPct);
 
-      if (allBoxesGreen && finalScore >= 8.5) {
+      if (allBoxesGreen && finalPct >= 85) {
         if (isTightDaylight) {
           dialVerdict.textContent = '9 Holes Only 🌙';
           dialSub.textContent = `Great weather, but only ~${daylightRemaining.toFixed(1)}h daylight remaining before sunset.`;
@@ -1358,19 +1381,19 @@
           dialVerdict.textContent = 'Yes, Perfect! ⛳';
           dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
         }
-      } else if (finalScore >= 7.0) {
+      } else if (finalPct >= 70) {
         dialVerdict.textContent = 'Yes, Good! 👍';
         if (windowRainSum > 0.5) dialSub.textContent = 'Rain expected during play. Keep umbrella & waterproofs handy.';
-        else if (!isGroundGood) dialSub.textContent = 'Soft fairways will reduce ball roll. Expect muddy lies.';
-        else if (!isWindGood) dialSub.textContent = 'Breezy conditions. Factor in 1–2 club adjustments.';
+        else if (subScores[0] < 20) dialSub.textContent = 'Soft fairways will reduce ball roll. Expect muddy lies.';
+        else if (subScores[1] < 20) dialSub.textContent = 'Breezy conditions. Factor in 1–2 club adjustments.';
         else if (isCold) dialSub.textContent = 'Chilly air! Thermal layers and mitts recommended.';
         else dialSub.textContent = 'Solid playing weather. Pack standard layers.';
-      } else if (finalScore >= 5.0) {
+      } else if (finalPct >= 50) {
         dialVerdict.textContent = 'Not Bad 🌥️';
         if (windowRainSum > 0.5) dialSub.textContent = 'Playable, but rain forecast during round. Pack waterproof gear!';
         else if (isCold) dialSub.textContent = 'Playable, but cold air & cool breeze. Wrap up warmly!';
         else dialSub.textContent = 'Playable round, but expect damp conditions or cool winds.';
-      } else if (finalScore >= 3.0) {
+      } else if (finalPct >= 30) {
         dialVerdict.textContent = 'Poor 🌧️';
         dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
       } else {
@@ -1398,22 +1421,22 @@
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
-    // Ground Status Box
-    if (hasSnowCover) {
-      groundCallout.className = 'callout-box callout-bad';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Snow cover / Frozen greens detected ❄️. Course likely closed.`;
-    } else if (windowAvgTemp <= 0) {
-      groundCallout.className = 'callout-box callout-bad';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Sub-zero conditions (${toTemp(windowAvgTemp)}). Expect hard, frozen ground 🧊.`;
-    } else if (past7DaysRain > 25 || last24hRain > 12) {
-      groundCallout.className = 'callout-box callout-bad';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Waterlogged ground (${toPrecip(past7DaysRain)} 7-day rain). Very soft roll.`;
-    } else if (past7DaysRain > 10 || last24hRain > 4) {
-      groundCallout.className = 'callout-box callout-orange';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Soggy ground (${toPrecip(past7DaysRain)} 7-day rain). Moderate fairway roll.`;
-    } else {
+    // Ground Status Callout Box
+    if (subScores[0] === 20) {
       groundCallout.className = 'callout-box callout-good';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Dry / Firm fairways. Great roll expected!`;
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status (20%)</span>Dry / Firm fairways. Great roll expected!`;
+    } else if (subScores[0] === 15) {
+      groundCallout.className = 'callout-box callout-good';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status (15%)</span>Slightly soft ground. Good playing conditions.`;
+    } else if (subScores[0] === 10) {
+      groundCallout.className = 'callout-box callout-orange';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status (10%)</span>Soggy ground (${toPrecip(past7DaysRain)} 7-day rain). Moderate fairway roll.`;
+    } else if (subScores[0] === 5) {
+      groundCallout.className = 'callout-box callout-orange';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status (5%)</span>Very wet / muddy lies (${toPrecip(past7DaysRain)} 7-day rain). Soft roll.`;
+    } else {
+      groundCallout.className = 'callout-box callout-bad';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status (0%)</span>Waterlogged fairways or sub-zero frozen greens. Course likely restricted.`;
     }
 
     // Wind Box
@@ -1425,46 +1448,31 @@
     document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
     document.getElementById('windSub').textContent = windVisual.label;
 
-    windCallout.className = `callout-box ${windClass.replace('stat-', 'callout-')}`;
-    if (windMph > 25) {
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Strong winds (${toSpeed(windowMaxWind)}). Take 1-2 extra clubs into wind.`;
-    } else if (windMph >= 15) {
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Moderate breeze (${toSpeed(windowMaxWind)}). Slight club adjustment needed.`;
-    } else {
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Light breeze. Minimal ball flight change.`;
-    }
+    windCallout.className = `callout-box ${subScores[1] >= 15 ? 'callout-good' : (subScores[1] >= 10 ? 'callout-orange' : 'callout-bad')}`;
+    if (subScores[1] === 20) windCallout.innerHTML = `<span class="callout-title">Wind Impact (20%)</span>Calm / Light breeze (${toSpeed(windowMaxWind)}). No flight deviation.`;
+    else if (subScores[1] === 15) windCallout.innerHTML = `<span class="callout-title">Wind Impact (15%)</span>Gentle breeze (${toSpeed(windowMaxWind)}). Slight club adjustment.`;
+    else if (subScores[1] === 10) windCallout.innerHTML = `<span class="callout-title">Wind Impact (10%)</span>Moderate wind (${toSpeed(windowMaxWind)}). Take 1 club adjustment.`;
+    else if (subScores[1] === 5) windCallout.innerHTML = `<span class="callout-title">Wind Impact (5%)</span>Strong winds (${toSpeed(windowMaxWind)}). Take 2 extra clubs into wind.`;
+    else windCallout.innerHTML = `<span class="callout-title">Wind Impact (0%)</span>Gale force winds (${toSpeed(windowMaxWind)}). Extreme flight impact.`;
 
     // Rain Box
-    const rainClass = getRainTier(windowRainSum);
-    rainOutlookCallout.className = `callout-box ${rainClass.replace('stat-', 'callout-')}`;
-    rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Dry skies overhead.'}`;
+    rainOutlookCallout.className = `callout-box ${subScores[2] >= 15 ? 'callout-good' : (subScores[2] >= 10 ? 'callout-orange' : 'callout-bad')}`;
+    rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${subScores[2]}%)</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Bone dry skies overhead.'}`;
 
     // Distance Penalty Box
     const tempDiffC = 22 - windowAvgTemp;
     let penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
-    if (penaltyYards >= 4) {
-      distancePenaltyCallout.className = 'callout-box callout-orange';
-      distancePenaltyCallout.innerHTML = `<span class="callout-title">Carry Penalty</span>Cold air! Ball carries ~<strong>${penaltyYards} yards shorter</strong> per club.`;
-      distancePenaltyCallout.style.display = 'block';
-    } else {
-      distancePenaltyCallout.style.display = 'none';
-    }
+    distancePenaltyCallout.className = `callout-box ${subScores[3] >= 15 ? 'callout-good' : (subScores[3] >= 10 ? 'callout-orange' : 'callout-bad')}`;
+    distancePenaltyCallout.innerHTML = `<span class="callout-title">Carry & Temp (${subScores[3]}%)</span>Air temp ${toTemp(windowAvgTemp)}. Carry loss ~<strong>${penaltyYards} yards</strong> per club.`;
 
     // Gear Checklist Box
     let gear = 'Standard Polo & Light Layer 👕';
-    let gearClass = 'callout-good';
-    if (windowAvgTemp < 5) {
-      gear = 'Thermal base layer, beanie/hat & winter mitts 🥶';
-      gearClass = 'callout-orange';
-    } else if (windowAvgTemp <= 10) {
-      gear = 'Windproof sweater / fleece & thermal layer 🧥';
-    }
-    if (windowRainSum > 0.1) {
-      gear += ' + Waterproof Jacket, Umbrella ☔';
-      gearClass = 'callout-orange';
-    }
-    gearCallout.className = `callout-box ${gearClass}`;
-    gearCallout.innerHTML = `<span class="callout-title">Gear Checklist</span>${gear}`;
+    if (windowAvgTemp < 5) gear = 'Thermal base layer, beanie/hat & winter mitts 🥶';
+    else if (windowAvgTemp <= 10) gear = 'Windproof sweater / fleece & thermal layer 🧥';
+    if (windowRainSum > 0.1) gear += ' + Waterproof Jacket, Umbrella ☔';
+    
+    gearCallout.className = `callout-box ${subScores[4] >= 15 ? 'callout-good' : (subScores[4] >= 10 ? 'callout-orange' : 'callout-bad')}`;
+    gearCallout.innerHTML = `<span class="callout-title">Gear & Comfort (${subScores[4]}%)</span>${gear}`;
 
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
     document.getElementById('forecastRain').textContent = toPrecip(windowRainSum);
@@ -1474,7 +1482,7 @@
 
     windCard.className = `grid-item ${windClass}`;
     recentRainCard.className = `grid-item ${getRainTier(last24hRain)}`;
-    forecastRainCard.className = `grid-item ${rainClass}`;
+    forecastRainCard.className = `grid-item ${getRainTier(windowRainSum)}`;
 
     const todayRainSum = d.precipitation_sum[currentDayIdx];
     dailyRainCard.className = `grid-item ${getRainTier(todayRainSum)}`;
