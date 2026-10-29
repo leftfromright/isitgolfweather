@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v2.1</title>
+  <title>Is It Golf Weather? v2.2</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -72,6 +72,10 @@
       --warn-good-border: #2e7d32;
       --warn-good-text: #a5d6a7;
 
+      --warn-med-bg: #3e3310;
+      --warn-med-border: #fbc02d;
+      --warn-med-text: #ffe082;
+
       --warn-orange-bg: #3e2610;
       --warn-orange-border: #f57c00;
       --warn-orange-text: #ffcc80;
@@ -91,7 +95,6 @@
       color: var(--text);
     }
 
-    /* Standardized Single Column Layout */
     .app-container {
       max-width: 520px;
       margin: 0 auto;
@@ -105,7 +108,7 @@
       justify-content: space-between;
     }
 
-    /* Header & Interactive Version Tag */
+    /* Header & Version Tag */
     .compact-header {
       display: flex;
       justify-content: space-between;
@@ -294,7 +297,7 @@
       font-size: clamp(0.72rem, 2.6vw, 0.8rem);
       color: var(--text-muted);
       line-height: 1.15;
-      max-width: 190px;
+      max-width: 200px;
     }
 
     /* Date Bar */
@@ -513,22 +516,23 @@
 
     .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
 
-    /* Chart Styles */
-    .chart-wrapper-split {
-      display: flex;
+    /* Clean Horizontal-Only Chart Container (No Vertical Scroll) */
+    .chart-container-scrollable {
       width: 100%;
-      margin-top: 0.4rem;
+      overflow-x: auto;
+      overflow-y: hidden;
       background: var(--card-bg);
       border-radius: 6px;
-      overflow: hidden;
+      padding: 0.4rem 0;
+      margin-top: 0.4rem;
     }
-    .chart-y-fixed { width: 32px; height: 135px; flex-shrink: 0; background: var(--card-bg); border-right: 1px solid var(--border); }
-    .chart-container-scrollable { flex: 1; overflow-x: auto; height: 135px; }
-    .chart-scroll-inner { min-width: 480px; height: 135px; }
+    .chart-scroll-inner {
+      min-width: 520px;
+      height: 140px;
+    }
     
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
-    .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
     .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
@@ -550,7 +554,7 @@
 
     #status { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem; }
 
-    /* Modal Overlay for App Info Popup */
+    /* Creator Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -582,6 +586,18 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    /* Wider Single Column Desktop View (680px) */
+    @media (min-width: 768px) {
+      .app-container {
+        max-width: 680px;
+        padding: 1rem 1.5rem 2rem 1.5rem;
+      }
+      .dial-container {
+        width: 310px;
+        height: 310px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -596,7 +612,7 @@
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ Golf Weather</h1>
-          <span class="version-tag" id="versionTag">v2.1</span>
+          <span class="version-tag" id="versionTag">v2.2</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -691,14 +707,9 @@
 
       <div class="card">
         <h2>24-Hour Forecast</h2>
-        <div class="chart-wrapper-split">
-          <div class="chart-y-fixed">
-            <svg id="yAxisSvg"></svg>
-          </div>
-          <div class="chart-container-scrollable">
-            <div class="chart-scroll-inner">
-              <svg id="hourlyChart"></svg>
-            </div>
+        <div class="chart-container-scrollable">
+          <div class="chart-scroll-inner">
+            <svg id="hourlyChart"></svg>
           </div>
         </div>
         <div class="chart-legend">
@@ -748,11 +759,10 @@
   <div id="status">Getting location...</div>
 </div>
 
-<!-- Creator Modal Popup -->
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>Is It Golf Weather?</h3>
-    <p>Version 2.1 • Made by KW</p>
+    <p>Version 2.2 • Made by KW</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -836,7 +846,6 @@
 
   teeTimeSlider.value = selectedTeeHour;
 
-  // Version Badge Modal Controls
   versionTag.addEventListener('click', () => { creatorModal.style.display = 'flex'; });
   closeModalBtn.addEventListener('click', () => { creatorModal.style.display = 'none'; });
   creatorModal.addEventListener('click', (e) => {
@@ -1094,15 +1103,14 @@
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
+  // Inline Chart Rendering (No Fixed Y Axis Box / No Vertical Scroll)
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
-    const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
-    ySvg.innerHTML = '';
     svg.innerHTML = '';
 
-    const width = 480;
-    const height = 125;
-    const paddingLeft = 10;
+    const width = 520;
+    const height = 135;
+    const paddingLeft = 32;
     const paddingRight = 15;
     const paddingBottom = 18;
     const paddingTop = 16;
@@ -1113,16 +1121,18 @@
 
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
+    // Integrated Y Axis Labels
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
       
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', 26);
+      label.setAttribute('x', 24);
       label.setAttribute('y', yPos + 3);
-      label.setAttribute('class', 'chart-y-text');
+      label.setAttribute('class', 'chart-text');
+      label.setAttribute('style', 'text-anchor: end; font-size: 9px;');
       label.textContent = `${tickVal}°`;
-      ySvg.appendChild(label);
+      svg.appendChild(label);
     }
 
     hourlyPrecip.forEach((rain, i) => {
@@ -1308,13 +1318,17 @@
         }
       } else if (finalScore >= 7.0) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        if (!isGroundGood) dialSub.textContent = 'Soft/soggy fairways will reduce roll. Pack an extra towel!';
-        else if (!isWindGood) dialSub.textContent = 'Breezy conditions on course. Factor in wind adjustments.';
-        else if (isCold) dialSub.textContent = 'Solid round, but chilly air! Wrap up warmly.';
+        // Context-Aware Subtext Fix
+        if (windowRainSum > 0.5) dialSub.textContent = 'Rain expected during play. Keep umbrella & waterproofs handy.';
+        else if (!isGroundGood) dialSub.textContent = 'Soft fairways will reduce ball roll. Expect muddy lies.';
+        else if (!isWindGood) dialSub.textContent = 'Breezy conditions. Factor in 1–2 club adjustments.';
+        else if (isCold) dialSub.textContent = 'Chilly air! Thermal layers and mitts recommended.';
         else dialSub.textContent = 'Solid playing weather. Pack standard layers.';
       } else if (finalScore >= 5.0) {
         dialVerdict.textContent = 'Not Bad 🌥️';
-        dialSub.textContent = isCold ? 'Playable, but cold air & cool breeze. Pack heavy thermals!' : 'Playable round, but factor in cool winds or soggy ground.';
+        if (windowRainSum > 0.5) dialSub.textContent = 'Playable, but rain forecast during round. Pack waterproof gear!';
+        else if (isCold) dialSub.textContent = 'Playable, but cold air & cool breeze. Wrap up warmly!';
+        else dialSub.textContent = 'Playable round, but expect damp conditions or cool winds.';
       } else if (finalScore >= 3.0) {
         dialVerdict.textContent = 'Poor 🌧️';
         dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
