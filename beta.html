@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v2.2</title>
+  <title>Is It Golf Weather? v2.3</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -197,7 +197,7 @@
       border-radius: 9px;
       box-shadow: var(--shadow);
       z-index: 1000;
-      max-height: 200px;
+      max-height: 240px;
       overflow-y: auto;
       display: none;
       margin-top: 4px;
@@ -516,7 +516,7 @@
 
     .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
 
-    /* Clean Horizontal-Only Chart Container (No Vertical Scroll) */
+    /* Chart Container */
     .chart-container-scrollable {
       width: 100%;
       overflow-x: auto;
@@ -587,7 +587,7 @@
       cursor: pointer;
     }
 
-    /* Wider Single Column Desktop View (680px) */
+    /* Desktop View Enhancements (≥ 768px) */
     @media (min-width: 768px) {
       .app-container {
         max-width: 680px;
@@ -596,6 +596,23 @@
       .dial-container {
         width: 310px;
         height: 310px;
+      }
+      /* Bigger Date Buttons on Desktop */
+      .date-btn {
+        min-height: 66px;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.3rem;
+      }
+      .date-btn .day { font-size: 0.85rem; }
+      .date-btn .date-icon { font-size: 1.15rem; }
+      .date-btn .date-temps { font-size: 0.75rem; }
+
+      /* Always show details on desktop; hide expand toggle button */
+      .expand-toggle-btn {
+        display: none !important;
+      }
+      .details-section {
+        display: flex !important;
       }
     }
   </style>
@@ -607,12 +624,12 @@
   
   <div class="screen-landing">
     
-    <!-- Left / Primary Focus Section -->
+    <!-- Primary Focus Section -->
     <div style="display: flex; flex-direction: column; gap: 0.6rem;">
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ Golf Weather</h1>
-          <span class="version-tag" id="versionTag">v2.2</span>
+          <span class="version-tag" id="versionTag">v2.3</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -622,7 +639,7 @@
       </header>
 
       <div class="search-box">
-        <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
+        <input type="text" id="locationInput" placeholder="Search golf club or location..." autocomplete="off">
         <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
         <button id="geoBtn" class="icon-btn" title="Use current location">📍</button>
         <div id="autocompleteList" class="autocomplete-list"></div>
@@ -762,7 +779,7 @@
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>Is It Golf Weather?</h3>
-    <p>Version 2.2 • Made by KW</p>
+    <p>Version 2.3 • Made by KW</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -901,15 +918,44 @@
     debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
   });
 
+  // Dedicated Golf Club & Location Geocoding
   async function searchAutocomplete(rawQuery) {
     try {
       let cleanQuery = rawQuery.replace(/royal/gi, '').trim() || rawQuery;
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=6&language=en&format=json`);
-      const data = await res.json();
       
+      // Dual fetch: Direct search + explicit Golf Club search query
+      const queryNormal = fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=5&language=en&format=json`).then(r=>r.json());
+      const queryGolf = fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery + " golf club")}&count=5&language=en&format=json`).then(r=>r.json());
+
+      const [resNormal, resGolf] = await Promise.all([queryNormal, queryGolf]);
+      
+      const combined = [];
+      const seenIds = new Set();
+
+      const addResults = (list) => {
+        if (list && list.results) {
+          list.results.forEach(place => {
+            if (!seenIds.has(place.id)) {
+              seenIds.add(place.id);
+              combined.push(place);
+            }
+          });
+        }
+      };
+
+      addResults(resGolf);
+      addResults(resNormal);
+
+      // Rank golf clubs at the top of the list
+      combined.sort((a, b) => {
+        const aIsGolf = a.name.toLowerCase().includes('golf') ? 1 : 0;
+        const bIsGolf = b.name.toLowerCase().includes('golf') ? 1 : 0;
+        return bIsGolf - aIsGolf;
+      });
+
       autocompleteList.innerHTML = '';
-      if (data.results && data.results.length > 0) {
-        data.results.forEach(place => {
+      if (combined.length > 0) {
+        combined.slice(0, 6).forEach(place => {
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
           const isGolf = place.name.toLowerCase().includes('golf') ? '⛳ ' : '📍 ';
@@ -1103,7 +1149,6 @@
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
-  // Inline Chart Rendering (No Fixed Y Axis Box / No Vertical Scroll)
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
     const svg = document.getElementById('hourlyChart');
     svg.innerHTML = '';
@@ -1121,7 +1166,6 @@
 
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
-    // Integrated Y Axis Labels
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -1281,14 +1325,12 @@
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
     let rawScore = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
     
-    // Condition Box Class Evaluations
     let isGroundGood = !hasSnowCover && windowAvgTemp > 0 && past7DaysRain <= 10 && last24hRain <= 4;
     let isWindGood = (windowMaxWind / 1.609) < 15;
     let isRainGood = windowRainSum <= 0.5;
     let isTempGood = (22 - windowAvgTemp) <= 0 || Math.round(((22 - windowAvgTemp) / 5) * 2.5) < 4;
     let isGearGood = windowAvgTemp > 10 && windowRainSum <= 0.1;
 
-    // Strict Rule: Never Perfect if ANY Breakdown Box is NOT Green
     const allBoxesGreen = isGroundGood && isWindGood && isRainGood && isTempGood && isGearGood;
     let finalScore = allBoxesGreen ? rawScore : Math.min(rawScore, 8.2);
 
@@ -1318,7 +1360,6 @@
         }
       } else if (finalScore >= 7.0) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        // Context-Aware Subtext Fix
         if (windowRainSum > 0.5) dialSub.textContent = 'Rain expected during play. Keep umbrella & waterproofs handy.';
         else if (!isGroundGood) dialSub.textContent = 'Soft fairways will reduce ball roll. Expect muddy lies.';
         else if (!isWindGood) dialSub.textContent = 'Breezy conditions. Factor in 1–2 club adjustments.';
