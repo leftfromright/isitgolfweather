@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v1.7</title>
+  <title>Is It Golf Weather? v1.8</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -102,10 +102,9 @@
     .app-container {
       max-width: 500px;
       margin: 0 auto;
-      padding: 0.25rem 0.5rem;
+      padding: 0.35rem 0.5rem;
     }
 
-    /* Screen 1: Initial Viewport Fit */
     .screen-landing {
       min-height: calc((var(--real-vh, 1vh) * 100) - 0.5rem);
       display: flex;
@@ -118,7 +117,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.1rem 0;
+      padding: 0.2rem 0;
       flex-shrink: 0;
     }
     .compact-title {
@@ -127,81 +126,89 @@
       gap: 0.35rem;
     }
     .compact-title h1 {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 800;
       letter-spacing: -0.3px;
     }
     .version-tag {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: var(--accent);
       background: var(--card-bg);
       border: 1px solid var(--border);
-      padding: 0.05rem 0.35rem;
+      padding: 0.1rem 0.4rem;
       border-radius: 4px;
     }
     
     .controls-mini {
       display: flex;
-      gap: 0.25rem;
+      gap: 0.35rem;
     }
     .controls-mini button {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.25rem 0.45rem;
-      border-radius: 6px;
+      min-height: 38px;
+      padding: 0.35rem 0.6rem;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
     }
 
-    /* Search Box */
+    /* Fat-finger Touch Friendly Search Box */
     .search-box {
       position: relative;
       display: flex;
-      gap: 0.25rem;
-      margin-bottom: 0.1rem;
+      gap: 0.35rem;
+      margin-bottom: 0.2rem;
       flex-shrink: 0;
     }
     input[type="text"] {
       flex: 1;
-      padding: 0.4rem 0.6rem;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 9px;
       background: var(--card-bg);
       color: var(--text);
-      font-size: 0.85rem;
+      font-size: 0.92rem;
       outline: none;
     }
     .icon-btn {
-      padding: 0.4rem 0.6rem;
-      font-size: 0.9rem;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0.5rem;
+      font-size: 1.1rem;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 9px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .autocomplete-list {
       position: absolute;
       top: 100%;
       left: 0;
-      right: 75px;
+      right: 90px;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 9px;
       box-shadow: var(--shadow);
       z-index: 1000;
-      max-height: 180px;
+      max-height: 200px;
       overflow-y: auto;
       display: none;
-      margin-top: 3px;
+      margin-top: 4px;
     }
     .autocomplete-item {
-      padding: 0.5rem 0.65rem;
+      min-height: 42px;
+      padding: 0.6rem 0.75rem;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -222,9 +229,9 @@
 
     .dial-container {
       position: relative;
-      width: min(300px, calc(100vw - 1.2rem));
-      height: min(300px, calc(100vw - 1.2rem));
-      max-height: 38vh;
+      width: min(290px, calc(100vw - 1.2rem));
+      height: min(290px, calc(100vw - 1.2rem));
+      max-height: 36vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -277,7 +284,7 @@
       color: var(--accent);
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.08rem 0.5rem;
+      padding: 0.1rem 0.55rem;
       border-radius: 12px;
       margin: 0.15rem 0 0.2rem 0;
     }
@@ -295,12 +302,12 @@
       max-width: 190px;
     }
 
-    /* Date Bar (7 Days + More) */
+    /* Date Bar (Include Temps + Modern Icons) */
     .date-bar {
       display: flex;
-      gap: 0.25rem;
+      gap: 0.3rem;
       overflow-x: auto;
-      padding-bottom: 0.1rem;
+      padding-bottom: 0.2rem;
       margin-bottom: 0.15rem;
       scrollbar-width: none;
       flex-shrink: 0;
@@ -309,34 +316,45 @@
 
     .date-btn {
       flex: 1;
-      min-width: 48px;
-      min-height: 48px;
+      min-width: 58px;
+      min-height: 54px;
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.35rem 0.15rem;
-      border-radius: 7px;
+      padding: 0.35rem 0.2rem;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       font-size: 0.72rem;
       cursor: pointer;
+      position: relative;
     }
     .date-btn.active {
       background: var(--accent);
       color: #ffffff;
       border-color: var(--accent);
     }
-    .date-btn .day { font-weight: bold; }
-    .date-btn .date-icon { font-size: 0.95rem; margin: 0.04rem 0; }
+    .date-btn .day { font-weight: bold; font-size: 0.74rem; }
+    .date-btn .date-icon { font-size: 0.95rem; margin: 0.02rem 0; }
+    .date-btn .date-temps { font-size: 0.65rem; opacity: 0.9; font-weight: 600; }
 
-    /* Tee Time Slider Card - Reserved Space for Warning */
+    /* Hidden native date picker trigger */
+    #hiddenDatePicker {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+
+    /* Tee Time Slider Card - Fixed Height Reserved Slot */
     .slider-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 9px;
-      padding: 0.4rem 0.7rem;
+      padding: 0.5rem 0.75rem;
       box-shadow: var(--shadow);
       flex-shrink: 0;
     }
@@ -344,22 +362,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.15rem;
-      font-size: 0.8rem;
+      margin-bottom: 0.2rem;
+      font-size: 0.82rem;
       font-weight: bold;
       color: var(--text-muted);
     }
     .slider-value {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--accent);
       font-weight: 800;
     }
 
     input[type="range"] {
       width: 100%;
-      height: 6px;
+      height: 8px;
       background: var(--border);
-      border-radius: 3px;
+      border-radius: 4px;
       outline: none;
       cursor: pointer;
       -webkit-appearance: none;
@@ -368,17 +386,16 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--accent);
       cursor: pointer;
     }
 
-    /* Fixed Height Container to Prevent Shifting Elements */
     .warning-slot {
-      min-height: 1.8rem;
-      margin-top: 0.2rem;
+      min-height: 2.2rem;
+      margin-top: 0.25rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -387,9 +404,9 @@
     .daylight-warning {
       display: none;
       width: 100%;
-      padding: 0.2rem 0.35rem;
-      border-radius: 5px;
-      font-size: 0.7rem;
+      padding: 0.25rem 0.4rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 600;
       text-align: center;
     }
@@ -404,17 +421,17 @@
       color: var(--warn-bad-text);
     }
 
-    /* In-Place Expand Toggle Button */
+    /* Fat-finger Expand Button */
     .expand-toggle-btn {
       width: 100%;
-      margin-top: 0.15rem;
-      padding: 0.55rem 0;
+      margin-top: 0.2rem;
+      padding: 0.65rem 0;
       background: var(--accent);
       color: #ffffff;
       border: none;
-      border-radius: 8px;
+      border-radius: 9px;
       text-align: center;
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -423,10 +440,10 @@
       box-shadow: var(--shadow);
       cursor: pointer;
       flex-shrink: 0;
-      min-height: 40px;
+      min-height: 44px;
     }
 
-    /* Expanded Content Section */
+    /* Expanded Details Section */
     .details-section {
       display: none;
       flex-direction: column;
@@ -521,7 +538,6 @@
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
     .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
-    .chart-bar-val { fill: var(--chart-bar-text); font-size: 9px; font-weight: bold; text-anchor: middle; }
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
     .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
@@ -555,14 +571,15 @@
 <body>
 
 <div class="app-container">
+  <input type="date" id="hiddenDatePicker">
   
-  <!-- Screen 1: Initial Single Viewport View -->
+  <!-- Screen 1: Initial Viewport -->
   <div class="screen-landing">
     <!-- Header -->
     <header class="compact-header">
       <div class="compact-title">
         <h1>⛳ Golf Weather</h1>
-        <span class="version-tag">v1.7</span>
+        <span class="version-tag">v1.8</span>
       </div>
       <div class="controls-mini">
         <button id="unitToggle">°C</button>
@@ -571,7 +588,7 @@
       </div>
     </header>
 
-    <!-- Location Search Bar -->
+    <!-- Fat-finger Touch Friendly Search -->
     <div class="search-box">
       <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
       <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
@@ -596,10 +613,10 @@
       </div>
     </div>
 
-    <!-- 7-Day Date Bar Selector -->
+    <!-- Date Bar Selector with Temps -->
     <div class="date-bar" id="dateBar"></div>
 
-    <!-- Tee Time Slider Card (Fixed Height Warning Area) -->
+    <!-- Tee Time Slider Card (Fixed Reserved Slot for Warning) -->
     <div class="slider-card">
       <div class="slider-header">
         <span>⛳ Tee Time</span>
@@ -611,7 +628,7 @@
       </div>
     </div>
 
-    <!-- Expand / Collapse In-Place Toggle -->
+    <!-- Expand Button -->
     <button class="expand-toggle-btn" id="expandToggleBtn">
       <span id="expandBtnText">Detailed Breakdown</span> <span id="expandBtnIcon">👇</span>
     </button>
@@ -619,10 +636,10 @@
 
   <div id="status">Getting location...</div>
 
-  <!-- Expanded Details Section (In-Place Below Landing View) -->
+  <!-- Details Section -->
   <div id="detailsSection" class="details-section">
     
-    <!-- Detailed Callout Breakdown -->
+    <!-- Detailed Breakdown -->
     <div class="card">
       <h2>Course Condition Breakdown</h2>
       <div id="groundCallout" class="callout-box"></div>
@@ -632,7 +649,7 @@
       <div id="gearCallout" class="callout-box"></div>
     </div>
 
-    <!-- Weather Overview Card -->
+    <!-- Weather Overview -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       
@@ -664,7 +681,7 @@
       </div>
     </div>
 
-    <!-- 24-Hour Forecast Chart -->
+    <!-- 24-Hour Chart -->
     <div class="card">
       <h2>24-Hour Forecast</h2>
       <div class="chart-wrapper-split">
@@ -719,7 +736,7 @@
     </div>
 
     <footer class="beta-footer">
-      Is It Golf Weather? v1.7 • Made by KW
+      Is It Golf Weather? v1.8 • Made by KW
     </footer>
 
   </div>
@@ -727,7 +744,6 @@
 </div>
 
 <script>
-  // Exact Viewport Height Measuring
   function updateRealVh() {
     document.documentElement.style.setProperty('--real-vh', `${window.innerHeight * 0.01}px`);
   }
@@ -763,6 +779,7 @@
   const autocompleteList = document.getElementById('autocompleteList');
   const statusEl = document.getElementById('status');
   const dateBar = document.getElementById('dateBar');
+  const hiddenDatePicker = document.getElementById('hiddenDatePicker');
   
   const teeTimeSlider = document.getElementById('teeTimeSlider');
   const teeTimeDisplay = document.getElementById('teeTimeDisplay');
@@ -789,7 +806,6 @@
 
   teeTimeSlider.value = selectedTeeHour;
 
-  // In-place Expand / Collapse Toggle Logic
   expandToggleBtn.addEventListener('click', () => {
     const isExpanded = detailsSection.style.display === 'flex';
     if (isExpanded) {
@@ -885,7 +901,6 @@
     teeTimeDisplay.textContent = `${(selectedTeeHour % 12 || 12)}:00 ${ampm}`;
   }
 
-  /* Updated Icons Set */
   function getWeatherInfo(code) {
     const codes = {
       0: { text: 'Clear sky', icon: '☀️' },
@@ -927,7 +942,7 @@
 
       locationInput.value = currentCityName;
 
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=14&timezone=auto`;
       const res = await fetch(url);
       currentData = await res.json();
       
@@ -941,7 +956,7 @@
     }
   }
 
-  /* 7-Day Date Bar + More Button */
+  /* Date Bar with Temps & Calendar Trigger */
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
     dateBar.innerHTML = '';
@@ -949,17 +964,24 @@
     const pastOffset = 7;
     const days = currentData.daily.time.slice(pastOffset);
     const weatherCodes = currentData.daily.weather_code.slice(pastOffset);
-    
-    for (let idx = 0; idx < Math.min(7, days.length); idx++) {
+    const maxTemps = currentData.daily.temperature_2m_max.slice(pastOffset);
+    const minTemps = currentData.daily.temperature_2m_min.slice(pastOffset);
+    const isF = currentUnit === 'F';
+    const fmtT = (cVal) => isF ? Math.round((cVal * 9/5) + 32) : Math.round(cVal);
+
+    for (let idx = 0; idx < Math.min(6, days.length); idx++) {
       const d = new Date(days[idx]);
       const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
       const dayWeatherInfo = getWeatherInfo(weatherCodes[idx]);
+      const tMax = fmtT(maxTemps[idx]);
+      const tMin = fmtT(minTemps[idx]);
 
       const btn = document.createElement('button');
       btn.className = `date-btn ${idx === selectedDayIndex ? 'active' : ''}`;
       btn.innerHTML = `
         <span class="day">${dayName}</span>
         <span class="date-icon">${dayWeatherInfo.icon}</span>
+        <span class="date-temps">${tMax}°/${tMin}°</span>
       `;
       btn.addEventListener('click', () => {
         selectedDayIndex = idx;
@@ -969,22 +991,39 @@
       dateBar.appendChild(btn);
     }
 
-    // More Button
+    // Interactive Calendar Trigger Date Box
     const moreBtn = document.createElement('button');
     moreBtn.className = 'date-btn';
     moreBtn.innerHTML = `
       <span class="day">More</span>
       <span class="date-icon">📅</span>
+      <span class="date-temps">Select</span>
     `;
+    
+    // Set native date picker bounds
+    if (days.length > 0) {
+      hiddenDatePicker.min = days[0];
+      hiddenDatePicker.max = days[days.length - 1];
+    }
+
     moreBtn.addEventListener('click', () => {
-      alert("Showing extended 14-day weather horizon in details breakdown below.");
-      if (detailsSection.style.display !== 'flex') {
-        expandToggleBtn.click();
+      hiddenDatePicker.showPicker ? hiddenDatePicker.showPicker() : hiddenDatePicker.click();
+    });
+
+    hiddenDatePicker.addEventListener('change', (e) => {
+      const selectedVal = e.target.value;
+      const targetIdx = days.indexOf(selectedVal);
+      if (targetIdx !== -1) {
+        selectedDayIndex = targetIdx;
+        buildDateBar();
+        render();
       }
     });
+
     dateBar.appendChild(moreBtn);
   }
 
+  /* Shared Standardized Golf Scoring Parity */
   function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
     if (tempC <= 0) return 1.0; 
     let score = 10;
@@ -1088,7 +1127,7 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Sunrise Vertical Line
+    // Sunrise Marker
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const srX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1104,7 +1143,7 @@
       svg.appendChild(icon);
     }
 
-    // Sunset Vertical Line
+    // Sunset Marker
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const ssX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1183,7 +1222,6 @@
     const windowMaxWind = Math.max(...windowWinds, 0);
     const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
 
-    // Sunrise / Sunset Hour Decimals
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
     if (d.sunrise[currentDayIdx]) {
@@ -1198,7 +1236,6 @@
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
     let score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
     
-    // Sunset checks for dial verdict
     const isPastSunset = selectedTeeHour >= sunsetHourDec;
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
 
@@ -1237,11 +1274,11 @@
       }
     }
 
-    // Daylight Slider Warning Box
+    // Modern Daylight Warning Box
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-red';
-      daylightWarning.textContent = `⚠️ Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
+      daylightWarning.textContent = `🌇 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
     } else if (daylightRemaining < 4.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-orange';
@@ -1250,7 +1287,7 @@
       daylightWarning.style.display = 'none';
     }
 
-    // Weather Overview Hero
+    // Weather Hero
     const weatherCode = isToday ? c.weather_code : d.weather_code[currentDayIdx];
     const weatherInfo = getWeatherInfo(weatherCode);
     document.getElementById('weatherIcon').textContent = weatherInfo.icon;
@@ -1337,6 +1374,7 @@
   unitToggle.addEventListener('click', () => {
     currentUnit = currentUnit === 'C' ? 'F' : 'C';
     unitToggle.textContent = `°${currentUnit}`;
+    buildDateBar();
     render();
   });
 
