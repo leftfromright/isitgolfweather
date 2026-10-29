@@ -2,18 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Is It Golf Weather?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Is It Golf Weather? v1.6</title>
   
-  <!-- Mobile Web App & PWA Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Golf Weather">
-  
-  <!-- Inline Golf Pin SVG Favicon & Apple Touch Icon -->
+  <meta name="apple-mobile-web-app-title" content="Golf Weather Beta">
+
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
 
   <style>
     :root {
@@ -23,15 +20,18 @@
       --text-muted: #4a6352;
       --border: #c8dcd0;
       --accent: #1b5e20;
-      --accent-hover: #144718;
+      --shadow: 0 4px 16px rgba(27, 94, 32, 0.08);
+
+      --gauge-good: #2e7d32;
+      --gauge-med: #f57f17;
+      --gauge-bad: #c62828;
+
       --chart-line: #2e7d32;
       --chart-bar: #1e88e5;
       --chart-bar-text: #1565c0;
       --sun-line: #e65100;
       --now-line: #d32f2f;
       --tee-line: #1565c0;
-      --badge-bg: #e8f5e9;
-      --shadow: 0 4px 12px rgba(27, 94, 32, 0.08);
 
       --warn-good-bg: #e8f5e9;
       --warn-good-border: #2e7d32;
@@ -48,6 +48,8 @@
       --warn-bad-bg: #ffebee;
       --warn-bad-border: #c62828;
       --warn-bad-text: #b71c1c;
+
+      --real-vh: 1vh;
     }
 
     [data-theme="dark"] {
@@ -57,15 +59,18 @@
       --text-muted: #8ba895;
       --border: #233b2c;
       --accent: #4caf50;
-      --accent-hover: #388e3c;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+      --gauge-good: #66bb6a;
+      --gauge-med: #fbc02d;
+      --gauge-bad: #ef5350;
+
       --chart-line: #66bb6a;
       --chart-bar: #64b5f6;
       --chart-bar-text: #90caf9;
       --sun-line: #ffb74d;
       --now-line: #ef5350;
       --tee-line: #90caf9;
-      --badge-bg: #1b3e20;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
       --warn-good-bg: #1b3e20;
       --warn-good-border: #2e7d32;
@@ -85,237 +90,272 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
+    
+    html, body {
+      width: 100%;
+      min-height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
-      background-image: radial-gradient(var(--border) 1px, transparent 1px);
-      background-size: 16px 16px;
       color: var(--text);
-      line-height: 1.5;
-      padding: 1rem;
-      transition: background-color 0.2s, color 0.2s;
     }
 
-    .container {
-      max-width: 650px;
+    .app-container {
+      max-width: 500px;
       margin: 0 auto;
-      position: relative;
+      padding: 0.25rem 0.5rem;
     }
 
-    @media (max-width: 600px) {
-      body { padding: 0 0 1rem 0; }
-      .container { max-width: 100%; }
+    /* Screen 1: Strict Single Viewport Landing Page */
+    .screen-landing {
+      height: calc((var(--real-vh, 1vh) * 100) - 0.5rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
     }
 
-    .hero-banner {
-      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
-      color: #ffffff;
-      padding: 1.25rem 1.5rem;
-      border-radius: 10px;
-      margin-bottom: 0.75rem;
-      box-shadow: 0 6px 16px rgba(27, 94, 32, 0.25);
+    /* Header */
+    .compact-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: relative;
+      padding: 0.1rem 0;
+      flex-shrink: 0;
     }
-
-    @media (max-width: 600px) {
-      .hero-banner {
-        border-radius: 0;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.8rem;
-        padding: 1.2rem 1rem 1rem 1rem;
-      }
-      .controls {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        gap: 0.3rem;
-      }
-      .controls button {
-        flex: 1;
-        text-align: center;
-      }
-      #pwaBtn { display: none; }
+    .compact-title {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
     }
-
-    .hero-title h1 {
-      font-size: 1.5rem;
-      color: #ffffff;
-      margin: 0;
+    .compact-title h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
     }
-    .hero-title p {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      margin-top: 0.15rem;
+    .version-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0.05rem 0.35rem;
+      border-radius: 4px;
     }
-
-    .controls { display: flex; gap: 0.4rem; }
-    button {
+    
+    .controls-mini {
+      display: flex;
+      gap: 0.25rem;
+    }
+    .controls-mini button {
       background: var(--card-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.35rem 0.65rem;
+      padding: 0.25rem 0.45rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      font-size: 0.85rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    button:hover { border-color: var(--accent); }
-    button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-    .hero-banner button {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-    .hero-banner button:hover {
-      background: rgba(255, 255, 255, 0.3);
+      font-size: 0.78rem;
     }
 
+    /* Search Box */
     .search-box {
       position: relative;
       display: flex;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-      padding: 0 0.5rem;
+      gap: 0.25rem;
+      margin-bottom: 0.1rem;
+      flex-shrink: 0;
     }
     input[type="text"] {
       flex: 1;
-      padding: 0.6rem;
+      padding: 0.4rem 0.6rem;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       background: var(--card-bg);
       color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
     }
-
     .icon-btn {
-      padding: 0.6rem 0.75rem;
-      font-size: 1rem;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.9rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     .autocomplete-list {
       position: absolute;
       top: 100%;
-      left: 0.5rem;
-      right: 120px;
+      left: 0;
+      right: 75px;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       box-shadow: var(--shadow);
       z-index: 1000;
-      max-height: 250px;
+      max-height: 180px;
       overflow-y: auto;
       display: none;
-      margin-top: 4px;
+      margin-top: 3px;
     }
     .autocomplete-item {
-      padding: 0.65rem 0.8rem;
+      padding: 0.5rem 0.65rem;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 0.4rem;
     }
     .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover {
-      background: var(--bg);
-      color: var(--accent);
+
+    /* Dial Display Section */
+    .dial-section {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 0;
     }
 
-    .verdict-banner {
-      border-radius: 8px;
-      padding: 1.1rem 1.25rem;
-      margin: 0 0.5rem 1.25rem 0.5rem;
-      text-align: center;
-      box-shadow: var(--shadow);
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .verdict-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 0.25rem;
-    }
-    .verdict-sub {
-      font-size: 0.9rem;
-      opacity: 0.92;
-      font-weight: 500;
-    }
-
-    .verdict-vhigh { background: #1b5e20; color: #ffffff; border: 1px solid #144718; }
-    .verdict-high  { background: #2e7d32; color: #ffffff; border: 1px solid #1b5e20; }
-    .verdict-med   { background: #f57f17; color: #ffffff; border: 1px solid #e65100; }
-    .verdict-low   { background: #e65100; color: #ffffff; border: 1px solid #bf360c; }
-    .verdict-vlow  { background: #c62828; color: #ffffff; border: 1px solid #b71c1c; }
-
-    [data-theme="dark"] .verdict-vhigh { background: #144718; color: #e8f3ec; border-color: #2e7d32; }
-    [data-theme="dark"] .verdict-high  { background: #1b3e20; color: #81c784; border-color: #2e7d32; }
-    [data-theme="dark"] .verdict-med   { background: #3e3310; color: #fff176; border-color: #fbc02d; }
-    [data-theme="dark"] .verdict-low   { background: #3e1f10; color: #ffb74d; border-color: #f57c00; }
-    [data-theme="dark"] .verdict-vlow  { background: #3e1b1b; color: #ef9a9a; border-color: #c62828; }
-
-    .alert-banner {
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      margin: 0 0.5rem 1rem 0.5rem;
-      font-weight: bold;
-      font-size: 0.9rem;
+    .dial-container {
+      position: relative;
+      width: min(310px, calc(100vw - 1.2rem));
+      height: min(310px, calc(100vw - 1.2rem));
+      max-height: 40vh;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      box-shadow: var(--shadow);
-    }
-    .alert-warning {
-      background-color: #fff8e1;
-      color: #826100;
-      border: 1px solid #ffe082;
-    }
-    .alert-danger {
-      background-color: #ffebee;
-      color: #c62828;
-      border: 1px solid #ef9a9a;
+      justify-content: center;
     }
 
-    [data-theme="dark"] .alert-warning {
-      background-color: #3e3310;
-      color: #ffe082;
-      border-color: #fbc02d;
-    }
-    [data-theme="dark"] .alert-danger {
-      background-color: #3e1b1b;
-      color: #ef9a9a;
-      border-color: #c62828;
+    .dial-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
     }
 
+    .dial-bg-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 14;
+      opacity: 0.4;
+    }
+
+    .dial-value-arc {
+      fill: none;
+      stroke: var(--gauge-good);
+      stroke-width: 14;
+      stroke-linecap: round;
+      stroke-dasharray: 691;
+      stroke-dashoffset: 691;
+      transition: stroke-dashoffset 0.4s ease-out, stroke 0.3s ease;
+    }
+
+    .dial-content {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0.6rem;
+    }
+
+    .dial-score-num {
+      font-size: clamp(2.5rem, 8vw, 3.3rem);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 0.95;
+    }
+
+    .dial-temp-badge {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.08rem 0.5rem;
+      border-radius: 12px;
+      margin: 0.15rem 0 0.2rem 0;
+    }
+
+    .dial-verdict-title {
+      font-size: clamp(1.05rem, 3.8vw, 1.2rem);
+      font-weight: 800;
+      margin-bottom: 0.1rem;
+    }
+
+    .dial-verdict-sub {
+      font-size: clamp(0.72rem, 2.6vw, 0.8rem);
+      color: var(--text-muted);
+      line-height: 1.15;
+      max-width: 190px;
+    }
+
+    /* Date Bar Selector */
+    .date-bar {
+      display: flex;
+      gap: 0.3rem;
+      overflow-x: auto;
+      padding-bottom: 0.1rem;
+      margin-bottom: 0.15rem;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .date-bar::-webkit-scrollbar { display: none; }
+
+    .date-btn {
+      flex: 1;
+      min-width: 58px;
+      min-height: 48px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.2rem;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+    .date-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+    .date-btn .day { font-weight: bold; }
+    .date-btn .date-icon { font-size: 1.05rem; margin: 0.05rem 0; }
+
+    /* Tee Time Slider Card */
     .slider-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.9rem 1.25rem;
-      margin: 0 0.5rem 1.25rem 0.5rem;
+      border-radius: 9px;
+      padding: 0.4rem 0.7rem;
       box-shadow: var(--shadow);
+      flex-shrink: 0;
     }
     .slider-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.4rem;
-      font-size: 0.85rem;
+      margin-bottom: 0.15rem;
+      font-size: 0.8rem;
       font-weight: bold;
       color: var(--text-muted);
     }
     .slider-value {
-      font-size: 1rem;
+      font-size: 0.88rem;
       color: var(--accent);
       font-weight: 800;
-      white-space: nowrap;
     }
-    
+
     input[type="range"] {
       width: 100%;
       height: 6px;
@@ -329,254 +369,167 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: var(--accent);
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    input[type="range"]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
+
+    .daylight-warning {
+      display: none;
+      margin-top: 0.2rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .daylight-warning.warn-orange {
+      background-color: var(--warn-orange-bg);
+      border: 1px solid var(--warn-orange-border);
+      color: var(--warn-orange-text);
+    }
+    .daylight-warning.warn-red {
+      background-color: var(--warn-bad-bg);
+      border: 1px solid var(--warn-bad-border);
+      color: var(--warn-bad-text);
+    }
+
+    /* Page Switch Action Button (Bottom of Screen 1) */
+    .page-nav-btn {
+      width: 100%;
+      margin-top: 0.15rem;
+      padding: 0.55rem 0;
       background: var(--accent);
-      cursor: pointer;
+      color: #ffffff;
       border: none;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      flex-shrink: 0;
+      min-height: 40px;
+    }
+    .page-nav-btn:active {
+      opacity: 0.9;
+      transform: scale(0.99);
+    }
+
+    /* Screen 2: Details Page View */
+    .screen-details {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 0.4rem 0 1.5rem 0;
+    }
+
+    .back-nav-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.8rem;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      align-self: flex-start;
+      box-shadow: var(--shadow);
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.25rem;
-      margin: 0 0.5rem 1.25rem 0.5rem;
+      border-radius: 10px;
+      padding: 1rem;
       box-shadow: var(--shadow);
     }
-
     .card h2 {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       margin-bottom: 0.5rem;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .card-centered { text-align: center; }
-    .card-centered h2 { text-align: center; }
-
-    .score-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 1.35rem;
-      margin: 0.25rem auto 0.75rem auto;
-    }
-    .score-high { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
-    .score-med  { background: #fffde7; color: #f57f17; border: 1px solid #fff9c4; }
-    .score-low  { background: #ffebee; color: #b71c1c; border: 1px solid #ffcdd2; }
-
-    [data-theme="dark"] .score-high { background: #1b3e20; color: #81c784; border-color: #2e7d32; }
-    [data-theme="dark"] .score-med  { background: #3e3810; color: #fff176; border-color: #fbc02d; }
-    [data-theme="dark"] .score-low  { background: #3e1b1b; color: #e57373; border-color: #c62828; }
-
-    .callout-box {
-      margin-top: 0.6rem;
-      padding: 0.65rem 0.9rem;
-      border-radius: 6px;
-      font-size: 0.88rem;
-      text-align: left;
-      border-left: 5px solid var(--accent);
-      background: var(--bg);
-      transition: background-color 0.2s, border-color 0.2s;
-    }
-    .callout-title {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 0.15rem;
-    }
-    .callout-body {
-      display: block;
-    }
-
-    .callout-good {
-      background-color: var(--warn-good-bg);
-      border-left-color: var(--warn-good-border);
-      color: var(--warn-good-text);
-    }
-    .callout-med {
-      background-color: var(--warn-med-bg);
-      border-left-color: var(--warn-med-border);
-      color: var(--warn-med-text);
-    }
-    .callout-orange {
-      background-color: var(--warn-orange-bg);
-      border-left-color: var(--warn-orange-border);
-      color: var(--warn-orange-text);
-    }
-    .callout-bad {
-      background-color: var(--warn-bad-bg);
-      border-left-color: var(--warn-bad-border);
-      color: var(--warn-bad-text);
-    }
-
-    .gear-list {
-      margin-top: 0.3rem;
-      padding-left: 1.25rem;
-      font-size: 0.85rem;
-    }
-    .gear-list li {
-      margin-bottom: 0.2rem;
+      letter-spacing: 0.5px;
     }
 
     .overview-hero {
       text-align: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
     .temp-large {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: bold;
       display: flex;
       align-items: baseline;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 0.35rem;
     }
     .feels-like-tag {
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
       font-weight: normal;
     }
     .current-condition-text {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
       font-weight: 500;
     }
 
-    .grid-3col {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      margin-top: 0.75rem;
+    .callout-box {
+      margin-top: 0.45rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      border-left: 4px solid var(--accent);
+      background: var(--bg);
     }
+    .callout-title { font-weight: bold; display: block; margin-bottom: 0.1rem; }
+    
+    .callout-good { background-color: var(--warn-good-bg); border-left-color: var(--warn-good-border); color: var(--warn-good-text); }
+    .callout-med { background-color: var(--warn-med-bg); border-left-color: var(--warn-med-border); color: var(--warn-med-text); }
+    .callout-orange { background-color: var(--warn-orange-bg); border-left-color: var(--warn-orange-border); color: var(--warn-orange-text); }
+    .callout-bad { background-color: var(--warn-bad-bg); border-left-color: var(--warn-bad-border); color: var(--warn-bad-text); }
 
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
     .grid-item {
       background: var(--bg);
-      padding: 0.65rem 0.5rem;
+      padding: 0.6rem 0.4rem;
       border-radius: 6px;
       border: 1px solid var(--border);
-      transition: background-color 0.2s, border-color 0.2s;
     }
-    .grid-item .label { font-size: 0.75rem; color: var(--text-muted); }
+    .grid-item .label { font-size: 0.72rem; color: var(--text-muted); }
     .grid-item .value-main { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
-    .grid-item .value-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; font-weight: normal; }
+    .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
 
-    .grid-item.stat-good {
-      background-color: var(--warn-good-bg);
-      border-color: var(--warn-good-border);
-    }
-    .grid-item.stat-med {
-      background-color: var(--warn-med-bg);
-      border-color: var(--warn-med-border);
-    }
-    .grid-item.stat-orange {
-      background-color: var(--warn-orange-bg);
-      border-color: var(--warn-orange-border);
-    }
-    .grid-item.stat-bad {
-      background-color: var(--warn-bad-bg);
-      border-color: var(--warn-bad-border);
-    }
+    .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); }
+    .grid-item.stat-med { background-color: var(--warn-med-bg); border-color: var(--warn-med-border); }
+    .grid-item.stat-orange { background-color: var(--warn-orange-bg); border-color: var(--warn-orange-border); }
+    .grid-item.stat-bad { background-color: var(--warn-bad-bg); border-color: var(--warn-bad-border); }
 
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
-      margin-top: 0.75rem;
-    }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
 
-    #status { margin: 0 0.5rem 1rem 0.5rem; font-style: italic; color: var(--text-muted); font-size: 0.9rem; }
-    
-    .date-bar {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-      padding: 0 0.5rem 0.5rem 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-    @media (min-width: 600px) {
-      .date-bar {
-        display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-        grid-auto-flow: column;
-        overflow-x: visible;
-        padding: 0 0.5rem 0.5rem 0.5rem;
-      }
-    }
-    .date-btn {
-      flex: 0 0 auto;
-      text-align: center;
-      padding: 0.5rem 0.2rem;
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.15rem;
-      min-width: 65px;
-      position: relative;
-    }
-    @media (min-width: 600px) {
-      .date-btn { min-width: 0; width: 100%; }
-    }
-    .date-btn .day { font-weight: bold; }
-    .date-btn .date-icon { font-size: 1.1rem; margin: 0.1rem 0; }
-    .date-btn .date { font-size: 0.72rem; opacity: 0.8; }
-
-    .anchored-picker {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      width: 1px;
-      height: 1px;
-      pointer-events: none;
-      border: none;
-    }
-
-    /* Fixed Chart Container - Zero Vertical Scroll */
+    /* Chart Styles */
     .chart-wrapper-split {
       display: flex;
       width: 100%;
-      margin-top: 0.5rem;
-      position: relative;
+      margin-top: 0.4rem;
       background: var(--card-bg);
       border-radius: 6px;
       overflow: hidden;
     }
-    .chart-y-fixed {
-      width: 35px;
-      height: 155px;
-      flex-shrink: 0;
-      z-index: 10;
-      background: var(--card-bg);
-      border-right: 1px solid var(--border);
-    }
-    .chart-container-scrollable {
-      flex: 1;
-      overflow-x: auto;
-      overflow-y: hidden;
-      height: 155px;
-    }
-    .chart-scroll-inner {
-      min-width: 520px;
-      height: 155px;
-    }
-
+    .chart-y-fixed { width: 32px; height: 135px; flex-shrink: 0; background: var(--card-bg); border-right: 1px solid var(--border); }
+    .chart-container-scrollable { flex: 1; overflow-x: auto; height: 135px; }
+    .chart-scroll-inner { min-width: 480px; height: 135px; }
+    
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
     .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; }
@@ -588,110 +541,104 @@
     .tee-line { stroke: var(--tee-line); stroke-width: 2; stroke-dasharray: 3,3; }
     .chart-icon-marker { font-size: 12px; text-anchor: middle; cursor: pointer; }
 
-    /* Clean Chart Legend */
     .chart-legend {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.8rem 1.25rem;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 0.6rem;
-    }
-    .legend-item { display: flex; align-items: center; gap: 0.35rem; }
-    .legend-color { width: 10px; height: 10px; border-radius: 2px; }
-    
-    .sun-icon { width: 16px; height: 16px; vertical-align: middle; }
-
-    .pwa-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .pwa-content {
-      background: var(--card-bg);
-      border-radius: 8px;
-      padding: 1.5rem;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: var(--shadow);
-    }
-    .pwa-content h3 { margin-bottom: 0.75rem; font-size: 1.1rem; }
-    .pwa-content ol { padding-left: 1.25rem; margin-bottom: 1rem; font-size: 0.9rem; }
-    .pwa-content li { margin-bottom: 0.4rem; }
-
-    /* Subtle Footer Style */
-    .app-footer {
-      text-align: center;
-      padding: 1rem 0.5rem 0.5rem 0.5rem;
+      gap: 0.5rem 0.8rem;
       font-size: 0.75rem;
       color: var(--text-muted);
+      margin-top: 0.45rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.25rem; }
+    .legend-color { width: 8px; height: 8px; border-radius: 2px; }
+
+    #status { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem; }
+
+    .beta-footer {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
       opacity: 0.75;
-      font-weight: 500;
+      padding: 1.2rem 0 0.4rem 0;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header class="hero-banner">
-    <div class="hero-title">
-      <h1>⛳ Is It Golf Weather?</h1>
-      <p>Course conditions & playability</p>
+<div class="app-container">
+  
+  <!-- Screen 1: Singular Landing Page View -->
+  <div id="screen1" class="screen-landing">
+    <!-- Top Header -->
+    <header class="compact-header">
+      <div class="compact-title">
+        <h1>⛳ Golf Weather</h1>
+        <span class="version-tag">v1.6</span>
+      </div>
+      <div class="controls-mini">
+        <button id="unitToggle">°C</button>
+        <button id="speedToggle">mph</button>
+        <button id="themeToggle">🌙</button>
+      </div>
+    </header>
+
+    <!-- Location Search Bar -->
+    <div class="search-box">
+      <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
+      <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
+      <button id="geoBtn" class="icon-btn" title="Use current location">📍</button>
+      <div id="autocompleteList" class="autocomplete-list"></div>
     </div>
-    <div class="controls">
-      <button id="pwaBtn" title="Install or Pin to Home Screen">📱 Pin App</button>
-      <button id="unitToggle">°C</button>
-      <button id="speedToggle">mph</button>
-      <button id="themeToggle">🌙</button>
-    </div>
-  </header>
 
-  <div class="search-box">
-    <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
-    <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
-    <button id="geoBtn" class="icon-btn" title="Use current location">📍</button>
-    <div id="autocompleteList" class="autocomplete-list"></div>
-  </div>
+    <!-- Central Dynamic Dial -->
+    <div class="dial-section">
+      <div class="dial-container">
+        <svg class="dial-svg" viewBox="0 0 240 240">
+          <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
+          <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
+        </svg>
 
-  <div id="status">Getting location...</div>
-
-  <div id="weatherContent" style="display: none;">
-    
-    <!-- Verdict Banner -->
-    <div id="verdictBanner" class="verdict-banner verdict-high">
-      <div id="verdictTitle" class="verdict-title">--</div>
-      <div id="verdictSub" class="verdict-sub">--</div>
+        <div class="dial-content">
+          <div id="dialScore" class="dial-score-num">--</div>
+          <div id="dialTemp" class="dial-temp-badge">--°C</div>
+          <div id="dialVerdict" class="dial-verdict-title">--</div>
+          <div id="dialSub" class="dial-verdict-sub">--</div>
+        </div>
+      </div>
     </div>
 
     <!-- Date Bar Selector -->
     <div class="date-bar" id="dateBar"></div>
 
-    <!-- Clean Tee Time Start Slider -->
+    <!-- Tee Time Slider Card -->
     <div class="slider-card">
       <div class="slider-header">
         <span>⛳ Tee Time</span>
         <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
       </div>
       <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
+      <div id="daylightWarning" class="daylight-warning"></div>
     </div>
 
-    <!-- Dynamic Daylight Warning Banner -->
-    <div id="daylightBanner" style="display: none;"></div>
+    <!-- Bottom Click Navigation Button to Details Page -->
+    <button class="page-nav-btn" id="goToDetailsBtn">
+      <span>Click for Detailed Breakdown</span> <span>👉</span>
+    </button>
+  </div>
 
-    <!-- Golf Rating Card with Color-Coded Callouts -->
-    <div class="card card-centered">
-      <h2>Golf Rating</h2>
-      <div id="scoreBadge" class="score-badge score-high">
-        <span id="scoreIcon">⛳</span>
-        <span id="scoreText">-- / 10</span>
-      </div>
-      
+  <div id="status">Getting location...</div>
+
+  <!-- Screen 2: Detailed Breakdown Page View -->
+  <div id="screen2" class="screen-details">
+    
+    <button class="back-nav-btn" id="backToLandingBtn">
+      <span>← Back to Overview</span>
+    </button>
+
+    <!-- Detailed Callout Breakdown -->
+    <div class="card">
+      <h2>Course Condition Breakdown</h2>
       <div id="groundCallout" class="callout-box"></div>
       <div id="windCallout" class="callout-box"></div>
       <div id="rainOutlookCallout" class="callout-box"></div>
@@ -699,7 +646,7 @@
       <div id="gearCallout" class="callout-box"></div>
     </div>
 
-    <!-- Right Now / Round Overview Card -->
+    <!-- Weather Overview Card -->
     <div class="card">
       <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
       
@@ -711,36 +658,27 @@
         </div>
         <div id="currentCondition" class="current-condition-text">--</div>
       </div>
-      
+
       <div class="grid-3col">
         <div class="grid-item" id="windCard">
           <div class="label">Wind Speed</div>
-          <div class="value-main">
-            <span id="windIcon">🍃</span>
-            <span id="currentWind">--</span>
-          </div>
+          <div class="value-main"><span id="windIcon">🍃</span> <span id="currentWind">--</span></div>
           <div class="value-sub" id="windSub">--</div>
         </div>
         <div class="grid-item" id="recentRainCard">
           <div class="label">Recent (24h)</div>
-          <div class="value-main">
-            <span>🌧️</span>
-            <span id="recentRain">--</span>
-          </div>
+          <div class="value-main"><span>🌧️</span> <span id="recentRain">--</span></div>
           <div class="value-sub" id="recentRainSub">--</div>
         </div>
         <div class="grid-item" id="forecastRainCard">
           <div class="label">Round Rain (4h)</div>
-          <div class="value-main">
-            <span>☔</span>
-            <span id="forecastRain">--</span>
-          </div>
+          <div class="value-main"><span>☔</span> <span id="forecastRain">--</span></div>
           <div class="value-sub" id="forecastRainSub">--</div>
         </div>
       </div>
     </div>
 
-    <!-- 24-Hour Forecast Chart with Correct Legend (No Blue Box on Tee Time) -->
+    <!-- 24-Hour Forecast Chart -->
     <div class="card">
       <h2>24-Hour Forecast</h2>
       <div class="chart-wrapper-split">
@@ -763,29 +701,17 @@
       </div>
     </div>
 
-    <!-- Day Summary Card -->
+    <!-- Day Summary Grid -->
     <div class="card">
       <h2>Day Summary</h2>
       <div class="summary-grid">
         <div class="grid-item">
           <div class="label">Sunrise</div>
-          <div class="value-main">
-            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#f57c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v6M4.93 10.93l4.24 4.24M1 18h22M2 22h20M19.07 10.93l-4.24 4.24"/>
-              <circle cx="12" cy="18" r="4"/>
-            </svg>
-            <span id="sunriseTime">--:--</span>
-          </div>
+          <div class="value-main">☀️ <span id="sunriseTime">--:--</span></div>
         </div>
         <div class="grid-item">
           <div class="label">Sunset</div>
-          <div class="value-main">
-            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 10V4M4.93 10.93l4.24-4.24M1 18h22M2 22h20M19.07 10.93l-4.24 4.24"/>
-              <circle cx="12" cy="18" r="4"/>
-            </svg>
-            <span id="sunsetTime">--:--</span>
-          </div>
+          <div class="value-main">🌙 <span id="sunsetTime">--:--</span></div>
         </div>
         <div class="grid-item" id="daylightCard">
           <div class="label">Daylight Left</div>
@@ -806,38 +732,22 @@
       </div>
     </div>
 
-    <!-- Subtle App Footer -->
-    <footer class="app-footer">
-      v1.0 • Made by KW • October 2026
+    <footer class="beta-footer">
+      Is It Golf Weather? v1.6 • Made by KW
     </footer>
 
   </div>
-</div>
 
-<!-- Add to Home Screen Modal -->
-<div id="pwaModal" class="pwa-modal">
-  <div class="pwa-content">
-    <h3>📱 Add to Home Screen</h3>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">To pin <strong>Is It Golf Weather?</strong> to your mobile homescreen:</p>
-    <div id="iosSteps" style="display:none;">
-      <ol>
-        <li>Tap the <strong>Share</strong> icon (square with arrow) at the bottom of Safari.</li>
-        <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
-        <li>Tap <strong>Add</strong> in the top right.</li>
-      </ol>
-    </div>
-    <div id="androidSteps" style="display:none;">
-      <ol>
-        <li>Tap the <strong>Three Dots (⋮)</strong> menu icon in Chrome.</li>
-        <li>Tap <strong>Add to Home screen</strong> or <strong>Install app</strong>.</li>
-        <li>Confirm by tapping <strong>Add</strong>.</li>
-      </ol>
-    </div>
-    <button id="closePwaBtn" style="width: 100%; margin-top: 0.5rem; background: var(--accent); color: #fff;">Got it!</button>
-  </div>
 </div>
 
 <script>
+  // Exact Viewport Height Measuring
+  function updateRealVh() {
+    document.documentElement.style.setProperty('--real-vh', `${window.innerHeight * 0.01}px`);
+  }
+  window.addEventListener('resize', updateRealVh);
+  updateRealVh();
+
   let currentUnit = 'C'; 
   let speedUnit = 'mph'; 
   let currentData = null;
@@ -846,45 +756,38 @@
   
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(18, currentHourNow));
-  
   let debounceTimer = null;
   let savedHomeCourse = null;
-  let rAFPending = false;
 
-  const fahrenheitCountries = ['US', 'PR', 'VI', 'GU', 'MP', 'AS', 'BS', 'KY', 'LR'];
+  const circumference = 2 * Math.PI * 110;
 
-  // Global DOM Caching
+  // DOM Elements
+  const screen1 = document.getElementById('screen1');
+  const screen2 = document.getElementById('screen2');
+  const goToDetailsBtn = document.getElementById('goToDetailsBtn');
+  const backToLandingBtn = document.getElementById('backToLandingBtn');
+
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
   const geoBtn = document.getElementById('geoBtn');
   const homeCourseBtn = document.getElementById('homeCourseBtn');
-  const pwaBtn = document.getElementById('pwaBtn');
-  const pwaModal = document.getElementById('pwaModal');
-  const closePwaBtn = document.getElementById('closePwaBtn');
-  const iosSteps = document.getElementById('iosSteps');
-  const androidSteps = document.getElementById('androidSteps');
 
   const locationInput = document.getElementById('locationInput');
   const autocompleteList = document.getElementById('autocompleteList');
   const statusEl = document.getElementById('status');
-  const contentEl = document.getElementById('weatherContent');
   const dateBar = document.getElementById('dateBar');
   
   const teeTimeSlider = document.getElementById('teeTimeSlider');
   const teeTimeDisplay = document.getElementById('teeTimeDisplay');
+  const daylightWarning = document.getElementById('daylightWarning');
 
-  teeTimeSlider.value = selectedTeeHour;
+  const dialArc = document.getElementById('dialArc');
+  const dialScore = document.getElementById('dialScore');
+  const dialTemp = document.getElementById('dialTemp');
+  const dialVerdict = document.getElementById('dialVerdict');
+  const dialSub = document.getElementById('dialSub');
 
-  const verdictBanner = document.getElementById('verdictBanner');
-  const verdictTitle = document.getElementById('verdictTitle');
-  const verdictSub = document.getElementById('verdictSub');
-
-  const scoreBadge = document.getElementById('scoreBadge');
-  const scoreIcon = document.getElementById('scoreIcon');
-  const scoreText = document.getElementById('scoreText');
-  const daylightBanner = document.getElementById('daylightBanner');
-  
   const groundCallout = document.getElementById('groundCallout');
   const windCallout = document.getElementById('windCallout');
   const rainOutlookCallout = document.getElementById('rainOutlookCallout');
@@ -898,6 +801,21 @@
   const dailyRainCard = document.getElementById('dailyRainCard');
   const maxWindCard = document.getElementById('maxWindCard');
 
+  teeTimeSlider.value = selectedTeeHour;
+
+  // Page Toggle Navigation
+  goToDetailsBtn.addEventListener('click', () => {
+    screen1.style.display = 'none';
+    screen2.style.display = 'flex';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  backToLandingBtn.addEventListener('click', () => {
+    screen2.style.display = 'none';
+    screen1.style.display = 'flex';
+    updateRealVh();
+  });
+
   try {
     const saved = localStorage.getItem('golf_home_course');
     if (saved) {
@@ -908,56 +826,74 @@
 
   homeCourseBtn.addEventListener('click', () => {
     if (savedHomeCourse && locationInput.value === savedHomeCourse.name) {
-      if (confirm(`Remove "${savedHomeCourse.name}" as your saved Home Course?`)) {
+      if (confirm(`Remove "${savedHomeCourse.name}" as saved Home Course?`)) {
         savedHomeCourse = null;
         localStorage.removeItem('golf_home_course');
         homeCourseBtn.style.color = 'inherit';
       }
     } else if (savedHomeCourse && locationInput.value !== savedHomeCourse.name) {
-      fetchWeather(savedHomeCourse.lat, savedHomeCourse.lon, savedHomeCourse.name, savedHomeCourse.country);
-    } else {
-      if (currentCityName) {
-        savedHomeCourse = { name: currentCityName, lat: currentData.latitude, lon: currentData.longitude };
-        localStorage.setItem('golf_home_course', JSON.stringify(savedHomeCourse));
-        homeCourseBtn.style.color = '#fbc02d';
-        alert(`Saved "${currentCityName}" as your Home Course!`);
+      fetchWeather(savedHomeCourse.lat, savedHomeCourse.lon, savedHomeCourse.name);
+    } else if (currentCityName) {
+      savedHomeCourse = { name: currentCityName, lat: currentData.latitude, lon: currentData.longitude };
+      localStorage.setItem('golf_home_course', JSON.stringify(savedHomeCourse));
+      homeCourseBtn.style.color = '#fbc02d';
+    }
+  });
+
+  locationInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const query = locationInput.value.trim();
+    if (query.length < 2) {
+      autocompleteList.style.display = 'none';
+      return;
+    }
+    debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
+  });
+
+  async function searchAutocomplete(rawQuery) {
+    try {
+      let cleanQuery = rawQuery.replace(/royal/gi, '').trim() || rawQuery;
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=6&language=en&format=json`);
+      const data = await res.json();
+      
+      autocompleteList.innerHTML = '';
+      if (data.results && data.results.length > 0) {
+        data.results.forEach(place => {
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          const isGolf = place.name.toLowerCase().includes('golf') ? '⛳ ' : '📍 ';
+          const region = place.admin1 ? `, ${place.admin1}` : '';
+          const fullName = `${place.name}${region}, ${place.country_code}`;
+          
+          item.innerHTML = `<span>${isGolf}</span> <span>${fullName}</span>`;
+          item.addEventListener('click', () => {
+            locationInput.value = fullName;
+            autocompleteList.style.display = 'none';
+            selectedDayIndex = 0;
+            fetchWeather(place.latitude, place.longitude, `${place.name}${region}`);
+          });
+          autocompleteList.appendChild(item);
+        });
+        autocompleteList.style.display = 'block';
+      } else {
+        autocompleteList.style.display = 'none';
       }
-    }
-  });
+    } catch (e) { console.warn("Autocomplete failed", e); }
+  }
 
-  pwaBtn.addEventListener('click', () => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS) {
-      iosSteps.style.display = 'block';
-      androidSteps.style.display = 'none';
-    } else {
-      androidSteps.style.display = 'block';
-      iosSteps.style.display = 'none';
-    }
-    pwaModal.style.display = 'flex';
-  });
-
-  closePwaBtn.addEventListener('click', () => {
-    pwaModal.style.display = 'none';
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-box')) autocompleteList.style.display = 'none';
   });
 
   teeTimeSlider.addEventListener('input', (e) => {
     selectedTeeHour = parseInt(e.target.value);
     updateTeeTimeDisplay();
-    
-    if (!rAFPending) {
-      rAFPending = true;
-      requestAnimationFrame(() => {
-        render();
-        rAFPending = false;
-      });
-    }
+    render();
   });
 
   function updateTeeTimeDisplay() {
-    const ampmStart = selectedTeeHour >= 12 ? 'PM' : 'AM';
-    const displayStart = (selectedTeeHour % 12 || 12) + ':00 ' + ampmStart;
-    teeTimeDisplay.textContent = displayStart;
+    const ampm = selectedTeeHour >= 12 ? 'PM' : 'AM';
+    teeTimeDisplay.textContent = `${(selectedTeeHour % 12 || 12)}:00 ${ampm}`;
   }
 
   function getWeatherInfo(code) {
@@ -966,23 +902,13 @@
       1: { text: 'Mainly clear', icon: '🌤️' },
       2: { text: 'Partly cloudy', icon: '⛅' },
       3: { text: 'Overcast', icon: '☁️' },
-      45: { text: 'Fog', icon: '🌫️' },
-      48: { text: 'Depositing rime fog', icon: '🌫️' },
-      51: { text: 'Light drizzle', icon: '🌦️' },
-      53: { text: 'Moderate drizzle', icon: '🌧️' },
-      55: { text: 'Dense drizzle', icon: '🌧️' },
+      51: { text: 'Drizzle', icon: '🌦️' },
       61: { text: 'Slight rain', icon: '🌧️' },
       63: { text: 'Moderate rain', icon: '🌧️' },
       65: { text: 'Heavy rain', icon: '🌧️☔' },
-      71: { text: 'Slight snow', icon: '🌨️' },
-      73: { text: 'Moderate snow', icon: '❄️' },
-      75: { text: 'Heavy snow', icon: '❄️' },
-      80: { text: 'Slight showers', icon: '🌦️' },
-      81: { text: 'Moderate showers', icon: '🌧️' },
-      82: { text: 'Violent showers', icon: '⛈️' },
       95: { text: 'Thunderstorm', icon: '⚡' }
     };
-    return codes[code] || { text: 'Unknown', icon: '🌡️' };
+    return codes[code] || { text: 'Cloudy', icon: '🌥️' };
   }
 
   function getWindVisuals(speedKmh) {
@@ -997,127 +923,34 @@
     try {
       const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
       const data = await res.json();
-      
-      if (data.countryCode && fahrenheitCountries.includes(data.countryCode.toUpperCase())) {
-        currentUnit = 'F';
-      } else {
-        currentUnit = 'C';
-      }
-      unitToggle.textContent = `°${currentUnit}`;
-
       const city = data.city || data.locality || data.principalSubdivision;
       if (city) return `${city}, ${data.countryCode}`;
-    } catch (e) {
-      console.warn("Geocoding failed", e);
-    }
+    } catch (e) { console.warn(e); }
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
-  async function fetchWeather(lat, lon, overrideName = '', countryCode = '') {
-    statusEl.textContent = 'Fetching weather data...';
+  async function fetchWeather(lat, lon, overrideName = '') {
+    statusEl.textContent = 'Fetching weather...';
     try {
-      if (!overrideName) {
-        currentCityName = await fetchFriendlyLocationName(lat, lon);
-      } else {
-        currentCityName = overrideName;
-        if (countryCode && fahrenheitCountries.includes(countryCode.toUpperCase())) {
-          currentUnit = 'F';
-        } else {
-          currentUnit = 'C';
-        }
-        unitToggle.textContent = `°${currentUnit}`;
-      }
+      if (!overrideName) currentCityName = await fetchFriendlyLocationName(lat, lon);
+      else currentCityName = overrideName;
 
       locationInput.value = currentCityName;
 
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
       const res = await fetch(url);
-      const data = await res.json();
-      
-      currentData = data;
+      currentData = await res.json();
       
       buildDateBar();
       updateTeeTimeDisplay();
       render();
-      statusEl.textContent = '';
-      contentEl.style.display = 'block';
+      statusEl.style.display = 'none';
+      screen1.style.display = 'flex';
+      updateRealVh();
     } catch (err) {
-      statusEl.textContent = 'Error loading weather data.';
-      console.error(err);
+      statusEl.textContent = 'Error loading weather.';
     }
   }
-
-  locationInput.addEventListener('input', () => {
-    clearTimeout(debounceTimer);
-    const query = locationInput.value.trim();
-    if (query.length < 2) {
-      autocompleteList.style.display = 'none';
-      return;
-    }
-    debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
-  });
-
-  async function searchAutocomplete(rawQuery) {
-    try {
-      let cleanQuery = rawQuery.replace(/royal/gi, '').trim();
-      if (!cleanQuery) cleanQuery = rawQuery;
-
-      const primaryRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(rawQuery)}&count=10&language=en&format=json`);
-      const primaryData = await primaryRes.json();
-      
-      let results = primaryData.results || [];
-
-      if (cleanQuery !== rawQuery) {
-        const fallbackRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=10&language=en&format=json`);
-        const fallbackData = await fallbackRes.json();
-        if (fallbackData.results) {
-          results = [...results, ...fallbackData.results];
-        }
-      }
-
-      const uniqueResults = Array.from(new Map(results.map(item => [item.id, item])).values());
-
-      autocompleteList.innerHTML = '';
-      
-      if (uniqueResults.length > 0) {
-        uniqueResults.sort((a, b) => {
-          const aGolf = a.name.toLowerCase().includes('golf');
-          const bGolf = b.name.toLowerCase().includes('golf');
-          return bGolf - aGolf;
-        });
-
-        uniqueResults.slice(0, 6).forEach(place => {
-          const item = document.createElement('div');
-          item.className = 'autocomplete-item';
-          const isGolf = place.name.toLowerCase().includes('golf') ? '⛳ ' : '📍 ';
-          const region = place.admin1 ? `, ${place.admin1}` : '';
-          const country = place.country ? `, ${place.country}` : '';
-          const fullName = `${place.name}${region}${country}`;
-          
-          item.innerHTML = `<span>${isGolf}</span> <span>${fullName}</span>`;
-          
-          item.addEventListener('click', () => {
-            locationInput.value = fullName;
-            autocompleteList.style.display = 'none';
-            selectedDayIndex = 0;
-            fetchWeather(place.latitude, place.longitude, `${place.name}${region}`, place.country_code);
-          });
-          autocompleteList.appendChild(item);
-        });
-        autocompleteList.style.display = 'block';
-      } else {
-        autocompleteList.style.display = 'none';
-      }
-    } catch (e) {
-      console.warn("Autocomplete search failed", e);
-    }
-  }
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-box')) {
-      autocompleteList.style.display = 'none';
-    }
-  });
 
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
@@ -1128,10 +961,8 @@
     const weatherCodes = currentData.daily.weather_code.slice(pastOffset);
     
     for (let idx = 0; idx < Math.min(6, days.length); idx++) {
-      const dateStr = days[idx];
-      const d = new Date(dateStr);
+      const d = new Date(days[idx]);
       const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
-      const dateNum = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
       const dayWeatherInfo = getWeatherInfo(weatherCodes[idx]);
 
       const btn = document.createElement('button');
@@ -1139,7 +970,6 @@
       btn.innerHTML = `
         <span class="day">${dayName}</span>
         <span class="date-icon">${dayWeatherInfo.icon}</span>
-        <span class="date">${dateNum}</span>
       `;
       btn.addEventListener('click', () => {
         selectedDayIndex = idx;
@@ -1148,49 +978,10 @@
       });
       dateBar.appendChild(btn);
     }
-
-    const moreBtn = document.createElement('button');
-    moreBtn.className = `date-btn ${selectedDayIndex >= 6 ? 'active' : ''}`;
-    moreBtn.innerHTML = `
-      <span class="day">Custom</span>
-      <span class="date-icon">📅</span>
-      <span class="date">+ More</span>
-      <input type="date" id="anchoredDatePicker" class="anchored-picker">
-    `;
-    
-    moreBtn.addEventListener('click', (e) => {
-      const picker = moreBtn.querySelector('#anchoredDatePicker');
-      if (picker && picker.showPicker) {
-        picker.showPicker();
-      }
-    });
-
-    dateBar.appendChild(moreBtn);
-
-    const anchoredPicker = moreBtn.querySelector('#anchoredDatePicker');
-    if (anchoredPicker) {
-      anchoredPicker.addEventListener('change', (e) => {
-        if (!e.target.value) return;
-        const selectedDate = new Date(e.target.value);
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        const diffDays = Math.round((selectedDate - today) / (1000 * 60 * 60 * 24));
-        
-        if (diffDays >= 0 && diffDays < 7) {
-          selectedDayIndex = diffDays;
-          buildDateBar();
-          render();
-        } else {
-          alert("Please select a date within the next 7 days for detailed weather forecasting.");
-        }
-      });
-    }
   }
 
-  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh, weatherCode, orangeCardCount) {
-    const isSnow = [71, 73, 75].includes(weatherCode);
-    if (tempC <= 0 || isSnow) return 1.0; 
-
+  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
+    if (tempC <= 0) return 1.0; 
     let score = 10;
     const windMph = windSpeedKmh / 1.609;
 
@@ -1208,66 +999,57 @@
 
     if (tempC < 4) score -= 3.5;
     else if (tempC < 8) score -= 2.2;
-    else if (tempC < 12) score -= 1.2;
 
-    if (orangeCardCount >= 3) {
-      score = Math.min(score, 6.4);
-    } else if (orangeCardCount >= 1) {
-      score = Math.min(score, 7.4);
-    }
-
-    score = Math.max(1, Math.min(10, score));
-    return Math.round(score * 10) / 10;
+    return Math.max(1, Math.min(10, Math.round(score * 10) / 10));
   }
 
-  // Render Chart with Clean Icon Markers
-  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday, sunriseDisplay, sunsetDisplay) {
+  function updateDialGauge(score) {
+    const fraction = score / 10;
+    const offset = circumference - (fraction * circumference);
+    dialArc.style.strokeDashoffset = offset;
+
+    if (score >= 8.0) dialArc.style.stroke = 'var(--gauge-good)';
+    else if (score >= 5.0) dialArc.style.stroke = 'var(--gauge-med)';
+    else dialArc.style.stroke = 'var(--gauge-bad)';
+  }
+
+  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
     const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
     ySvg.innerHTML = '';
     svg.innerHTML = '';
 
-    const width = 520;
-    const height = 145;
+    const width = 480;
+    const height = 125;
     const paddingLeft = 10;
     const paddingRight = 15;
-    const paddingBottom = 22;
-    const paddingTop = 20;
+    const paddingBottom = 18;
+    const paddingTop = 16;
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
     const maxRain = Math.max(...hourlyPrecip, 2);
 
-    const count = 24;
-    const stepX = (width - paddingLeft - paddingRight) / (count - 1);
+    const stepX = (width - paddingLeft - paddingRight) / 23;
 
-    const ySteps = 5;
-    for (let i = 0; i < ySteps; i++) {
-      const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / (ySteps - 1)));
+    // Y Axis
+    for (let i = 0; i < 4; i++) {
+      const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
       
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', 28);
+      label.setAttribute('x', 26);
       label.setAttribute('y', yPos + 3);
       label.setAttribute('class', 'chart-y-text');
       label.textContent = `${tickVal}°`;
       ySvg.appendChild(label);
-
-      const gridline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      gridline.setAttribute('x1', paddingLeft);
-      gridline.setAttribute('x2', width - paddingRight);
-      gridline.setAttribute('y1', yPos);
-      gridline.setAttribute('y2', yPos);
-      gridline.setAttribute('stroke', 'var(--border)');
-      gridline.setAttribute('stroke-dasharray', '2,2');
-      svg.appendChild(gridline);
     }
 
+    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
       const y = height - paddingBottom - barHeight;
-      
       if (rain > 0) {
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         rect.setAttribute('x', x);
@@ -1276,26 +1058,20 @@
         rect.setAttribute('height', Math.max(barHeight, 2));
         rect.setAttribute('class', 'chart-bar');
         svg.appendChild(rect);
-
-        const valText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        valText.setAttribute('x', paddingLeft + i * stepX);
-        valText.setAttribute('y', Math.max(y - 2, paddingTop - 2));
-        valText.setAttribute('class', 'chart-bar-val');
-        valText.textContent = `${rain.toFixed(1)}`;
-        svg.appendChild(valText);
       }
     });
 
+    // Temp Line
     let points = '';
     hourlyTemps.forEach((temp, i) => {
       const x = paddingLeft + i * stepX;
       const y = height - paddingBottom - ((temp - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
       points += `${x},${y} `;
 
-      if (i % 4 === 0 || i === count - 1) {
+      if (i % 4 === 0 || i === 23) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', x);
-        text.setAttribute('y', height - 4);
+        text.setAttribute('y', height - 3);
         text.setAttribute('class', 'chart-text');
         text.textContent = `${i}:00`;
         svg.appendChild(text);
@@ -1307,129 +1083,83 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // 📍 Now Marker Icon
+    // Sunrise Vertical Line
+    if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
+      const srX = paddingLeft + sunriseHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', srX); line.setAttribute('x2', srX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'sun-line');
+      svg.appendChild(line);
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', srX); icon.setAttribute('y', paddingTop - 3);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '☀️';
+      svg.appendChild(icon);
+    }
+
+    // Sunset Vertical Line
+    if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
+      const ssX = paddingLeft + sunsetHourDec * stepX;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', ssX); line.setAttribute('x2', ssX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'sun-line');
+      svg.appendChild(line);
+
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      icon.setAttribute('x', ssX); icon.setAttribute('y', paddingTop - 3);
+      icon.setAttribute('class', 'chart-icon-marker');
+      icon.textContent = '🌙';
+      svg.appendChild(icon);
+    }
+
+    // Now Marker
     if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
       const nowX = paddingLeft + currentHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', nowX);
-      line.setAttribute('x2', nowX);
-      line.setAttribute('y1', paddingTop - 2);
-      line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('x1', nowX); line.setAttribute('x2', nowX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
       line.setAttribute('class', 'now-line');
       svg.appendChild(line);
 
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      icon.setAttribute('x', nowX);
-      icon.setAttribute('y', paddingTop - 5);
+      icon.setAttribute('x', nowX); icon.setAttribute('y', paddingTop - 3);
       icon.setAttribute('class', 'chart-icon-marker');
       icon.textContent = '📍';
-      
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = 'Current Time (Now)';
-      icon.appendChild(title);
       svg.appendChild(icon);
     }
 
-    // ☀️ Sunrise Marker Icon
-    if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
-      const sunX = paddingLeft + sunriseHourDec * stepX;
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', sunX);
-      line.setAttribute('x2', sunX);
-      line.setAttribute('y1', paddingTop - 2);
-      line.setAttribute('y2', height - paddingBottom);
-      line.setAttribute('class', 'sun-line');
-      svg.appendChild(line);
-
-      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      icon.setAttribute('x', sunX);
-      icon.setAttribute('y', paddingTop - 5);
-      icon.setAttribute('class', 'chart-icon-marker');
-      icon.textContent = '☀️';
-      
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = `Sunrise (${sunriseDisplay})`;
-      icon.appendChild(title);
-      svg.appendChild(icon);
-    }
-
-    // 🌙 Sunset Marker Icon
-    if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
-      const sunX = paddingLeft + sunsetHourDec * stepX;
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', sunX);
-      line.setAttribute('x2', sunX);
-      line.setAttribute('y1', paddingTop - 2);
-      line.setAttribute('y2', height - paddingBottom);
-      line.setAttribute('class', 'sun-line');
-      svg.appendChild(line);
-
-      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      icon.setAttribute('x', sunX);
-      icon.setAttribute('y', paddingTop - 5);
-      icon.setAttribute('class', 'chart-icon-marker');
-      icon.textContent = '🌙';
-      
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = `Sunset (${sunsetDisplay})`;
-      icon.appendChild(title);
-      svg.appendChild(icon);
-    }
-
-    // ⛳ Tee Time Marker Icon
-    if (teeHourDec >= 0 && teeHourDec <= 23) {
+    // Tee Time Marker
+    if (teeHourDec >= 0) {
       const teeX = paddingLeft + teeHourDec * stepX;
-      const teeLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      teeLine.setAttribute('x1', teeX);
-      teeLine.setAttribute('x2', teeX);
-      teeLine.setAttribute('y1', paddingTop - 2);
-      teeLine.setAttribute('y2', height - paddingBottom);
-      teeLine.setAttribute('class', 'tee-line');
-      svg.appendChild(teeLine);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', teeX); line.setAttribute('x2', teeX);
+      line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+      line.setAttribute('class', 'tee-line');
+      svg.appendChild(line);
 
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      icon.setAttribute('x', teeX);
-      icon.setAttribute('y', paddingTop - 5);
+      icon.setAttribute('x', teeX); icon.setAttribute('y', paddingTop - 3);
       icon.setAttribute('class', 'chart-icon-marker');
       icon.textContent = '⛳';
-      
-      const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-      title.textContent = `Selected Tee Time (${teeHourDec}:00)`;
-      icon.appendChild(title);
       svg.appendChild(icon);
     }
-  }
-
-  function parseTimeFromISO(isoStr) {
-    if (!isoStr) return { hour: 0, minute: 0, display: '--:--', iso: '' };
-    const timePart = isoStr.split('T')[1] || '';
-    const [h, m] = timePart.split(':').map(Number);
-    return {
-      hour: h || 0,
-      minute: m || 0,
-      display: `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`,
-      iso: isoStr
-    };
   }
 
   function render() {
     if (!currentData) return;
 
     const isF = currentUnit === 'F';
-    const c = currentData.current;
-
     const pastOffset = 7;
     const currentDayIdx = pastOffset + selectedDayIndex;
-
-    const d = currentData.daily;
     const h = currentData.hourly;
+    const d = currentData.daily;
+    const c = currentData.current;
 
     const toTemp = (valC) => isF ? Math.round((valC * 9/5) + 32) + '°F' : Math.round(valC) + '°C';
-    const toSpeed = (valKmh) => {
-      if (speedUnit === 'mph') return Math.round(valKmh / 1.609) + ' mph';
-      if (speedUnit === 'kmh') return Math.round(valKmh) + ' km/h';
-      if (speedUnit === 'ms') return Math.round(valKmh / 3.6) + ' m/s';
-    };
+    const toSpeed = (valKmh) => speedUnit === 'mph' ? Math.round(valKmh / 1.609) + ' mph' : Math.round(valKmh) + ' km/h';
     const toPrecip = (valMm) => isF ? (valMm / 25.4).toFixed(2) + ' in' : valMm.toFixed(1) + ' mm';
 
     document.getElementById('locationName').textContent = currentCityName;
@@ -1442,50 +1172,131 @@
     
     const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
-    const startRain = windowPrecip[0] || 0;
-    const laterRain = windowPrecip.slice(1).reduce((a,b) => a + b, 0);
-
     const windowTemps = h.temperature_2m.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
-
     const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowMaxWind = Math.max(...windowWinds, 0);
+    const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
 
+    // Sunrise / Sunset Hour Decimals
+    let sunriseHourDec = 6;
+    let sunsetHourDec = 18;
+    if (d.sunrise[currentDayIdx]) {
+      const parts = d.sunrise[currentDayIdx].split('T')[1].split(':');
+      sunriseHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    }
+    if (d.sunset[currentDayIdx]) {
+      const parts = d.sunset[currentDayIdx].split('T')[1].split(':');
+      sunsetHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    }
+
+    const daylightRemaining = sunsetHourDec - selectedTeeHour;
+    let score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
+    
+    // Sunset checks for dial verdict
+    const isPastSunset = selectedTeeHour >= sunsetHourDec;
+    const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
+
+    if (isPastSunset) {
+      score = 1.0;
+      dialScore.textContent = `${score}`;
+      dialTemp.textContent = toTemp(windowAvgTemp);
+      updateDialGauge(score);
+      dialVerdict.textContent = 'Too Dark / Sunset 🌙';
+      dialSub.textContent = `Sunset is at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}. Select an earlier tee time.`;
+    } else {
+      dialScore.textContent = `${score}`;
+      dialTemp.textContent = toTemp(windowAvgTemp);
+      updateDialGauge(score);
+
+      if (score >= 8.5) {
+        if (isTightDaylight) {
+          dialVerdict.textContent = '9 Holes Only 🌇';
+          dialSub.textContent = `Great weather, but only ~${daylightRemaining.toFixed(1)}h daylight remaining before sunset.`;
+        } else {
+          dialVerdict.textContent = 'Yes, Perfect! ⛳';
+          dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
+        }
+      } else if (score >= 7.0) {
+        dialVerdict.textContent = 'Yes, Good! 👍';
+        dialSub.textContent = 'Solid playing weather. Pack a standard light layer.';
+      } else if (score >= 5.0) {
+        dialVerdict.textContent = 'Not Bad 🌥️';
+        dialSub.textContent = 'Playable round, but factor in cool winds or soggy ground.';
+      } else if (score >= 3.0) {
+        dialVerdict.textContent = 'Poor 🌧️';
+        dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
+      } else {
+        dialVerdict.textContent = 'No Chance ⛔';
+        dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
+      }
+    }
+
+    // Daylight Slider Warning Box
+    if (daylightRemaining < 2.0) {
+      daylightWarning.style.display = 'block';
+      daylightWarning.className = 'daylight-warning warn-red';
+      daylightWarning.textContent = `⚠️ Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
+    } else if (daylightRemaining < 4.0) {
+      daylightWarning.style.display = 'block';
+      daylightWarning.className = 'daylight-warning warn-orange';
+      daylightWarning.textContent = `🌇 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Enough for 9 holes (~2h), tight for 18.`;
+    } else {
+      daylightWarning.style.display = 'none';
+    }
+
+    // Weather Overview Hero
     const weatherCode = isToday ? c.weather_code : d.weather_code[currentDayIdx];
     const weatherInfo = getWeatherInfo(weatherCode);
     document.getElementById('weatherIcon').textContent = weatherInfo.icon;
     document.getElementById('currentCondition').textContent = weatherInfo.text;
-
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
+
+    // Callouts Update
+    const totalMoisture = last24hRain + windowRainSum;
+    if (totalMoisture > 5) {
+      groundCallout.className = 'callout-box callout-orange';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Soggy ground (${toPrecip(last24hRain)} in 24h). Reduced fairway roll.`;
+    } else {
+      groundCallout.className = 'callout-box callout-good';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Dry / Firm fairways. Great roll expected!`;
+    }
 
     const windVisual = getWindVisuals(windowMaxWind);
     document.getElementById('windIcon').textContent = windVisual.icon;
     document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
     document.getElementById('windSub').textContent = windVisual.label;
 
-    const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
-    const past7DaysRain = d.precipitation_sum.slice(0, currentDayIdx).reduce((a, b) => a + b, 0);
+    if (windowMaxWind > 25) {
+      windCallout.className = 'callout-box callout-orange';
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Strong winds (${toSpeed(windowMaxWind)}). Take 1-2 extra clubs into wind.`;
+    } else {
+      windCallout.className = 'callout-box callout-good';
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Light breeze. Minimal ball flight change.`;
+    }
 
-    const todayRainSum = d.precipitation_sum[currentDayIdx];
+    rainOutlookCallout.className = windowRainSum > 1.5 ? 'callout-box callout-orange' : 'callout-box callout-good';
+    rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Dry skies overhead.'}`;
+
+    const tempDiffC = 22 - windowAvgTemp;
+    let penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
+    if (penaltyYards >= 4) {
+      distancePenaltyCallout.className = 'callout-box callout-orange';
+      distancePenaltyCallout.innerHTML = `<span class="callout-title">Carry Penalty</span>Cold air! Ball carries ~<strong>${penaltyYards} yards shorter</strong> per club.`;
+      distancePenaltyCallout.style.display = 'block';
+    } else {
+      distancePenaltyCallout.style.display = 'none';
+    }
+
+    let gear = windowRainSum > 0.1 ? 'Waterproof Jacket, Umbrella ☔' : 'Standard Polo & Light Layer 👕';
+    gearCallout.className = 'callout-box callout-good';
+    gearCallout.innerHTML = `<span class="callout-title">Gear Checklist</span>${gear}`;
+
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
-
-    let rainSubText = 'Bone dry';
-    if (last24hRain > 12) rainSubText = 'Recent downpour!';
-    else if (last24hRain > 5) rainSubText = 'Soggy underfoot';
-    else if (last24hRain > 1) rainSubText = 'A little damp';
-    document.getElementById('recentRainSub').textContent = rainSubText;
-
     document.getElementById('forecastRain').textContent = toPrecip(windowRainSum);
-    
-    let forecastSubText = 'Dry skies';
-    if (windowRainSum > 5) forecastSubText = 'Heavy rain!';
-    else if (windowRainSum > 1.5) forecastSubText = 'Moderate rain';
-    else if (windowRainSum > 0.1) forecastSubText = 'Light drizzle';
-    document.getElementById('forecastRainSub').textContent = forecastSubText;
-
     document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_min[currentDayIdx])} / ${toTemp(d.temperature_2m_max[currentDayIdx])}`;
-    document.getElementById('todayRain').textContent = toPrecip(todayRainSum);
+    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
     const windMph = windowMaxWind / 1.609;
@@ -1493,6 +1304,7 @@
     recentRainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
     forecastRainCard.className = 'grid-item ' + (windowRainSum > 5 ? 'stat-bad' : windowRainSum > 0.5 ? 'stat-med' : 'stat-good');
 
+    const todayRainSum = d.precipitation_sum[currentDayIdx];
     if (todayRainSum > 10.0) dailyRainCard.className = 'grid-item stat-bad';
     else if (todayRainSum > 4.0) dailyRainCard.className = 'grid-item stat-orange';
     else if (todayRainSum > 1.0) dailyRainCard.className = 'grid-item stat-med';
@@ -1504,226 +1316,17 @@
     else if (maxDayWindMph > 12) maxWindCard.className = 'grid-item stat-med';
     else maxWindCard.className = 'grid-item stat-good';
 
-    const sunriseObj = parseTimeFromISO(d.sunrise[currentDayIdx]);
-    const sunsetObj = parseTimeFromISO(d.sunset[currentDayIdx]);
-    
-    document.getElementById('sunriseTime').textContent = sunriseObj.display;
-    document.getElementById('sunsetTime').textContent = sunsetObj.display;
+    const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
+    const sunsetStr = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
+    document.getElementById('sunriseTime').textContent = sunriseStr;
+    document.getElementById('sunsetTime').textContent = sunsetStr;
+    document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining.toFixed(1))} hrs`;
 
-    const now = new Date();
-    const nowHour = now.getHours();
-    const nowDec = nowHour + (now.getMinutes() / 60);
-    const riseDec = sunriseObj.hour + (sunriseObj.minute / 60);
-    const setDec = sunsetObj.hour + (sunsetObj.minute / 60);
-
-    const daylightRemainingFromTeeTime = setDec - selectedTeeHour;
-
-    if (daylightRemainingFromTeeTime <= 0) {
-      daylightBanner.className = 'alert-banner alert-danger';
-      daylightBanner.innerHTML = `🌇 <span><strong>Sunset Alert:</strong> Selected tee time (${selectedTeeHour}:00) is after sunset (${sunsetObj.display}). You won't be able to play.</span>`;
-      daylightBanner.style.display = 'flex';
-      document.getElementById('daylightLeft').textContent = '0 hrs';
-      daylightCard.className = 'grid-item stat-bad';
-    } else if (daylightRemainingFromTeeTime <= 2.0) {
-      daylightBanner.className = 'alert-banner alert-danger';
-      daylightBanner.innerHTML = `⚠️ <span><strong>Limited Daylight:</strong> Less than 2 hours of daylight left before sunset (${sunsetObj.display}). You may not even get 9 holes in!</span>`;
-      daylightBanner.style.display = 'flex';
-      document.getElementById('daylightLeft').textContent = `${daylightRemainingFromTeeTime.toFixed(1)} hrs`;
-      daylightCard.className = 'grid-item stat-bad';
-    } else if (daylightRemainingFromTeeTime < 4.0) {
-      daylightBanner.className = 'alert-banner alert-warning';
-      daylightBanner.innerHTML = `⏳ <span><strong>Limited Daylight:</strong> ~${daylightRemainingFromTeeTime.toFixed(1)} hours of daylight left before sunset (${sunsetObj.display}). You may only get 9 holes in.</span>`;
-      daylightBanner.style.display = 'flex';
-      document.getElementById('daylightLeft').textContent = `${daylightRemainingFromTeeTime.toFixed(1)} hrs`;
-      daylightCard.className = 'grid-item stat-med';
-    } else {
-      daylightBanner.style.display = 'none';
-      document.getElementById('daylightLeft').textContent = `${daylightRemainingFromTeeTime.toFixed(1)} hrs`;
-      daylightCard.className = 'grid-item stat-good';
-    }
-
-    let orangeCardCount = 0;
-
-    const totalMoisture = last24hRain + windowRainSum;
-    if (totalMoisture > 12 || last24hRain > 10) {
-      groundCallout.className = 'callout-box callout-bad';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Soft / Wet fairways. <strong>${toPrecip(last24hRain)} rain in past 24h</strong> (${toPrecip(past7DaysRain)} past 7 days). Minimal ball roll.</span>`;
-      orangeCardCount += 2;
-    } else if (totalMoisture > 5 || last24hRain > 3) {
-      groundCallout.className = 'callout-box callout-orange';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Soggy ground. <strong>${toPrecip(last24hRain)} rain in past 24h</strong> (${toPrecip(past7DaysRain)} past 7 days). Reduced fairway roll.</span>`;
-      orangeCardCount += 1;
-    } else if (totalMoisture > 1.5 || last24hRain > 1) {
-      groundCallout.className = 'callout-box callout-med';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Damp underfoot. <strong>${toPrecip(last24hRain)} rain in past 24h</strong> (${toPrecip(past7DaysRain)} past 7 days). Standard fairways.</span>`;
-    } else {
-      groundCallout.className = 'callout-box callout-good';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span><span class="callout-body">Dry / Firm fairways. <strong>${toPrecip(last24hRain)} rain in past 24h</strong> (${toPrecip(past7DaysRain)} past 7 days). Great roll!</span>`;
-    }
-
-    if (windowMaxWind > 38) {
-      windCallout.className = 'callout-box callout-bad';
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Gale force gusts! 2–3+ clubs difference; ball trajectory heavily affected.</span>`;
-      orangeCardCount += 2;
-    } else if (windowMaxWind > 25) {
-      windCallout.className = 'callout-box callout-orange';
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Strong winds (${toSpeed(windowMaxWind)}). 2 clubs difference into wind.</span>`;
-      orangeCardCount += 1;
-    } else if (windowMaxWind > 15) {
-      windCallout.className = 'callout-box callout-med';
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Breezy (${toSpeed(windowMaxWind)}). 1 club difference on exposed holes.</span>`;
-    } else {
-      windCallout.className = 'callout-box callout-good';
-      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span><span class="callout-body">Light breeze. Minimal impact on ball flight.</span>`;
-    }
-
-    const teeEndHour = selectedTeeHour + 4;
-    if (windowRainSum > 5) {
-      rainOutlookCallout.className = 'callout-box callout-bad';
-      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">Heavy Rain 🌧️☔ (${toPrecip(windowRainSum)})</span>`;
-      orangeCardCount += 2;
-    } else if (windowRainSum > 1.5) {
-      rainOutlookCallout.className = 'callout-box callout-orange';
-      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">Moderate Rain 🌧️ (${toPrecip(windowRainSum)})</span>`;
-      orangeCardCount += 1;
-    } else if (windowRainSum > 0.1) {
-      rainOutlookCallout.className = 'callout-box callout-med';
-      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">Light Drizzle 🌦️ (${toPrecip(windowRainSum)})</span>`;
-    } else {
-      rainOutlookCallout.className = 'callout-box callout-good';
-      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook (${selectedTeeHour}:00–${teeEndHour}:00)</span><span class="callout-body">No Rain ☀️ (0.0)</span>`;
-    }
-
-    const tempDiffC = 22 - windowAvgTemp;
-    let distancePenaltyYards = 0;
-    if (tempDiffC > 0) {
-      distancePenaltyYards = Math.round((tempDiffC / 5) * 2.5);
-    }
-
-    if (distancePenaltyYards >= 8) {
-      distancePenaltyCallout.className = 'callout-box callout-bad';
-      distancePenaltyCallout.innerHTML = `<span class="callout-title">Ball Carry Penalty</span><span class="callout-body">Very cold dense air! Expect your ball to carry ~<strong>${distancePenaltyYards} yards shorter</strong> per club. Take 1–2 extra clubs! 🥶</span>`;
-      distancePenaltyCallout.style.display = 'block';
-      orangeCardCount += 1;
-    } else if (distancePenaltyYards >= 4) {
-      distancePenaltyCallout.className = 'callout-box callout-orange';
-      distancePenaltyCallout.innerHTML = `<span class="callout-title">Ball Carry Penalty</span><span class="callout-body">Cold dense air! Expect your ball to carry ~<strong>${distancePenaltyYards} yards shorter</strong> per club. Club up! 🏌️‍♂️</span>`;
-      distancePenaltyCallout.style.display = 'block';
-      orangeCardCount += 1;
-    } else if (distancePenaltyYards >= 2) {
-      distancePenaltyCallout.className = 'callout-box callout-med';
-      distancePenaltyCallout.innerHTML = `<span class="callout-title">Ball Carry Penalty</span><span class="callout-body">Cool air. Minor distance loss of ~<strong>${distancePenaltyYards} yards</strong> per club.</span>`;
-      distancePenaltyCallout.style.display = 'block';
-    } else {
-      distancePenaltyCallout.style.display = 'none';
-    }
-
-    let gearItems = [];
-    let gearSeverity = 'good';
-
-    if (windowRainSum > 2) {
-      gearItems.push('Umbrella ☔');
-      gearItems.push('Full Waterproof Suit 🧥');
-      gearItems.push('Extra Towels 🧼');
-      gearSeverity = 'bad';
-    } else if (windowRainSum > 0.1) {
-      gearItems.push('Umbrella ☔');
-      gearItems.push('Waterproof Jacket 🧥');
-      gearSeverity = 'orange';
-    }
-
-    if (windowAvgTemp < 6) {
-      gearItems.push('Hand Warmers 🧤');
-      gearItems.push('Thermal Base Layer 🧥');
-      gearItems.push('Woolly Hat / Beanie 🧢');
-      if (gearSeverity !== 'bad') gearSeverity = 'orange';
-    } else if (windowAvgTemp < 12) {
-      gearItems.push('Windproof Pullover / Sweater 🧥');
-      if (gearSeverity === 'good') gearSeverity = 'med';
-    }
-
-    if (windowAvgTemp > 20 && weatherCode <= 2) {
-      gearItems.push('Suncream 🧴');
-      gearItems.push('Sunglasses 🕶️');
-    }
-
-    if (gearItems.length === 0) {
-      gearItems.push('Standard Golf Polo 👕');
-      gearItems.push('Light Layer 🧥');
-    }
-
-    gearCallout.className = `callout-box callout-${gearSeverity}`;
-    let gearListHTML = '<span class="callout-title">Gear Checklist</span><ul class="gear-list">';
-    gearItems.forEach(item => { gearListHTML += `<li>${item}</li>`; });
-    gearListHTML += '</ul>';
-    gearCallout.innerHTML = gearListHTML;
-
-    const score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, weatherCode, orangeCardCount);
-    scoreText.textContent = `${score} / 10`;
-
-    if (score >= 8.0) {
-      scoreBadge.className = 'score-badge score-high';
-      scoreIcon.textContent = '⛳';
-    } else if (score >= 5.0) {
-      scoreBadge.className = 'score-badge score-med';
-      scoreIcon.textContent = '🌥️';
-    } else {
-      scoreBadge.className = 'score-badge score-low';
-      scoreIcon.textContent = '🌧️';
-    }
-
-    const isSnow = [71, 73, 75].includes(weatherCode);
-    const isFreezing = windowAvgTemp <= 0;
-    const isHeavyWind = windMph > 25;
-    const isHeavyRain = windowRainSum > 5 || todayRainSum > 12;
-
-    if (isFreezing || isSnow) {
-      verdictBanner.className = 'verdict-banner verdict-vlow';
-      verdictTitle.textContent = 'No Chance ⛔';
-      verdictSub.textContent = isSnow ? 'Snow forecast. Greens covered and unplayable.' : 'Freezing temperatures (0°C or below). Frozen turf & frost delay expected.';
-    } else if (score >= 8.5 && orangeCardCount === 0) {
-      verdictBanner.className = 'verdict-banner verdict-vhigh';
-      verdictTitle.textContent = 'Yes, Perfect! ⛳';
-      verdictSub.textContent = 'Firm fairways, gentle breeze, and dry skies. Get out on the course!';
-    } else if (score >= 7.0 && orangeCardCount <= 1) {
-      if (startRain === 0 && laterRain > 0.1) {
-        verdictBanner.className = 'verdict-banner verdict-high';
-        verdictTitle.textContent = 'Good (Rain Later) 🌦️';
-        verdictSub.textContent = `Dry at tee-off (${selectedTeeHour}:00), but rain is expected within 1–2 hours. Pack a jacket!`;
-      } else if (last24hRain > 5.0) {
-        verdictBanner.className = 'verdict-banner verdict-high';
-        verdictTitle.textContent = 'Good (Soggy Fairways) 👍';
-        verdictSub.textContent = 'Dry overhead, but recent heavy rain means soft turf and minimal roll.';
-      } else {
-        verdictBanner.className = 'verdict-banner verdict-high';
-        verdictTitle.textContent = 'Yes, Good! 👍';
-        verdictSub.textContent = 'Great conditions for a round. Pack standard layers and enjoy.';
-      }
-    } else if (score >= 5.0) {
-      verdictBanner.className = 'verdict-banner verdict-med';
-      verdictTitle.textContent = 'Not Bad 🌥️';
-      if (last24hRain > 5.0) verdictSub.textContent = 'Soggy underfoot from recent rain. Wet fairways expected.';
-      else if (windMph > 16) verdictSub.textContent = 'Playable round, but expect a stiff breeze impacting club selection.';
-      else verdictSub.textContent = 'Playable round, but factor in cool weather or light dampness.';
-    } else if (score >= 3.0) {
-      verdictBanner.className = 'verdict-banner verdict-low';
-      verdictTitle.textContent = 'Poor 🌧️';
-      if (isHeavyRain && isHeavyWind) verdictSub.textContent = 'Heavy rain AND high winds expected. Full waterproofs required.';
-      else if (isHeavyRain) verdictSub.textContent = 'Heavy rain expected during play. Waterproof jacket & umbrella mandatory.';
-      else verdictSub.textContent = 'High wind or cold rain. Ball control will be tough; club up twice.';
-    } else {
-      verdictBanner.className = 'verdict-banner verdict-vlow';
-      verdictTitle.textContent = 'No Chance ⛔';
-      if (isHeavyRain && isHeavyWind) verdictSub.textContent = 'Torrential downpour AND gale force winds. Hit the indoor simulator instead.';
-      else if (isHeavyRain) verdictSub.textContent = 'Torrential rain forecast. Standing water on greens likely.';
-      else verdictSub.textContent = 'Gale force winds expected. Unsafe or unplayable conditions.';
-    }
-
-    const dayTempsC = h.precipitation ? h.temperature_2m.slice(startIndex, startIndex + 24) : [];
-    const dayPrecip = h.precipitation ? h.precipitation.slice(startIndex, startIndex + 24) : [];
+    const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
+    const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    renderChart(displayTemps, dayPrecip, riseDec, setDec, nowDec, selectedTeeHour, isToday, sunriseObj.display, sunsetObj.display);
+    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, selectedTeeHour, isToday);
   }
 
   unitToggle.addEventListener('click', () => {
@@ -1733,9 +1336,7 @@
   });
 
   speedToggle.addEventListener('click', () => {
-    if (speedUnit === 'mph') speedUnit = 'kmh';
-    else if (speedUnit === 'kmh') speedUnit = 'ms';
-    else speedUnit = 'mph';
+    speedUnit = speedUnit === 'mph' ? 'kmh' : 'mph';
     speedToggle.textContent = speedUnit;
     render();
   });
@@ -1753,13 +1354,10 @@
       statusEl.textContent = 'Locating...';
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => {
-          statusEl.textContent = 'Location denied. Defaulting to Leamington Spa...';
-          fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK', 'GB');
-        }
+        () => fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK')
       );
     } else {
-      fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK', 'GB');
+      fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, UK');
     }
   }
 
