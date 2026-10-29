@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v1.9</title>
+  <title>Is It Golf Weather? v2.0</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -36,10 +36,6 @@
       --warn-good-bg: #e8f5e9;
       --warn-good-border: #2e7d32;
       --warn-good-text: #1b5e20;
-
-      --warn-med-bg: #fff8e1;
-      --warn-med-border: #fbc02d;
-      --warn-med-text: #826100;
 
       --warn-orange-bg: #fff3e0;
       --warn-orange-border: #f57c00;
@@ -75,10 +71,6 @@
       --warn-good-bg: #1b3e20;
       --warn-good-border: #2e7d32;
       --warn-good-text: #a5d6a7;
-
-      --warn-med-bg: #3e3310;
-      --warn-med-border: #fbc02d;
-      --warn-med-text: #ffe082;
 
       --warn-orange-bg: #3e2610;
       --warn-orange-border: #f57c00;
@@ -487,6 +479,7 @@
       font-weight: 500;
     }
 
+    /* Synchronized Callout Box Styling */
     .callout-box {
       margin-top: 0.45rem;
       padding: 0.65rem 0.85rem;
@@ -498,7 +491,6 @@
     .callout-title { font-weight: bold; display: block; margin-bottom: 0.1rem; }
     
     .callout-good { background-color: var(--warn-good-bg); border-left-color: var(--warn-good-border); color: var(--warn-good-text); }
-    .callout-med { background-color: var(--warn-med-bg); border-left-color: var(--warn-med-border); color: var(--warn-med-text); }
     .callout-orange { background-color: var(--warn-orange-bg); border-left-color: var(--warn-orange-border); color: var(--warn-orange-text); }
     .callout-bad { background-color: var(--warn-bad-bg); border-left-color: var(--warn-bad-border); color: var(--warn-bad-text); }
 
@@ -513,10 +505,10 @@
     .grid-item .value-main { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
     .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
 
-    .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); }
-    .grid-item.stat-med { background-color: var(--warn-med-bg); border-color: var(--warn-med-border); }
-    .grid-item.stat-orange { background-color: var(--warn-orange-bg); border-color: var(--warn-orange-border); }
-    .grid-item.stat-bad { background-color: var(--warn-bad-bg); border-color: var(--warn-bad-border); }
+    /* Synchronized Grid Colors */
+    .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); color: var(--warn-good-text); }
+    .grid-item.stat-orange { background-color: var(--warn-orange-bg); border-color: var(--warn-orange-border); color: var(--warn-orange-text); }
+    .grid-item.stat-bad { background-color: var(--warn-bad-bg); border-color: var(--warn-bad-border); color: var(--warn-bad-text); }
 
     .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
 
@@ -565,7 +557,6 @@
       padding: 1.2rem 0 0.4rem 0;
     }
 
-    /* Refactored Desktop Dashboard Layout (≥ 768px) */
     @media (min-width: 768px) {
       .app-container {
         max-width: 1100px;
@@ -581,7 +572,7 @@
       }
 
       .expand-toggle-btn {
-        display: none; /* Auto-expanded on desktop */
+        display: none;
       }
 
       .details-section {
@@ -606,15 +597,14 @@
 <div class="app-container">
   <input type="date" id="hiddenDatePicker">
   
-  <!-- Main Grid / Flex Container -->
   <div class="screen-landing">
     
-    <!-- Left Column (Controls & Gauge) -->
+    <!-- Left Column Controls -->
     <div style="display: flex; flex-direction: column; gap: 0.6rem;">
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ Golf Weather</h1>
-          <span class="version-tag">v1.9</span>
+          <span class="version-tag">v2.0</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -664,7 +654,7 @@
       </button>
     </div>
 
-    <!-- Right Column (Details Breakdown) -->
+    <!-- Right Column Breakdown -->
     <div id="detailsSection" class="details-section">
       
       <div class="card">
@@ -762,7 +752,7 @@
     </div>
 
     <footer class="beta-footer">
-      Is It Golf Weather? v1.9 • Made by KW
+      Is It Golf Weather? v2.0 • Made by KW
     </footer>
 
   </div>
@@ -789,6 +779,19 @@
   let savedHomeCourse = null;
 
   const circumference = 2 * Math.PI * 110;
+
+  // Unified Status Threshold Helper Functions for Synchronized Colors
+  function getWindTier(windMph) {
+    if (windMph > 25) return 'stat-bad';
+    if (windMph >= 15) return 'stat-orange';
+    return 'stat-good';
+  }
+
+  function getRainTier(rainMm) {
+    if (rainMm > 5) return 'stat-bad';
+    if (rainMm > 0.5) return 'stat-orange';
+    return 'stat-good';
+  }
 
   // DOM Elements
   const expandToggleBtn = document.getElementById('expandToggleBtn');
@@ -938,6 +941,9 @@
       61: { text: 'Slight rain', icon: '🌧️' },
       63: { text: 'Moderate rain', icon: '🌧️' },
       65: { text: 'Heavy rain', icon: '🌧️☔' },
+      71: { text: 'Slight snow', icon: '❄️' },
+      73: { text: 'Moderate snow', icon: '❄️' },
+      75: { text: 'Heavy snow', icon: '❄️🌨️' },
       95: { text: 'Thunderstorm', icon: '⚡' }
     };
     return codes[code] || { text: 'Cloudy', icon: '🌥️' };
@@ -946,9 +952,8 @@
   function getWindVisuals(speedKmh) {
     const mph = speedKmh / 1.609;
     if (mph < 8) return { icon: '🍃', label: 'Gentle Breeze' };
-    if (mph < 18) return { icon: '💨', label: 'Moderate Wind' };
-    if (mph < 28) return { icon: '💨🚩', label: 'Strong Wind' };
-    return { icon: '⚠️🌪️', label: 'Gale Force' };
+    if (mph <= 25) return { icon: '💨', label: 'Moderate Wind' };
+    return { icon: '💨🚩', label: 'Strong Wind' };
   }
 
   async function fetchFriendlyLocationName(lat, lon) {
@@ -961,18 +966,21 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
+  // Fast Parallelized Mobile Load Implementation
   async function fetchWeather(lat, lon, overrideName = '') {
     statusEl.textContent = 'Fetching weather...';
     try {
-      if (!overrideName) currentCityName = await fetchFriendlyLocationName(lat, lon);
-      else currentCityName = overrideName;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,precipitation,wind_speed_10m,snowfall,snow_depth&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
+      
+      const weatherPromise = fetch(weatherUrl).then(r => r.json());
+      const namePromise = overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon);
 
+      const [weatherData, locationName] = await Promise.all([weatherPromise, namePromise]);
+
+      currentData = weatherData;
+      currentCityName = locationName;
       locationInput.value = currentCityName;
 
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=14&timezone=auto`;
-      const res = await fetch(url);
-      currentData = await res.json();
-      
       buildDateBar();
       updateTeeTimeDisplay();
       render();
@@ -1047,8 +1055,8 @@
     dateBar.appendChild(moreBtn);
   }
 
-  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
-    if (tempC <= 0) return 1.0; 
+  function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing) {
+    if (isSnowing || tempC <= -2) return 1.0;
     let score = 10;
     const windMph = windSpeedKmh / 1.609;
 
@@ -1057,15 +1065,15 @@
     else if (windowRainMm > 1) score -= 1.8;
     else if (windowRainMm > 0.1) score -= 0.8;
 
-    if (past24RainMm > 15) score -= 2.8;
-    else if (past24RainMm > 5) score -= 1.5;
+    if (past24RainMm > 15 || past7DaysRainMm > 35) score -= 2.8;
+    else if (past24RainMm > 5 || past7DaysRainMm > 15) score -= 1.5;
 
     if (windMph > 30) score -= 4.5;
     else if (windMph > 20) score -= 2.8;
     else if (windMph > 12) score -= 1.5;
 
-    if (tempC < 4) score -= 3.5;
-    else if (tempC < 8) score -= 2.2;
+    if (tempC < 2) score -= 3.5;
+    else if (tempC < 7) score -= 2.0;
 
     return Math.max(1, Math.min(10, Math.round(score * 10) / 10));
   }
@@ -1147,7 +1155,6 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Option 3 Sunrise (☀️)
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const srX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1163,7 +1170,6 @@
       svg.appendChild(icon);
     }
 
-    // Option 4 Sunset (🌙)
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const ssX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1238,7 +1244,14 @@
     const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
     const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowMaxWind = Math.max(...windowWinds, 0);
+    
+    // Detailed 7-Day + Past 24h Rainfall Calculation
     const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
+    const past7DaysRain = h.precipitation.slice(0, startIndex).reduce((a, b) => a + b, 0);
+
+    // Snow / Sub-Zero Detection
+    const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
+    const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
 
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
@@ -1252,7 +1265,7 @@
     }
 
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
-    let score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind);
+    let score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
     
     const isPastSunset = selectedTeeHour >= sunsetHourDec;
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
@@ -1289,7 +1302,7 @@
         dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
       } else {
         dialVerdict.textContent = 'No Chance ⛔';
-        dialSub.textContent = 'Unplayable conditions. Check out the simulator instead!';
+        dialSub.textContent = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Check out the simulator instead!';
       }
     }
 
@@ -1312,31 +1325,48 @@
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
-    const totalMoisture = last24hRain + windowRainSum;
-    if (totalMoisture > 5) {
+    // Strict Ground Condition Evaluation (Snow, Sub-Zero, 7-day cumulative)
+    if (hasSnowCover) {
+      groundCallout.className = 'callout-box callout-bad';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Snow cover / Frozen greens detected ❄️. Course likely closed.`;
+    } else if (windowAvgTemp <= 0) {
+      groundCallout.className = 'callout-box callout-bad';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Sub-zero conditions (${toTemp(windowAvgTemp)}). Expect hard, frozen ground 🧊.`;
+    } else if (past7DaysRain > 25 || last24hRain > 12) {
+      groundCallout.className = 'callout-box callout-bad';
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Waterlogged ground (${toPrecip(past7DaysRain)} 7-day rain). Very soft roll.`;
+    } else if (past7DaysRain > 10 || last24hRain > 4) {
       groundCallout.className = 'callout-box callout-orange';
-      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Soggy ground (${toPrecip(last24hRain)} in 24h). Reduced fairway roll.`;
+      groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Soggy ground (${toPrecip(past7DaysRain)} 7-day rain). Moderate fairway roll.`;
     } else {
       groundCallout.className = 'callout-box callout-good';
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Dry / Firm fairways. Great roll expected!`;
     }
 
+    // Synchronized Wind Evaluation
+    const windMph = windowMaxWind / 1.609;
+    const windClass = getWindTier(windMph);
     const windVisual = getWindVisuals(windowMaxWind);
+    
     document.getElementById('windIcon').textContent = windVisual.icon;
     document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
     document.getElementById('windSub').textContent = windVisual.label;
 
-    if (windowMaxWind > 25) {
-      windCallout.className = 'callout-box callout-orange';
+    windCallout.className = `callout-box ${windClass.replace('stat-', 'callout-')}`;
+    if (windMph > 25) {
       windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Strong winds (${toSpeed(windowMaxWind)}). Take 1-2 extra clubs into wind.`;
+    } else if (windMph >= 15) {
+      windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Moderate breeze (${toSpeed(windowMaxWind)}). Slight club adjustment needed.`;
     } else {
-      windCallout.className = 'callout-box callout-good';
       windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Light breeze. Minimal ball flight change.`;
     }
 
-    rainOutlookCallout.className = windowRainSum > 1.5 ? 'callout-box callout-orange' : 'callout-box callout-good';
+    // Synchronized Rain Evaluation
+    const rainClass = getRainTier(windowRainSum);
+    rainOutlookCallout.className = `callout-box ${rainClass.replace('stat-', 'callout-')}`;
     rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Dry skies overhead.'}`;
 
+    // Carry Penalty Callout
     const tempDiffC = 22 - windowAvgTemp;
     let penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
     if (penaltyYards >= 4) {
@@ -1347,18 +1377,20 @@
       distancePenaltyCallout.style.display = 'none';
     }
 
-    // Dynamic Gear Checklist with Cold Temperature Logic
+    // Dynamic Gear Checklist Box
     let gear = 'Standard Polo & Light Layer 👕';
+    let gearClass = 'callout-good';
     if (windowAvgTemp < 5) {
       gear = 'Thermal base layer, beanie/hat & winter mitts 🥶';
+      gearClass = 'callout-orange';
     } else if (windowAvgTemp <= 10) {
       gear = 'Windproof sweater / fleece & thermal layer 🧥';
     }
     if (windowRainSum > 0.1) {
       gear += ' + Waterproof Jacket, Umbrella ☔';
+      gearClass = 'callout-orange';
     }
-
-    gearCallout.className = 'callout-box callout-good';
+    gearCallout.className = `callout-box ${gearClass}`;
     gearCallout.innerHTML = `<span class="callout-title">Gear Checklist</span>${gear}`;
 
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
@@ -1367,22 +1399,16 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
-    const windMph = windowMaxWind / 1.609;
-    windCard.className = 'grid-item ' + (windMph > 25 ? 'stat-bad' : windMph > 14 ? 'stat-med' : 'stat-good');
-    recentRainCard.className = 'grid-item ' + (last24hRain > 12 ? 'stat-bad' : last24hRain > 3 ? 'stat-med' : 'stat-good');
-    forecastRainCard.className = 'grid-item ' + (windowRainSum > 5 ? 'stat-bad' : windowRainSum > 0.5 ? 'stat-med' : 'stat-good');
+    // Strict Synchronized Grid Class Assignment
+    windCard.className = `grid-item ${windClass}`;
+    recentRainCard.className = `grid-item ${getRainTier(last24hRain)}`;
+    forecastRainCard.className = `grid-item ${rainClass}`;
 
     const todayRainSum = d.precipitation_sum[currentDayIdx];
-    if (todayRainSum > 10.0) dailyRainCard.className = 'grid-item stat-bad';
-    else if (todayRainSum > 4.0) dailyRainCard.className = 'grid-item stat-orange';
-    else if (todayRainSum > 1.0) dailyRainCard.className = 'grid-item stat-med';
-    else dailyRainCard.className = 'grid-item stat-good';
+    dailyRainCard.className = `grid-item ${getRainTier(todayRainSum)}`;
 
     const maxDayWindMph = d.wind_speed_10m_max[currentDayIdx] / 1.609;
-    if (maxDayWindMph > 30) maxWindCard.className = 'grid-item stat-bad';
-    else if (maxDayWindMph > 20) maxWindCard.className = 'grid-item stat-orange';
-    else if (maxDayWindMph > 12) maxWindCard.className = 'grid-item stat-med';
-    else maxWindCard.className = 'grid-item stat-good';
+    maxWindCard.className = `grid-item ${getWindTier(maxDayWindMph)}`;
 
     const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
     const sunsetStr = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
@@ -1390,7 +1416,6 @@
     document.getElementById('sunsetTime').textContent = sunsetStr;
     document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining.toFixed(1))} hrs`;
 
-    // Color-Coded Daylight Card
     if (daylightRemaining >= 4.0) daylightCard.className = 'grid-item stat-good';
     else if (daylightRemaining >= 2.0) daylightCard.className = 'grid-item stat-orange';
     else daylightCard.className = 'grid-item stat-bad';
