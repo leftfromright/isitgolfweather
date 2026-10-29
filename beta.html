@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v1.8</title>
+  <title>Is It Golf Weather? v1.9</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -156,7 +156,7 @@
       font-size: 0.82rem;
     }
 
-    /* Fat-finger Touch Friendly Search Box */
+    /* Mobile Search Box */
     .search-box {
       position: relative;
       display: flex;
@@ -302,7 +302,7 @@
       max-width: 190px;
     }
 
-    /* Date Bar (Include Temps + Modern Icons) */
+    /* Date Bar */
     .date-bar {
       display: flex;
       gap: 0.3rem;
@@ -340,7 +340,6 @@
     .date-btn .date-icon { font-size: 0.95rem; margin: 0.02rem 0; }
     .date-btn .date-temps { font-size: 0.65rem; opacity: 0.9; font-weight: 600; }
 
-    /* Hidden native date picker trigger */
     #hiddenDatePicker {
       position: absolute;
       opacity: 0;
@@ -349,7 +348,7 @@
       height: 0;
     }
 
-    /* Tee Time Slider Card - Fixed Height Reserved Slot */
+    /* Tee Time Slider Card */
     .slider-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -421,7 +420,6 @@
       color: var(--warn-bad-text);
     }
 
-    /* Fat-finger Expand Button */
     .expand-toggle-btn {
       width: 100%;
       margin-top: 0.2rem;
@@ -443,7 +441,7 @@
       min-height: 44px;
     }
 
-    /* Expanded Details Section */
+    /* Details Section */
     .details-section {
       display: none;
       flex-direction: column;
@@ -566,6 +564,41 @@
       opacity: 0.75;
       padding: 1.2rem 0 0.4rem 0;
     }
+
+    /* Refactored Desktop Dashboard Layout (≥ 768px) */
+    @media (min-width: 768px) {
+      .app-container {
+        max-width: 1100px;
+        padding: 1rem 1.5rem;
+      }
+
+      .screen-landing {
+        min-height: auto;
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      .expand-toggle-btn {
+        display: none; /* Auto-expanded on desktop */
+      }
+
+      .details-section {
+        display: flex !important;
+        padding: 0;
+      }
+
+      .dial-container {
+        width: 280px;
+        height: 280px;
+        max-height: none;
+      }
+
+      .beta-footer {
+        grid-column: 1 / -1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -573,174 +606,168 @@
 <div class="app-container">
   <input type="date" id="hiddenDatePicker">
   
-  <!-- Screen 1: Initial Viewport -->
+  <!-- Main Grid / Flex Container -->
   <div class="screen-landing">
-    <!-- Header -->
-    <header class="compact-header">
-      <div class="compact-title">
-        <h1>⛳ Golf Weather</h1>
-        <span class="version-tag">v1.8</span>
-      </div>
-      <div class="controls-mini">
-        <button id="unitToggle">°C</button>
-        <button id="speedToggle">mph</button>
-        <button id="themeToggle">🌙</button>
-      </div>
-    </header>
-
-    <!-- Fat-finger Touch Friendly Search -->
-    <div class="search-box">
-      <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
-      <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
-      <button id="geoBtn" class="icon-btn" title="Use current location">📍</button>
-      <div id="autocompleteList" class="autocomplete-list"></div>
-    </div>
-
-    <!-- Central Dial -->
-    <div class="dial-section">
-      <div class="dial-container">
-        <svg class="dial-svg" viewBox="0 0 240 240">
-          <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
-          <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
-        </svg>
-
-        <div class="dial-content">
-          <div id="dialScore" class="dial-score-num">--</div>
-          <div id="dialTemp" class="dial-temp-badge">--°C</div>
-          <div id="dialVerdict" class="dial-verdict-title">--</div>
-          <div id="dialSub" class="dial-verdict-sub">--</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Date Bar Selector with Temps -->
-    <div class="date-bar" id="dateBar"></div>
-
-    <!-- Tee Time Slider Card (Fixed Reserved Slot for Warning) -->
-    <div class="slider-card">
-      <div class="slider-header">
-        <span>⛳ Tee Time</span>
-        <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
-      </div>
-      <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
-      <div class="warning-slot">
-        <div id="daylightWarning" class="daylight-warning"></div>
-      </div>
-    </div>
-
-    <!-- Expand Button -->
-    <button class="expand-toggle-btn" id="expandToggleBtn">
-      <span id="expandBtnText">Detailed Breakdown</span> <span id="expandBtnIcon">👇</span>
-    </button>
-  </div>
-
-  <div id="status">Getting location...</div>
-
-  <!-- Details Section -->
-  <div id="detailsSection" class="details-section">
     
-    <!-- Detailed Breakdown -->
-    <div class="card">
-      <h2>Course Condition Breakdown</h2>
-      <div id="groundCallout" class="callout-box"></div>
-      <div id="windCallout" class="callout-box"></div>
-      <div id="rainOutlookCallout" class="callout-box"></div>
-      <div id="distancePenaltyCallout" class="callout-box"></div>
-      <div id="gearCallout" class="callout-box"></div>
-    </div>
-
-    <!-- Weather Overview -->
-    <div class="card">
-      <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
-      
-      <div class="overview-hero">
-        <div class="temp-large">
-          <span id="weatherIcon">☀️</span>
-          <span id="currentTemp">--</span>
-          <span id="feelsLikeTemp" class="feels-like-tag">(Feels like --)</span>
+    <!-- Left Column (Controls & Gauge) -->
+    <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+      <header class="compact-header">
+        <div class="compact-title">
+          <h1>⛳ Golf Weather</h1>
+          <span class="version-tag">v1.9</span>
         </div>
-        <div id="currentCondition" class="current-condition-text">--</div>
+        <div class="controls-mini">
+          <button id="unitToggle">°C</button>
+          <button id="speedToggle">mph</button>
+          <button id="themeToggle">🌙</button>
+        </div>
+      </header>
+
+      <div class="search-box">
+        <input type="text" id="locationInput" placeholder="Type city or course location..." autocomplete="off">
+        <button id="homeCourseBtn" class="icon-btn" title="Set/Load Home Course">⭐</button>
+        <button id="geoBtn" class="icon-btn" title="Use current location">📍</button>
+        <div id="autocompleteList" class="autocomplete-list"></div>
       </div>
 
-      <div class="grid-3col">
-        <div class="grid-item" id="windCard">
-          <div class="label">Wind Speed</div>
-          <div class="value-main"><span id="windIcon">🍃</span> <span id="currentWind">--</span></div>
-          <div class="value-sub" id="windSub">--</div>
-        </div>
-        <div class="grid-item" id="recentRainCard">
-          <div class="label">Recent (24h)</div>
-          <div class="value-main"><span>🌧️</span> <span id="recentRain">--</span></div>
-          <div class="value-sub" id="recentRainSub">--</div>
-        </div>
-        <div class="grid-item" id="forecastRainCard">
-          <div class="label">Round Rain (4h)</div>
-          <div class="value-main"><span>☔</span> <span id="forecastRain">--</span></div>
-          <div class="value-sub" id="forecastRainSub">--</div>
-        </div>
-      </div>
-    </div>
+      <div class="dial-section">
+        <div class="dial-container">
+          <svg class="dial-svg" viewBox="0 0 240 240">
+            <circle class="dial-bg-track" cx="120" cy="120" r="110"></circle>
+            <circle id="dialArc" class="dial-value-arc" cx="120" cy="120" r="110"></circle>
+          </svg>
 
-    <!-- 24-Hour Chart -->
-    <div class="card">
-      <h2>24-Hour Forecast</h2>
-      <div class="chart-wrapper-split">
-        <div class="chart-y-fixed">
-          <svg id="yAxisSvg"></svg>
-        </div>
-        <div class="chart-container-scrollable">
-          <div class="chart-scroll-inner">
-            <svg id="hourlyChart"></svg>
+          <div class="dial-content">
+            <div id="dialScore" class="dial-score-num">--</div>
+            <div id="dialTemp" class="dial-temp-badge">--°C</div>
+            <div id="dialVerdict" class="dial-verdict-title">--</div>
+            <div id="dialSub" class="dial-verdict-sub">--</div>
           </div>
         </div>
       </div>
-      <div class="chart-legend">
-        <div class="legend-item"><span class="legend-color" style="background: var(--chart-line);"></span> Temp</div>
-        <div class="legend-item"><span class="legend-color" style="background: var(--chart-bar);"></span> Rain</div>
-        <div class="legend-item">⛳ Tee Time</div>
-        <div class="legend-item">📍 Now</div>
-        <div class="legend-item">🌅 Sunrise</div>
-        <div class="legend-item">🌇 Sunset</div>
+
+      <div class="date-bar" id="dateBar"></div>
+
+      <div class="slider-card">
+        <div class="slider-header">
+          <span>⛳ Tee Time</span>
+          <span id="teeTimeDisplay" class="slider-value">08:00 AM</span>
+        </div>
+        <input type="range" id="teeTimeSlider" min="6" max="18" value="8" step="1">
+        <div class="warning-slot">
+          <div id="daylightWarning" class="daylight-warning"></div>
+        </div>
       </div>
+
+      <button class="expand-toggle-btn" id="expandToggleBtn">
+        <span id="expandBtnText">Detailed Breakdown</span> <span id="expandBtnIcon">👇</span>
+      </button>
     </div>
 
-    <!-- Day Summary Grid -->
-    <div class="card">
-      <h2>Day Summary</h2>
-      <div class="summary-grid">
-        <div class="grid-item">
-          <div class="label">Sunrise</div>
-          <div class="value-main">🌅 <span id="sunriseTime">--:--</span></div>
+    <!-- Right Column (Details Breakdown) -->
+    <div id="detailsSection" class="details-section">
+      
+      <div class="card">
+        <h2>Course Condition Breakdown</h2>
+        <div id="groundCallout" class="callout-box"></div>
+        <div id="windCallout" class="callout-box"></div>
+        <div id="rainOutlookCallout" class="callout-box"></div>
+        <div id="distancePenaltyCallout" class="callout-box"></div>
+        <div id="gearCallout" class="callout-box"></div>
+      </div>
+
+      <div class="card">
+        <h2><span id="dayLabel">Right Now</span> — <span id="locationName">---</span></h2>
+        
+        <div class="overview-hero">
+          <div class="temp-large">
+            <span id="weatherIcon">☀️</span>
+            <span id="currentTemp">--</span>
+            <span id="feelsLikeTemp" class="feels-like-tag">(Feels like --)</span>
+          </div>
+          <div id="currentCondition" class="current-condition-text">--</div>
         </div>
-        <div class="grid-item">
-          <div class="label">Sunset</div>
-          <div class="value-main">🌇 <span id="sunsetTime">--:--</span></div>
-        </div>
-        <div class="grid-item" id="daylightCard">
-          <div class="label">Daylight Left</div>
-          <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
-        </div>
-        <div class="grid-item">
-          <div class="label">High / Low</div>
-          <div class="value-main" id="tempRange">--</div>
-        </div>
-        <div class="grid-item" id="dailyRainCard">
-          <div class="label">Daily Rain</div>
-          <div class="value-main" id="todayRain">--</div>
-        </div>
-        <div class="grid-item" id="maxWindCard">
-          <div class="label">Max Wind</div>
-          <div class="value-main" id="maxWind">--</div>
+
+        <div class="grid-3col">
+          <div class="grid-item" id="windCard">
+            <div class="label">Wind Speed</div>
+            <div class="value-main"><span id="windIcon">🍃</span> <span id="currentWind">--</span></div>
+            <div class="value-sub" id="windSub">--</div>
+          </div>
+          <div class="grid-item" id="recentRainCard">
+            <div class="label">Recent (24h)</div>
+            <div class="value-main"><span>🌧️</span> <span id="recentRain">--</span></div>
+            <div class="value-sub" id="recentRainSub">--</div>
+          </div>
+          <div class="grid-item" id="forecastRainCard">
+            <div class="label">Round Rain (4h)</div>
+            <div class="value-main"><span>☔</span> <span id="forecastRain">--</span></div>
+            <div class="value-sub" id="forecastRainSub">--</div>
+          </div>
         </div>
       </div>
+
+      <div class="card">
+        <h2>24-Hour Forecast</h2>
+        <div class="chart-wrapper-split">
+          <div class="chart-y-fixed">
+            <svg id="yAxisSvg"></svg>
+          </div>
+          <div class="chart-container-scrollable">
+            <div class="chart-scroll-inner">
+              <svg id="hourlyChart"></svg>
+            </div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-color" style="background: var(--chart-line);"></span> Temp</div>
+          <div class="legend-item"><span class="legend-color" style="background: var(--chart-bar);"></span> Rain</div>
+          <div class="legend-item">⛳ Tee Time</div>
+          <div class="legend-item">📍 Now</div>
+          <div class="legend-item">☀️ Sunrise</div>
+          <div class="legend-item">🌙 Sunset</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Day Summary</h2>
+        <div class="summary-grid">
+          <div class="grid-item">
+            <div class="label">Sunrise</div>
+            <div class="value-main">☀️ <span id="sunriseTime">--:--</span></div>
+          </div>
+          <div class="grid-item">
+            <div class="label">Sunset</div>
+            <div class="value-main">🌙 <span id="sunsetTime">--:--</span></div>
+          </div>
+          <div class="grid-item" id="daylightCard">
+            <div class="label">Daylight Left</div>
+            <div class="value-main">⏳ <span id="daylightLeft">--</span></div>
+          </div>
+          <div class="grid-item">
+            <div class="label">High / Low</div>
+            <div class="value-main" id="tempRange">--</div>
+          </div>
+          <div class="grid-item" id="dailyRainCard">
+            <div class="label">Daily Rain</div>
+            <div class="value-main" id="todayRain">--</div>
+          </div>
+          <div class="grid-item" id="maxWindCard">
+            <div class="label">Max Wind</div>
+            <div class="value-main" id="maxWind">--</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <footer class="beta-footer">
-      Is It Golf Weather? v1.8 • Made by KW
+      Is It Golf Weather? v1.9 • Made by KW
     </footer>
 
   </div>
 
+  <div id="status">Getting location...</div>
 </div>
 
 <script>
@@ -956,7 +983,6 @@
     }
   }
 
-  /* Date Bar with Temps & Calendar Trigger */
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
     dateBar.innerHTML = '';
@@ -991,7 +1017,6 @@
       dateBar.appendChild(btn);
     }
 
-    // Interactive Calendar Trigger Date Box
     const moreBtn = document.createElement('button');
     moreBtn.className = 'date-btn';
     moreBtn.innerHTML = `
@@ -1000,7 +1025,6 @@
       <span class="date-temps">Select</span>
     `;
     
-    // Set native date picker bounds
     if (days.length > 0) {
       hiddenDatePicker.min = days[0];
       hiddenDatePicker.max = days[days.length - 1];
@@ -1023,7 +1047,6 @@
     dateBar.appendChild(moreBtn);
   }
 
-  /* Shared Standardized Golf Scoring Parity */
   function calculateGolfScore(tempC, windowRainMm, past24RainMm, windSpeedKmh) {
     if (tempC <= 0) return 1.0; 
     let score = 10;
@@ -1076,7 +1099,6 @@
 
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
-    // Y Axis
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -1089,7 +1111,6 @@
       ySvg.appendChild(label);
     }
 
-    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       const x = paddingLeft + i * stepX - (stepX * 0.35);
       const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
@@ -1105,7 +1126,6 @@
       }
     });
 
-    // Temp Line
     let points = '';
     hourlyTemps.forEach((temp, i) => {
       const x = paddingLeft + i * stepX;
@@ -1127,7 +1147,7 @@
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
 
-    // Sunrise Marker
+    // Option 3 Sunrise (☀️)
     if (sunriseHourDec >= 0 && sunriseHourDec <= 23) {
       const srX = paddingLeft + sunriseHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1139,11 +1159,11 @@
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       icon.setAttribute('x', srX); icon.setAttribute('y', paddingTop - 3);
       icon.setAttribute('class', 'chart-icon-marker');
-      icon.textContent = '🌅';
+      icon.textContent = '☀️';
       svg.appendChild(icon);
     }
 
-    // Sunset Marker
+    // Option 4 Sunset (🌙)
     if (sunsetHourDec >= 0 && sunsetHourDec <= 23) {
       const ssX = paddingLeft + sunsetHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1155,11 +1175,10 @@
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       icon.setAttribute('x', ssX); icon.setAttribute('y', paddingTop - 3);
       icon.setAttribute('class', 'chart-icon-marker');
-      icon.textContent = '🌇';
+      icon.textContent = '🌙';
       svg.appendChild(icon);
     }
 
-    // Now Marker
     if (isToday && currentHourDec >= 0 && currentHourDec <= 23) {
       const nowX = paddingLeft + currentHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1175,7 +1194,6 @@
       svg.appendChild(icon);
     }
 
-    // Tee Time Marker
     if (teeHourDec >= 0) {
       const teeX = paddingLeft + teeHourDec * stepX;
       const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1238,6 +1256,7 @@
     
     const isPastSunset = selectedTeeHour >= sunsetHourDec;
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
+    const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
 
     if (isPastSunset) {
       score = 1.0;
@@ -1253,7 +1272,7 @@
 
       if (score >= 8.5) {
         if (isTightDaylight) {
-          dialVerdict.textContent = '9 Holes Only 🌇';
+          dialVerdict.textContent = '9 Holes Only 🌙';
           dialSub.textContent = `Great weather, but only ~${daylightRemaining.toFixed(1)}h daylight remaining before sunset.`;
         } else {
           dialVerdict.textContent = 'Yes, Perfect! ⛳';
@@ -1261,10 +1280,10 @@
         }
       } else if (score >= 7.0) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        dialSub.textContent = 'Solid playing weather. Pack a standard light layer.';
+        dialSub.textContent = isCold ? 'Solid round, but chilly air! Wrap up warmly.' : 'Solid playing weather. Pack a standard light layer.';
       } else if (score >= 5.0) {
         dialVerdict.textContent = 'Not Bad 🌥️';
-        dialSub.textContent = 'Playable round, but factor in cool winds or soggy ground.';
+        dialSub.textContent = isCold ? 'Playable, but cold air & cool breeze. Pack heavy thermals!' : 'Playable round, but factor in cool winds or soggy ground.';
       } else if (score >= 3.0) {
         dialVerdict.textContent = 'Poor 🌧️';
         dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
@@ -1274,20 +1293,18 @@
       }
     }
 
-    // Modern Daylight Warning Box
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-red';
-      daylightWarning.textContent = `🌇 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
+      daylightWarning.textContent = `🌙 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
     } else if (daylightRemaining < 4.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-orange';
-      daylightWarning.textContent = `🌇 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Enough for 9 holes (~2h), tight for 18.`;
+      daylightWarning.textContent = `🌙 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Enough for 9 holes (~2h), tight for 18.`;
     } else {
       daylightWarning.style.display = 'none';
     }
 
-    // Weather Hero
     const weatherCode = isToday ? c.weather_code : d.weather_code[currentDayIdx];
     const weatherInfo = getWeatherInfo(weatherCode);
     document.getElementById('weatherIcon').textContent = weatherInfo.icon;
@@ -1295,7 +1312,6 @@
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
-    // Callouts Update
     const totalMoisture = last24hRain + windowRainSum;
     if (totalMoisture > 5) {
       groundCallout.className = 'callout-box callout-orange';
@@ -1331,7 +1347,17 @@
       distancePenaltyCallout.style.display = 'none';
     }
 
-    let gear = windowRainSum > 0.1 ? 'Waterproof Jacket, Umbrella ☔' : 'Standard Polo & Light Layer 👕';
+    // Dynamic Gear Checklist with Cold Temperature Logic
+    let gear = 'Standard Polo & Light Layer 👕';
+    if (windowAvgTemp < 5) {
+      gear = 'Thermal base layer, beanie/hat & winter mitts 🥶';
+    } else if (windowAvgTemp <= 10) {
+      gear = 'Windproof sweater / fleece & thermal layer 🧥';
+    }
+    if (windowRainSum > 0.1) {
+      gear += ' + Waterproof Jacket, Umbrella ☔';
+    }
+
     gearCallout.className = 'callout-box callout-good';
     gearCallout.innerHTML = `<span class="callout-title">Gear Checklist</span>${gear}`;
 
@@ -1363,6 +1389,11 @@
     document.getElementById('sunriseTime').textContent = sunriseStr;
     document.getElementById('sunsetTime').textContent = sunsetStr;
     document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining.toFixed(1))} hrs`;
+
+    // Color-Coded Daylight Card
+    if (daylightRemaining >= 4.0) daylightCard.className = 'grid-item stat-good';
+    else if (daylightRemaining >= 2.0) daylightCard.className = 'grid-item stat-orange';
+    else daylightCard.className = 'grid-item stat-bad';
 
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
