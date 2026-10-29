@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather? v2.0</title>
+  <title>Is It Golf Weather? v2.1</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -91,10 +91,11 @@
       color: var(--text);
     }
 
+    /* Standardized Single Column Layout */
     .app-container {
-      max-width: 500px;
+      max-width: 520px;
       margin: 0 auto;
-      padding: 0.35rem 0.5rem;
+      padding: 0.35rem 0.6rem 1.5rem 0.6rem;
     }
 
     .screen-landing {
@@ -104,7 +105,7 @@
       justify-content: space-between;
     }
 
-    /* Header */
+    /* Header & Interactive Version Tag */
     .compact-header {
       display: flex;
       justify-content: space-between;
@@ -130,7 +131,9 @@
       border: 1px solid var(--border);
       padding: 0.1rem 0.4rem;
       border-radius: 4px;
+      cursor: pointer;
     }
+    .version-tag:active { transform: scale(0.96); }
     
     .controls-mini {
       display: flex;
@@ -148,7 +151,7 @@
       font-size: 0.82rem;
     }
 
-    /* Mobile Search Box */
+    /* Search Box */
     .search-box {
       position: relative;
       display: flex;
@@ -433,12 +436,12 @@
       min-height: 44px;
     }
 
-    /* Details Section */
+    /* Accordion Details Section */
     .details-section {
       display: none;
       flex-direction: column;
       gap: 1rem;
-      padding: 1rem 0 1.5rem 0;
+      padding-top: 1rem;
     }
 
     .card {
@@ -479,7 +482,6 @@
       font-weight: 500;
     }
 
-    /* Synchronized Callout Box Styling */
     .callout-box {
       margin-top: 0.45rem;
       padding: 0.65rem 0.85rem;
@@ -505,7 +507,6 @@
     .grid-item .value-main { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
     .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
 
-    /* Synchronized Grid Colors */
     .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); color: var(--warn-good-text); }
     .grid-item.stat-orange { background-color: var(--warn-orange-bg); border-color: var(--warn-orange-border); color: var(--warn-orange-text); }
     .grid-item.stat-bad { background-color: var(--warn-bad-bg); border-color: var(--warn-bad-border); color: var(--warn-bad-text); }
@@ -549,46 +550,37 @@
 
     #status { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.8rem; }
 
-    .beta-footer {
-      text-align: center;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      opacity: 0.75;
-      padding: 1.2rem 0 0.4rem 0;
+    /* Modal Overlay for App Info Popup */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
     }
-
-    @media (min-width: 768px) {
-      .app-container {
-        max-width: 1100px;
-        padding: 1rem 1.5rem;
-      }
-
-      .screen-landing {
-        min-height: auto;
-        display: grid;
-        grid-template-columns: 360px 1fr;
-        gap: 1.5rem;
-        align-items: start;
-      }
-
-      .expand-toggle-btn {
-        display: none;
-      }
-
-      .details-section {
-        display: flex !important;
-        padding: 0;
-      }
-
-      .dial-container {
-        width: 280px;
-        height: 280px;
-        max-height: none;
-      }
-
-      .beta-footer {
-        grid-column: 1 / -1;
-      }
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .modal-card h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
+    .modal-card p { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .modal-close-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 0.45rem 1.2rem;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -599,12 +591,12 @@
   
   <div class="screen-landing">
     
-    <!-- Left Column Controls -->
+    <!-- Left / Primary Focus Section -->
     <div style="display: flex; flex-direction: column; gap: 0.6rem;">
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ Golf Weather</h1>
-          <span class="version-tag">v2.0</span>
+          <span class="version-tag" id="versionTag">v2.1</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -654,7 +646,7 @@
       </button>
     </div>
 
-    <!-- Right Column Breakdown -->
+    <!-- Secondary Breakdown Section -->
     <div id="detailsSection" class="details-section">
       
       <div class="card">
@@ -751,13 +743,18 @@
 
     </div>
 
-    <footer class="beta-footer">
-      Is It Golf Weather? v2.0 • Made by KW
-    </footer>
-
   </div>
 
   <div id="status">Getting location...</div>
+</div>
+
+<!-- Creator Modal Popup -->
+<div class="modal-overlay" id="creatorModal">
+  <div class="modal-card">
+    <h3>Is It Golf Weather?</h3>
+    <p>Version 2.1 • Made by KW</p>
+    <button class="modal-close-btn" id="closeModalBtn">Close</button>
+  </div>
 </div>
 
 <script>
@@ -780,7 +777,6 @@
 
   const circumference = 2 * Math.PI * 110;
 
-  // Unified Status Threshold Helper Functions for Synchronized Colors
   function getWindTier(windMph) {
     if (windMph > 25) return 'stat-bad';
     if (windMph >= 15) return 'stat-orange';
@@ -794,6 +790,10 @@
   }
 
   // DOM Elements
+  const versionTag = document.getElementById('versionTag');
+  const creatorModal = document.getElementById('creatorModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+
   const expandToggleBtn = document.getElementById('expandToggleBtn');
   const expandBtnText = document.getElementById('expandBtnText');
   const expandBtnIcon = document.getElementById('expandBtnIcon');
@@ -835,6 +835,13 @@
   const maxWindCard = document.getElementById('maxWindCard');
 
   teeTimeSlider.value = selectedTeeHour;
+
+  // Version Badge Modal Controls
+  versionTag.addEventListener('click', () => { creatorModal.style.display = 'flex'; });
+  closeModalBtn.addEventListener('click', () => { creatorModal.style.display = 'none'; });
+  creatorModal.addEventListener('click', (e) => {
+    if (e.target === creatorModal) creatorModal.style.display = 'none';
+  });
 
   expandToggleBtn.addEventListener('click', () => {
     const isExpanded = detailsSection.style.display === 'flex';
@@ -966,7 +973,6 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
-  // Fast Parallelized Mobile Load Implementation
   async function fetchWeather(lat, lon, overrideName = '') {
     statusEl.textContent = 'Fetching weather...';
     try {
@@ -1245,11 +1251,9 @@
     const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowMaxWind = Math.max(...windowWinds, 0);
     
-    // Detailed 7-Day + Past 24h Rainfall Calculation
     const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
     const past7DaysRain = h.precipitation.slice(0, startIndex).reduce((a, b) => a + b, 0);
 
-    // Snow / Sub-Zero Detection
     const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
     const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
 
@@ -1265,25 +1269,36 @@
     }
 
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
-    let score = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
+    let rawScore = calculateGolfScore(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
     
+    // Condition Box Class Evaluations
+    let isGroundGood = !hasSnowCover && windowAvgTemp > 0 && past7DaysRain <= 10 && last24hRain <= 4;
+    let isWindGood = (windowMaxWind / 1.609) < 15;
+    let isRainGood = windowRainSum <= 0.5;
+    let isTempGood = (22 - windowAvgTemp) <= 0 || Math.round(((22 - windowAvgTemp) / 5) * 2.5) < 4;
+    let isGearGood = windowAvgTemp > 10 && windowRainSum <= 0.1;
+
+    // Strict Rule: Never Perfect if ANY Breakdown Box is NOT Green
+    const allBoxesGreen = isGroundGood && isWindGood && isRainGood && isTempGood && isGearGood;
+    let finalScore = allBoxesGreen ? rawScore : Math.min(rawScore, 8.2);
+
     const isPastSunset = selectedTeeHour >= sunsetHourDec;
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
     const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
 
     if (isPastSunset) {
-      score = 1.0;
-      dialScore.textContent = `${score}`;
+      finalScore = 1.0;
+      dialScore.textContent = `${finalScore}`;
       dialTemp.textContent = toTemp(windowAvgTemp);
-      updateDialGauge(score);
+      updateDialGauge(finalScore);
       dialVerdict.textContent = 'Too Dark / Sunset 🌙';
       dialSub.textContent = `Sunset is at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}. Select an earlier tee time.`;
     } else {
-      dialScore.textContent = `${score}`;
+      dialScore.textContent = `${finalScore}`;
       dialTemp.textContent = toTemp(windowAvgTemp);
-      updateDialGauge(score);
+      updateDialGauge(finalScore);
 
-      if (score >= 8.5) {
+      if (allBoxesGreen && finalScore >= 8.5) {
         if (isTightDaylight) {
           dialVerdict.textContent = '9 Holes Only 🌙';
           dialSub.textContent = `Great weather, but only ~${daylightRemaining.toFixed(1)}h daylight remaining before sunset.`;
@@ -1291,13 +1306,16 @@
           dialVerdict.textContent = 'Yes, Perfect! ⛳';
           dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
         }
-      } else if (score >= 7.0) {
+      } else if (finalScore >= 7.0) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        dialSub.textContent = isCold ? 'Solid round, but chilly air! Wrap up warmly.' : 'Solid playing weather. Pack a standard light layer.';
-      } else if (score >= 5.0) {
+        if (!isGroundGood) dialSub.textContent = 'Soft/soggy fairways will reduce roll. Pack an extra towel!';
+        else if (!isWindGood) dialSub.textContent = 'Breezy conditions on course. Factor in wind adjustments.';
+        else if (isCold) dialSub.textContent = 'Solid round, but chilly air! Wrap up warmly.';
+        else dialSub.textContent = 'Solid playing weather. Pack standard layers.';
+      } else if (finalScore >= 5.0) {
         dialVerdict.textContent = 'Not Bad 🌥️';
         dialSub.textContent = isCold ? 'Playable, but cold air & cool breeze. Pack heavy thermals!' : 'Playable round, but factor in cool winds or soggy ground.';
-      } else if (score >= 3.0) {
+      } else if (finalScore >= 3.0) {
         dialVerdict.textContent = 'Poor 🌧️';
         dialSub.textContent = 'Rain or strong wind expected. Full waterproofs recommended.';
       } else {
@@ -1325,7 +1343,7 @@
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
-    // Strict Ground Condition Evaluation (Snow, Sub-Zero, 7-day cumulative)
+    // Ground Status Box
     if (hasSnowCover) {
       groundCallout.className = 'callout-box callout-bad';
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Snow cover / Frozen greens detected ❄️. Course likely closed.`;
@@ -1343,7 +1361,7 @@
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Dry / Firm fairways. Great roll expected!`;
     }
 
-    // Synchronized Wind Evaluation
+    // Wind Box
     const windMph = windowMaxWind / 1.609;
     const windClass = getWindTier(windMph);
     const windVisual = getWindVisuals(windowMaxWind);
@@ -1361,12 +1379,12 @@
       windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Light breeze. Minimal ball flight change.`;
     }
 
-    // Synchronized Rain Evaluation
+    // Rain Box
     const rainClass = getRainTier(windowRainSum);
     rainOutlookCallout.className = `callout-box ${rainClass.replace('stat-', 'callout-')}`;
     rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Dry skies overhead.'}`;
 
-    // Carry Penalty Callout
+    // Distance Penalty Box
     const tempDiffC = 22 - windowAvgTemp;
     let penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
     if (penaltyYards >= 4) {
@@ -1377,7 +1395,7 @@
       distancePenaltyCallout.style.display = 'none';
     }
 
-    // Dynamic Gear Checklist Box
+    // Gear Checklist Box
     let gear = 'Standard Polo & Light Layer 👕';
     let gearClass = 'callout-good';
     if (windowAvgTemp < 5) {
@@ -1399,7 +1417,6 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
-    // Strict Synchronized Grid Class Assignment
     windCard.className = `grid-item ${windClass}`;
     recentRainCard.className = `grid-item ${getRainTier(last24hRain)}`;
     forecastRainCard.className = `grid-item ${rainClass}`;
