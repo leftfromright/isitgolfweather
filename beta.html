@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>isitgolfweather v2.5</title>
+  <title>isitgolfweather v2.6</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,6 +29,7 @@
       --chart-line: #2e7d32;
       --chart-bar: #1e88e5;
       --chart-bar-text: #1565c0;
+      --chart-grid: rgba(74, 99, 82, 0.15);
       --sun-line: #e65100;
       --now-line: #d32f2f;
       --tee-line: #1565c0;
@@ -64,6 +65,7 @@
       --chart-line: #66bb6a;
       --chart-bar: #64b5f6;
       --chart-bar-text: #90caf9;
+      --chart-grid: rgba(139, 168, 149, 0.15);
       --sun-line: #ffb74d;
       --now-line: #ef5350;
       --tee-line: #90caf9;
@@ -270,34 +272,36 @@
     }
 
     .dial-score-num {
-      font-size: clamp(2.3rem, 7.5vw, 3.1rem);
+      font-size: clamp(2.4rem, 7.8vw, 3.2rem);
       font-weight: 900;
       letter-spacing: -1.5px;
       line-height: 0.95;
     }
 
     .dial-temp-badge {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-weight: 800;
       color: var(--accent);
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.1rem 0.55rem;
+      padding: 0.12rem 0.6rem;
       border-radius: 12px;
-      margin: 0.15rem 0 0.2rem 0;
+      margin: 0.15rem 0 0.25rem 0;
     }
 
     .dial-verdict-title {
-      font-size: clamp(1.05rem, 3.8vw, 1.2rem);
+      font-size: clamp(1.1rem, 4vw, 1.25rem);
       font-weight: 800;
-      margin-bottom: 0.1rem;
+      margin-bottom: 0.15rem;
     }
 
+    /* Larger Dial Subtext */
     .dial-verdict-sub {
-      font-size: clamp(0.72rem, 2.6vw, 0.8rem);
+      font-size: clamp(0.82rem, 3vw, 0.92rem);
       color: var(--text-muted);
-      line-height: 1.15;
-      max-width: 200px;
+      line-height: 1.2;
+      max-width: 220px;
+      font-weight: 500;
     }
 
     /* Date Calendar Buttons */
@@ -507,7 +511,7 @@
       border: 1px solid var(--border);
     }
     .grid-item .label { font-size: 0.72rem; color: var(--text-muted); }
-    .grid-item .value-main { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
+    .grid-item .value-main { font-size: 0.92rem; font-weight: bold; display: flex; align-items: center; gap: 0.2rem; }
     .grid-item .value-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
 
     .grid-item.stat-good { background-color: var(--warn-good-bg); border-color: var(--warn-good-border); color: var(--warn-good-text); }
@@ -548,6 +552,7 @@
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10px; text-anchor: middle; }
     .chart-y-text { fill: var(--text-muted); font-size: 9px; text-anchor: end; }
+    .chart-grid-line { stroke: var(--chart-grid); stroke-width: 1; stroke-dasharray: 2,3; }
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
     .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 4,4; }
@@ -642,7 +647,7 @@
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ isitgolfweather</h1>
-          <span class="version-tag" id="versionTag">v2.5</span>
+          <span class="version-tag" id="versionTag">v2.6</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -727,7 +732,7 @@
         </div>
       </div>
 
-      <!-- 2. 24-Hour Forecast Chart (Sticky Y-Axis) -->
+      <!-- 2. 24-Hour Forecast Chart (Gridlines + Sticky Y-Axis) -->
       <div class="card">
         <h2>24-Hour Forecast</h2>
         <div class="chart-wrapper-split">
@@ -750,7 +755,7 @@
         </div>
       </div>
 
-      <!-- 3. Day Summary (High/Low & Daylight Swapped; High/Low Fixed Order) -->
+      <!-- 3. Day Summary -->
       <div class="card">
         <h2>Day Summary</h2>
         <div class="summary-grid">
@@ -781,7 +786,7 @@
         </div>
       </div>
 
-      <!-- 4. Course Condition Breakdown (Clean Titles Without %) -->
+      <!-- 4. Course Condition Breakdown -->
       <div class="card">
         <h2>Course Condition Breakdown</h2>
         <div id="groundCallout" class="callout-box"></div>
@@ -801,7 +806,7 @@
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>isitgolfweather</h3>
-    <p>Version 2.5 • Made by KW</p>
+    <p>Version 2.6 • Made by KW</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -969,7 +974,6 @@
       addResults(resUK);
       addResults(resNormal);
 
-      // Prioritise UK locations & Golf Clubs at the top
       combined.sort((a, b) => {
         const aIsUK = a.country_code === 'GB' ? 2 : 0;
         const bIsUK = b.country_code === 'GB' ? 2 : 0;
@@ -1053,10 +1057,11 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
+  // Extended 16-Day Forecast Horizon API Call
   async function fetchWeather(lat, lon, overrideName = '') {
     statusEl.textContent = 'Fetching weather...';
     try {
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,precipitation,wind_speed_10m,snowfall,snow_depth&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=7&timezone=auto`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,precipitation,wind_speed_10m,snowfall,snow_depth&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
       
       const weatherPromise = fetch(weatherUrl).then(r => r.json());
       const namePromise = overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon);
@@ -1077,6 +1082,7 @@
     }
   }
 
+  // 16-Day Forecast Integration in Calendar Picker
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
     dateBar.innerHTML = '';
@@ -1121,7 +1127,7 @@
     
     if (days.length > 0) {
       hiddenDatePicker.min = days[0];
-      hiddenDatePicker.max = days[days.length - 1];
+      hiddenDatePicker.max = days[days.length - 1]; // Full 16-day limit
     }
 
     moreBtn.addEventListener('click', () => {
@@ -1194,7 +1200,7 @@
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
-  // Sticky Temperature Y-Axis Split Chart Renderer
+  // Sticky Y-Axis Chart Renderer with Faint Background Gridlines
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
     const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
@@ -1214,7 +1220,7 @@
 
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
-    // Render Sticky Y-Axis Labels
+    // Y-Axis Labels + Faint Horizontal Gridlines
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -1225,6 +1231,15 @@
       label.setAttribute('class', 'chart-y-text');
       label.textContent = `${tickVal}°`;
       ySvg.appendChild(label);
+
+      // Faint horizontal background gridline
+      const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      gridLine.setAttribute('x1', 0);
+      gridLine.setAttribute('x2', width);
+      gridLine.setAttribute('y1', yPos);
+      gridLine.setAttribute('y2', yPos);
+      gridLine.setAttribute('class', 'chart-grid-line');
+      svg.appendChild(gridLine);
     }
 
     hourlyPrecip.forEach((rain, i) => {
@@ -1361,6 +1376,8 @@
 
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
+    const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
+
     if (d.sunrise[currentDayIdx]) {
       const parts = d.sunrise[currentDayIdx].split('T')[1].split(':');
       sunriseHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
@@ -1380,6 +1397,7 @@
 
     const isPastSunset = selectedTeeHour >= sunsetHourDec;
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
+    const isWarningDaylight = daylightRemaining >= 2.0 && daylightRemaining <= 4.0;
     const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
 
     if (isPastSunset) {
@@ -1388,7 +1406,7 @@
       dialTemp.textContent = toTemp(windowAvgTemp);
       updateDialGauge(finalPct);
       dialVerdict.textContent = 'Too Dark / Sunset 🌙';
-      dialSub.textContent = `Sunset is at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}. Select an earlier tee time.`;
+      dialSub.textContent = `Sunset is at ${sunsetStrRaw}. Select an earlier tee time.`;
     } else {
       dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
@@ -1397,21 +1415,28 @@
       if (allBoxesGreen && finalPct >= 85) {
         if (isTightDaylight) {
           dialVerdict.textContent = '9 Holes Only 🌙';
-          dialSub.textContent = `Great weather, but only ~${daylightRemaining.toFixed(1)}h daylight remaining before sunset.`;
+          dialSub.textContent = `Sunset in ~${daylightRemaining.toFixed(1)}h (${sunsetStrRaw}) — 9 holes only!`;
+        } else if (isWarningDaylight) {
+          dialVerdict.textContent = 'Yes, Good! ⛳';
+          dialSub.textContent = `Sunset in ~${daylightRemaining.toFixed(1)}h (${sunsetStrRaw}) — tight for 18 holes!`;
         } else {
           dialVerdict.textContent = 'Yes, Perfect! ⛳';
           dialSub.textContent = 'Firm fairways, light breeze, and dry skies. Great round ahead!';
         }
       } else if (finalPct >= 70) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        if (windowRainSum > 0.5) dialSub.textContent = 'Rain expected during play. Keep umbrella & waterproofs handy.';
+        if (isTightDaylight) dialSub.textContent = `Sunset in ~${daylightRemaining.toFixed(1)}h (${sunsetStrRaw}) — 9 holes max!`;
+        else if (isWarningDaylight) dialSub.textContent = `Sunset in ~${daylightRemaining.toFixed(1)}h (${sunsetStrRaw}) — tight for 18 holes!`;
+        else if (windowRainSum > 0.5) dialSub.textContent = 'Rain expected during play. Keep umbrella & waterproofs handy.';
         else if (subScores[0] < 20) dialSub.textContent = 'Soft fairways will reduce ball roll. Expect muddy lies.';
         else if (subScores[1] < 20) dialSub.textContent = 'Breezy conditions. Factor in 1–2 club adjustments.';
         else if (isCold) dialSub.textContent = 'Chilly air! Thermal layers and mitts recommended.';
         else dialSub.textContent = 'Solid playing weather. Pack standard layers.';
       } else if (finalPct >= 50) {
         dialVerdict.textContent = 'Not Bad 🌥️';
-        if (windowRainSum > 0.5) dialSub.textContent = 'Playable, but rain forecast during round. Pack waterproof gear!';
+        if (isTightDaylight) dialSub.textContent = `Sunset in ~${daylightRemaining.toFixed(1)}h (${sunsetStrRaw}) — 9 holes max!`;
+        else if (isWarningDaylight) dialSub.textContent = `Sunset in ~${daylightRemaining.toFixed(1)}h (${sunsetStrRaw}) — tight for 18!`;
+        else if (windowRainSum > 0.5) dialSub.textContent = 'Playable, but rain forecast during round. Pack waterproof gear!';
         else if (isCold) dialSub.textContent = 'Playable, but cold air & cool breeze. Wrap up warmly!';
         else dialSub.textContent = 'Playable round, but expect damp conditions or cool winds.';
       } else if (finalPct >= 30) {
@@ -1426,11 +1451,11 @@
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-red';
-      daylightWarning.textContent = `🌙 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Not enough daylight for 9 or 18 holes.`;
-    } else if (daylightRemaining < 4.0) {
+      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw}! Not enough daylight for 9 or 18 holes.`;
+    } else if (daylightRemaining <= 4.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-warning warn-orange';
-      daylightWarning.textContent = `🌙 Sunset at ${d.sunset[currentDayIdx].split('T')[1].slice(0,5)}! Enough for 9 holes (~2h), tight for 18.`;
+      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw}! Enough for 9 holes (~2h), tight for 18.`;
     } else {
       daylightWarning.style.display = 'none';
     }
@@ -1442,7 +1467,7 @@
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `(Feels like ${toTemp(windowAvgTemp)})`;
 
-    // Ground Status Callout Box (Clean Title Without %)
+    // Ground Status Callout Box
     if (subScores[0] === 20) {
       groundCallout.className = 'callout-box callout-good';
       groundCallout.innerHTML = `<span class="callout-title">Ground Status</span>Dry / Firm fairways. Great roll expected!`;
@@ -1495,10 +1520,10 @@
     gearCallout.className = `callout-box ${subScores[4] >= 15 ? 'callout-good' : (subScores[4] >= 10 ? 'callout-orange' : 'callout-bad')}`;
     gearCallout.innerHTML = `<span class="callout-title">Gear & Comfort</span>${gear}`;
 
-    document.getElementById('recentRain').textContent = toPrecip(last24hRain);
-    document.getElementById('forecastRain').textContent = toPrecip(windowRainSum);
+    // Zero-Rain Fallback Display Texts
+    document.getElementById('recentRain').textContent = last24hRain > 0 ? toPrecip(last24hRain) : '0.0 mm (None)';
+    document.getElementById('forecastRain').textContent = windowRainSum > 0 ? toPrecip(windowRainSum) : '0.0 mm (Dry)';
     
-    // High / Low Corrected Order (Max Temp first, Min Temp second)
     const tMaxVal = d.temperature_2m_max[currentDayIdx];
     const tMinVal = d.temperature_2m_min[currentDayIdx];
     document.getElementById('tempRange').textContent = `${toTemp(tMaxVal)} / ${toTemp(tMinVal)}`;
@@ -1517,9 +1542,8 @@
     maxWindCard.className = `grid-item ${getWindTier(maxDayWindMph)}`;
 
     const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
-    const sunsetStr = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
     document.getElementById('sunriseTime').textContent = sunriseStr;
-    document.getElementById('sunsetTime').textContent = sunsetStr;
+    document.getElementById('sunsetTime').textContent = sunsetStrRaw;
     document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining.toFixed(1))} hrs`;
 
     if (daylightRemaining >= 4.0) daylightCard.className = 'grid-item stat-good';
