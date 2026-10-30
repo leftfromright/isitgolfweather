@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather v2.9</title>
+  <title>Is It Golf Weather v3.0</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -216,7 +216,7 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
 
-    /* Dial Display Section (Optimised Inner Padding) */
+    /* Dial Display Section */
     .dial-section {
       flex: 1 1 auto;
       display: flex;
@@ -314,6 +314,7 @@
       margin-bottom: 0.2rem;
       scrollbar-width: none;
       flex-shrink: 0;
+      position: relative;
     }
     .date-bar::-webkit-scrollbar { display: none; }
 
@@ -343,12 +344,14 @@
     .date-btn .date-icon { font-size: 1.05rem; margin: 0.05rem 0; }
     .date-btn .date-temps { font-size: 0.68rem; opacity: 0.95; font-weight: 700; }
 
+    /* Dynamically Anchored DatePicker */
     #hiddenDatePicker {
       position: absolute;
       opacity: 0;
       pointer-events: none;
-      width: 0;
-      height: 0;
+      width: 1px;
+      height: 1px;
+      z-index: 10;
     }
 
     /* Tee Time Slider Card */
@@ -521,7 +524,7 @@
 
     .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem; }
 
-    /* Sticky Y-Axis Split Chart Layout */
+    /* Full-Width Desktop Responsive Chart */
     .chart-wrapper-split {
       display: flex;
       width: 100%;
@@ -546,7 +549,8 @@
       height: 135px;
     }
     .chart-scroll-inner {
-      min-width: 480px;
+      width: 100%;
+      min-width: 100%;
       height: 135px;
     }
     
@@ -615,7 +619,7 @@
       cursor: pointer;
     }
 
-    /* Desktop View Enhancements (≥ 768px) */
+    /* Desktop View Adjustments (≥ 768px) */
     @media (min-width: 768px) {
       .app-container {
         max-width: 680px;
@@ -657,8 +661,8 @@
     <div style="display: flex; flex-direction: column; gap: 0.6rem;">
       <header class="compact-header">
         <div class="compact-title">
-          <h1>⛳ isitgolfweather</h1>
-          <span class="version-tag" id="versionTag">v2.9</span>
+          <h1>⛳ is it golf weather</h1>
+          <span class="version-tag" id="versionTag">v3.0</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -743,7 +747,7 @@
         </div>
       </div>
 
-      <!-- 2. 24-Hour Forecast Chart -->
+      <!-- 2. 24-Hour Forecast Chart (Responsive Full Width) -->
       <div class="card">
         <h2>24-Hour Forecast</h2>
         <div class="chart-wrapper-split">
@@ -821,7 +825,7 @@
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>Is It Golf Weather</h3>
-    <p>Version 2.9 • Made by KW</p>
+    <p>Version 3.0 • Made by KW in October 2026</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -1097,6 +1101,7 @@
     }
   }
 
+  // Position date picker over the More button
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
     dateBar.innerHTML = '';
@@ -1145,6 +1150,11 @@
     }
 
     moreBtn.addEventListener('click', () => {
+      const rect = moreBtn.getBoundingClientRect();
+      const parentRect = dateBar.getBoundingClientRect();
+      hiddenDatePicker.style.left = `${rect.left - parentRect.left}px`;
+      hiddenDatePicker.style.top = `${rect.top - parentRect.top}px`;
+
       hiddenDatePicker.showPicker ? hiddenDatePicker.showPicker() : hiddenDatePicker.click();
     });
 
@@ -1215,18 +1225,22 @@
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
+  // Full-Width Responsive Chart Renderer
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
     const ySvg = document.getElementById('yAxisSvg');
     const svg = document.getElementById('hourlyChart');
     ySvg.innerHTML = '';
     svg.innerHTML = '';
 
-    const width = 480;
+    const width = 1000;
     const height = 135;
-    const paddingLeft = 10;
-    const paddingRight = 15;
+    const paddingLeft = 15;
+    const paddingRight = 20;
     const paddingBottom = 18;
     const paddingTop = 16;
+
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
@@ -1262,7 +1276,7 @@
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         rect.setAttribute('x', x);
         rect.setAttribute('y', y);
-        rect.setAttribute('width', Math.max(stepX * 0.7, 3));
+        rect.setAttribute('width', Math.max(stepX * 0.7, 4));
         rect.setAttribute('height', Math.max(barHeight, 2));
         rect.setAttribute('class', 'chart-bar');
         svg.appendChild(rect);
@@ -1422,6 +1436,9 @@
       sunsetAppendTag = `<br><span style="color: var(--gauge-med); font-weight: bold;">${daylightRemaining.toFixed(1)}h till sunset</span>`;
     }
 
+    // Zero-Rain Dial Confirmation Notice
+    const dryRainTag = windowRainSum === 0 ? ' (0.0 mm rain during round)' : '';
+
     if (hasLightning) {
       finalPct = 0;
       dialScore.textContent = `0%`;
@@ -1444,23 +1461,23 @@
       if (allBoxesGreen && finalPct >= 85) {
         dialVerdict.textContent = isTightDaylight ? '9 Holes Only 🌙' : 'Yes, Perfect! ⛳';
         if (windowRainSum > 0) dialSub.innerHTML = `Rain expected (${toPrecip(windowRainSum)}).${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Dry skies & light breeze. Great round!${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Firm fairways, light breeze, and dry skies${dryRainTag}.${sunsetAppendTag}`;
       } else if (finalPct >= 70) {
         dialVerdict.textContent = 'Yes, Good! 👍';
         if (windowRainSum > 0) dialSub.innerHTML = `Rain forecast (${toPrecip(windowRainSum)}). Keep umbrella ready.${sunsetAppendTag}`;
-        else if (subScores[0] < 20) dialSub.innerHTML = `Soft fairways — damp lies & less roll.${sunsetAppendTag}`;
-        else if (subScores[1] < 20) dialSub.innerHTML = `Breezy! Factor 1–2 extra clubs.${sunsetAppendTag}`;
-        else if (isCold) dialSub.innerHTML = `Chilly air! Thermal layers advised.${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Solid golf weather. Pack layers.${sunsetAppendTag}`;
+        else if (subScores[0] < 20) dialSub.innerHTML = `Soft fairways — damp lies & less roll${dryRainTag}.${sunsetAppendTag}`;
+        else if (subScores[1] < 20) dialSub.innerHTML = `Breezy! Factor 1–2 extra clubs${dryRainTag}.${sunsetAppendTag}`;
+        else if (isCold) dialSub.innerHTML = `Chilly air! Thermal layers advised${dryRainTag}.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Solid golf weather. Dry skies forecast${dryRainTag}.${sunsetAppendTag}`;
       } else if (finalPct >= 50) {
         dialVerdict.textContent = 'Not Bad 🌥️';
         if (windowRainSum > 0) dialSub.innerHTML = `Rain forecast (${toPrecip(windowRainSum)}). Pack waterproofs!${sunsetAppendTag}`;
-        else if (isCold) dialSub.innerHTML = `Playable, but cold air & cool breeze.${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Playable, expect damp or cool wind.${sunsetAppendTag}`;
+        else if (isCold) dialSub.innerHTML = `Playable, but cold air & cool breeze${dryRainTag}.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Playable. Dry skies forecast during round${dryRainTag}.${sunsetAppendTag}`;
       } else if (finalPct >= 30) {
         dialVerdict.textContent = 'Poor 🌧️';
         if (windowRainSum > 0) dialSub.innerHTML = `Heavy rain (${toPrecip(windowRainSum)}). Full waterproof suit.${sunsetAppendTag}`;
-        else dialSub.innerHTML = `High wind or wet course expected.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `High wind or wet course expected${dryRainTag}.${sunsetAppendTag}`;
       } else {
         dialVerdict.textContent = 'No Chance ⛔';
         dialSub.innerHTML = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable. Try simulator instead!';
