@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>isitgolfweather v2.7</title>
+  <title>Is It Golf Weather v2.8</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="isitgolfweather">
+  <meta name="apple-mobile-web-app-title" content="Is It Golf Weather">
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
 
@@ -653,7 +653,7 @@
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ isitgolfweather</h1>
-          <span class="version-tag" id="versionTag">v2.7</span>
+          <span class="version-tag" id="versionTag">v2.8</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -738,7 +738,7 @@
         </div>
       </div>
 
-      <!-- 2. 24-Hour Forecast Chart (2-Line Legend) -->
+      <!-- 2. 24-Hour Forecast Chart -->
       <div class="card">
         <h2>24-Hour Forecast</h2>
         <div class="chart-wrapper-split">
@@ -815,8 +815,8 @@
 
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
-    <h3>isitgolfweather</h3>
-    <p>Version 2.7 • Made by KW</p>
+    <h3>Is It Golf Weather</h3>
+    <p>Version 2.8 • Made by KW</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -955,7 +955,6 @@
     debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
   });
 
-  // UK & Golf Club Prioritised Geocoding
   async function searchAutocomplete(rawQuery) {
     try {
       let cleanQuery = rawQuery.replace(/royal/gi, '').trim() || rawQuery;
@@ -1045,7 +1044,9 @@
       71: { text: 'Slight snow', icon: '❄️' },
       73: { text: 'Moderate snow', icon: '❄️' },
       75: { text: 'Heavy snow', icon: '❄️🌨️' },
-      95: { text: 'Thunderstorm', icon: '⚡' }
+      95: { text: 'Thunderstorm', icon: '⚡' },
+      96: { text: 'Thunderstorm w/ hail', icon: '⚡⛈️' },
+      99: { text: 'Heavy thunderstorm', icon: '⚡⛈️' }
     };
     return codes[code] || { text: 'Cloudy', icon: '🌥️' };
   }
@@ -1067,11 +1068,10 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
-  // Extended 16-Day Forecast Horizon
   async function fetchWeather(lat, lon, overrideName = '') {
     statusEl.textContent = 'Fetching weather...';
     try {
-      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,precipitation,wind_speed_10m,snowfall,snow_depth&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,precipitation,wind_speed_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
       
       const weatherPromise = fetch(weatherUrl).then(r => r.json());
       const namePromise = overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon);
@@ -1156,7 +1156,8 @@
     dateBar.appendChild(moreBtn);
   }
 
-  function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing) {
+  function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
+    if (hasLightning) return { score: 0, scores: [0, 0, 0, 0, 0] };
     if (isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
     
     const windMph = windSpeedKmh / 1.609;
@@ -1380,6 +1381,10 @@
     const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
     const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
 
+    // Open-Meteo Lightning Weather Codes: 95, 96, 99
+    const windowCodes = h.weather_code ? h.weather_code.slice(teeStartHourIndex, teeStartHourIndex + 4) : [];
+    const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code));
+
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
     const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0,5) : '--:--';
@@ -1394,7 +1399,7 @@
     }
 
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
-    const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover);
+    const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
     let rawScorePct = evalObj.score;
     const subScores = evalObj.scores;
 
@@ -1406,18 +1411,28 @@
     const isWarningDaylight = daylightRemaining >= 2.0 && daylightRemaining <= 4.0;
     const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
 
-    // Sunset Tag appended concisely
+    // Color-coded sunset string inside the dial text
     let sunsetAppendTag = '';
-    if (isTightDaylight) sunsetAppendTag = ` • ${daylightRemaining.toFixed(1)} hrs till sunset`;
-    else if (isWarningDaylight) sunsetAppendTag = ` • ${daylightRemaining.toFixed(1)} hrs till sunset`;
+    if (isTightDaylight) {
+      sunsetAppendTag = ` • <span style="color: var(--gauge-bad); font-weight: bold;">${daylightRemaining.toFixed(1)} hrs till sunset</span>`;
+    } else if (isWarningDaylight) {
+      sunsetAppendTag = ` • <span style="color: var(--gauge-med); font-weight: bold;">${daylightRemaining.toFixed(1)} hrs till sunset</span>`;
+    }
 
-    if (isPastSunset) {
+    if (hasLightning) {
+      finalPct = 0;
+      dialScore.textContent = `0%`;
+      dialTemp.textContent = toTemp(windowAvgTemp);
+      updateDialGauge(0);
+      dialVerdict.textContent = 'Lightning Risk ⚡';
+      dialSub.innerHTML = `<span style="color: var(--gauge-bad); font-weight: bold;">Thunderstorms forecast during tee window! Stay off course.</span>`;
+    } else if (isPastSunset) {
       finalPct = 0;
       dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
       updateDialGauge(finalPct);
       dialVerdict.textContent = 'Too Dark / Sunset 🌙';
-      dialSub.textContent = `Sunset was at ${sunsetStrRaw}. Select an earlier tee time.`;
+      dialSub.innerHTML = `Sunset was at ${sunsetStrRaw}. Select an earlier tee time.`;
     } else {
       dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
@@ -1425,27 +1440,27 @@
 
       if (allBoxesGreen && finalPct >= 85) {
         dialVerdict.textContent = isTightDaylight ? '9 Holes Only 🌙' : 'Yes, Perfect! ⛳';
-        if (windowRainSum > 0) dialSub.textContent = `Rain expected (${toPrecip(windowRainSum)}). Keep umbrella handy.${sunsetAppendTag}`;
-        else dialSub.textContent = `Firm fairways, light breeze, and dry skies. Great round ahead!${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Rain expected (${toPrecip(windowRainSum)}). Keep umbrella handy.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Firm fairways, light breeze, and dry skies. Great round ahead!${sunsetAppendTag}`;
       } else if (finalPct >= 70) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        if (windowRainSum > 0) dialSub.textContent = `Rain expected (${toPrecip(windowRainSum)}). Waterproofs recommended.${sunsetAppendTag}`;
-        else if (subScores[0] < 20) dialSub.textContent = `Soft fairways will reduce ball roll. Expect muddy lies.${sunsetAppendTag}`;
-        else if (subScores[1] < 20) dialSub.textContent = `Breezy conditions. Factor in 1–2 club adjustments.${sunsetAppendTag}`;
-        else if (isCold) dialSub.textContent = `Chilly air! Thermal layers recommended.${sunsetAppendTag}`;
-        else dialSub.textContent = `Solid playing weather. Pack standard layers.${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Rain expected (${toPrecip(windowRainSum)}). Waterproofs recommended.${sunsetAppendTag}`;
+        else if (subScores[0] < 20) dialSub.innerHTML = `Soft fairways will reduce ball roll. Expect muddy lies.${sunsetAppendTag}`;
+        else if (subScores[1] < 20) dialSub.innerHTML = `Breezy conditions. Factor in 1–2 club adjustments.${sunsetAppendTag}`;
+        else if (isCold) dialSub.innerHTML = `Chilly air! Thermal layers recommended.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Solid playing weather. Pack standard layers.${sunsetAppendTag}`;
       } else if (finalPct >= 50) {
         dialVerdict.textContent = 'Not Bad 🌥️';
-        if (windowRainSum > 0) dialSub.textContent = `Rain forecast during round (${toPrecip(windowRainSum)}). Pack waterproofs!${sunsetAppendTag}`;
-        else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. Wrap up warmly!${sunsetAppendTag}`;
-        else dialSub.textContent = `Playable round, but expect damp conditions or cool winds.${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Rain forecast during round (${toPrecip(windowRainSum)}). Pack waterproofs!${sunsetAppendTag}`;
+        else if (isCold) dialSub.innerHTML = `Playable, but cold air & cool breeze. Wrap up warmly!${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Playable round, but expect damp conditions or cool winds.${sunsetAppendTag}`;
       } else if (finalPct >= 30) {
         dialVerdict.textContent = 'Poor 🌧️';
-        if (windowRainSum > 0) dialSub.textContent = `Heavy rain expected (${toPrecip(windowRainSum)}). Full waterproof suit needed.${sunsetAppendTag}`;
-        else dialSub.textContent = `Strong winds or wet course expected. Full gear recommended.${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Heavy rain expected (${toPrecip(windowRainSum)}). Full waterproof suit needed.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Strong winds or wet course expected. Full gear recommended.${sunsetAppendTag}`;
       } else {
         dialVerdict.textContent = 'No Chance ⛔';
-        dialSub.textContent = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Check out the simulator instead!';
+        dialSub.innerHTML = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Check out the simulator instead!';
       }
     }
 
@@ -1502,9 +1517,14 @@
     else if (subScores[1] === 5) windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Strong winds (${toSpeed(windowMaxWind)}). Take 2 extra clubs into wind.`;
     else windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Gale force winds (${toSpeed(windowMaxWind)}). Extreme flight impact.`;
 
-    // Rain Box
-    rainOutlookCallout.className = `callout-box ${subScores[2] >= 15 ? 'callout-good' : (subScores[2] >= 10 ? 'callout-orange' : 'callout-bad')}`;
-    rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Bone dry skies overhead.'}`;
+    // Rain Outlook Box (includes lightning override)
+    if (hasLightning) {
+      rainOutlookCallout.className = 'callout-box callout-bad';
+      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain & Lightning</span>THUNDERSTORM RISK FORECAST ⚡ Clear the course immediately if thunder sounds!`;
+    } else {
+      rainOutlookCallout.className = `callout-box ${subScores[2] >= 15 ? 'callout-good' : (subScores[2] >= 10 ? 'callout-orange' : 'callout-bad')}`;
+      rainOutlookCallout.innerHTML = `<span class="callout-title">Rain Outlook</span>${windowRainSum > 0 ? toPrecip(windowRainSum) + ' rain forecast during round.' : 'Bone dry skies overhead.'}`;
+    }
 
     // Distance Penalty Box
     const tempDiffC = 22 - windowAvgTemp;
