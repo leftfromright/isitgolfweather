@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather v2.8</title>
+  <title>Is It Golf Weather v2.9</title>
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -216,7 +216,7 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
 
-    /* Dial Display Section */
+    /* Dial Display Section (Optimised Inner Padding) */
     .dial-section {
       flex: 1 1 auto;
       display: flex;
@@ -229,8 +229,8 @@
 
     .dial-container {
       position: relative;
-      width: min(290px, calc(100vw - 1.2rem));
-      height: min(290px, calc(100vw - 1.2rem));
+      width: min(295px, calc(100vw - 1.2rem));
+      height: min(295px, calc(100vw - 1.2rem));
       max-height: 36vh;
       display: flex;
       align-items: center;
@@ -262,45 +262,47 @@
 
     .dial-content {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 12%; left: 12%; right: 12%; bottom: 12%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0.6rem;
+      padding: 0.2rem;
     }
 
     .dial-score-num {
-      font-size: clamp(2.4rem, 7.8vw, 3.2rem);
+      font-size: clamp(2.2rem, 7vw, 2.9rem);
       font-weight: 900;
-      letter-spacing: -1.5px;
-      line-height: 0.95;
+      letter-spacing: -1.2px;
+      line-height: 0.9;
     }
 
     .dial-temp-badge {
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       font-weight: 800;
       color: var(--accent);
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 0.12rem 0.6rem;
-      border-radius: 12px;
-      margin: 0.15rem 0 0.25rem 0;
+      padding: 0.08rem 0.5rem;
+      border-radius: 10px;
+      margin: 0.1rem 0 0.2rem 0;
     }
 
     .dial-verdict-title {
-      font-size: clamp(1.1rem, 4vw, 1.25rem);
+      font-size: clamp(1.02rem, 3.8vw, 1.18rem);
       font-weight: 800;
+      line-height: 1.1;
       margin-bottom: 0.15rem;
     }
 
     .dial-verdict-sub {
-      font-size: clamp(0.82rem, 3vw, 0.92rem);
+      font-size: clamp(0.72rem, 2.5vw, 0.82rem);
       color: var(--text-muted);
-      line-height: 1.2;
-      max-width: 220px;
+      line-height: 1.15;
+      max-width: 185px;
       font-weight: 500;
+      word-wrap: break-word;
     }
 
     /* Date Calendar Buttons */
@@ -623,6 +625,9 @@
         width: 310px;
         height: 310px;
       }
+      .dial-verdict-sub {
+        max-width: 205px;
+      }
       .date-btn {
         min-height: 78px;
         font-size: 0.88rem;
@@ -653,7 +658,7 @@
       <header class="compact-header">
         <div class="compact-title">
           <h1>⛳ isitgolfweather</h1>
-          <span class="version-tag" id="versionTag">v2.8</span>
+          <span class="version-tag" id="versionTag">v2.9</span>
         </div>
         <div class="controls-mini">
           <button id="unitToggle">°C</button>
@@ -816,7 +821,7 @@
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>Is It Golf Weather</h3>
-    <p>Version 2.8 • Made by KW</p>
+    <p>Version 2.9 • Made by KW</p>
     <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
@@ -1381,7 +1386,6 @@
     const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
     const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
 
-    // Open-Meteo Lightning Weather Codes: 95, 96, 99
     const windowCodes = h.weather_code ? h.weather_code.slice(teeStartHourIndex, teeStartHourIndex + 4) : [];
     const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code));
 
@@ -1411,12 +1415,11 @@
     const isWarningDaylight = daylightRemaining >= 2.0 && daylightRemaining <= 4.0;
     const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
 
-    // Color-coded sunset string inside the dial text
     let sunsetAppendTag = '';
     if (isTightDaylight) {
-      sunsetAppendTag = ` • <span style="color: var(--gauge-bad); font-weight: bold;">${daylightRemaining.toFixed(1)} hrs till sunset</span>`;
+      sunsetAppendTag = `<br><span style="color: var(--gauge-bad); font-weight: bold;">${daylightRemaining.toFixed(1)}h till sunset</span>`;
     } else if (isWarningDaylight) {
-      sunsetAppendTag = ` • <span style="color: var(--gauge-med); font-weight: bold;">${daylightRemaining.toFixed(1)} hrs till sunset</span>`;
+      sunsetAppendTag = `<br><span style="color: var(--gauge-med); font-weight: bold;">${daylightRemaining.toFixed(1)}h till sunset</span>`;
     }
 
     if (hasLightning) {
@@ -1425,14 +1428,14 @@
       dialTemp.textContent = toTemp(windowAvgTemp);
       updateDialGauge(0);
       dialVerdict.textContent = 'Lightning Risk ⚡';
-      dialSub.innerHTML = `<span style="color: var(--gauge-bad); font-weight: bold;">Thunderstorms forecast during tee window! Stay off course.</span>`;
+      dialSub.innerHTML = `<span style="color: var(--gauge-bad); font-weight: bold;">Thunderstorms forecast! Clear course.</span>`;
     } else if (isPastSunset) {
       finalPct = 0;
       dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
       updateDialGauge(finalPct);
-      dialVerdict.textContent = 'Too Dark / Sunset 🌙';
-      dialSub.innerHTML = `Sunset was at ${sunsetStrRaw}. Select an earlier tee time.`;
+      dialVerdict.textContent = 'Too Dark 🌙';
+      dialSub.innerHTML = `Sunset was at ${sunsetStrRaw}. Choose earlier time.`;
     } else {
       dialScore.textContent = `${finalPct}%`;
       dialTemp.textContent = toTemp(windowAvgTemp);
@@ -1440,27 +1443,27 @@
 
       if (allBoxesGreen && finalPct >= 85) {
         dialVerdict.textContent = isTightDaylight ? '9 Holes Only 🌙' : 'Yes, Perfect! ⛳';
-        if (windowRainSum > 0) dialSub.innerHTML = `Rain expected (${toPrecip(windowRainSum)}). Keep umbrella handy.${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Firm fairways, light breeze, and dry skies. Great round ahead!${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Rain expected (${toPrecip(windowRainSum)}).${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Dry skies & light breeze. Great round!${sunsetAppendTag}`;
       } else if (finalPct >= 70) {
         dialVerdict.textContent = 'Yes, Good! 👍';
-        if (windowRainSum > 0) dialSub.innerHTML = `Rain expected (${toPrecip(windowRainSum)}). Waterproofs recommended.${sunsetAppendTag}`;
-        else if (subScores[0] < 20) dialSub.innerHTML = `Soft fairways will reduce ball roll. Expect muddy lies.${sunsetAppendTag}`;
-        else if (subScores[1] < 20) dialSub.innerHTML = `Breezy conditions. Factor in 1–2 club adjustments.${sunsetAppendTag}`;
-        else if (isCold) dialSub.innerHTML = `Chilly air! Thermal layers recommended.${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Solid playing weather. Pack standard layers.${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Rain forecast (${toPrecip(windowRainSum)}). Keep umbrella ready.${sunsetAppendTag}`;
+        else if (subScores[0] < 20) dialSub.innerHTML = `Soft fairways — damp lies & less roll.${sunsetAppendTag}`;
+        else if (subScores[1] < 20) dialSub.innerHTML = `Breezy! Factor 1–2 extra clubs.${sunsetAppendTag}`;
+        else if (isCold) dialSub.innerHTML = `Chilly air! Thermal layers advised.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Solid golf weather. Pack layers.${sunsetAppendTag}`;
       } else if (finalPct >= 50) {
         dialVerdict.textContent = 'Not Bad 🌥️';
-        if (windowRainSum > 0) dialSub.innerHTML = `Rain forecast during round (${toPrecip(windowRainSum)}). Pack waterproofs!${sunsetAppendTag}`;
-        else if (isCold) dialSub.innerHTML = `Playable, but cold air & cool breeze. Wrap up warmly!${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Playable round, but expect damp conditions or cool winds.${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Rain forecast (${toPrecip(windowRainSum)}). Pack waterproofs!${sunsetAppendTag}`;
+        else if (isCold) dialSub.innerHTML = `Playable, but cold air & cool breeze.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `Playable, expect damp or cool wind.${sunsetAppendTag}`;
       } else if (finalPct >= 30) {
         dialVerdict.textContent = 'Poor 🌧️';
-        if (windowRainSum > 0) dialSub.innerHTML = `Heavy rain expected (${toPrecip(windowRainSum)}). Full waterproof suit needed.${sunsetAppendTag}`;
-        else dialSub.innerHTML = `Strong winds or wet course expected. Full gear recommended.${sunsetAppendTag}`;
+        if (windowRainSum > 0) dialSub.innerHTML = `Heavy rain (${toPrecip(windowRainSum)}). Full waterproof suit.${sunsetAppendTag}`;
+        else dialSub.innerHTML = `High wind or wet course expected.${sunsetAppendTag}`;
       } else {
         dialVerdict.textContent = 'No Chance ⛔';
-        dialSub.innerHTML = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Check out the simulator instead!';
+        dialSub.innerHTML = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable. Try simulator instead!';
       }
     }
 
@@ -1517,7 +1520,7 @@
     else if (subScores[1] === 5) windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Strong winds (${toSpeed(windowMaxWind)}). Take 2 extra clubs into wind.`;
     else windCallout.innerHTML = `<span class="callout-title">Wind Impact</span>Gale force winds (${toSpeed(windowMaxWind)}). Extreme flight impact.`;
 
-    // Rain Outlook Box (includes lightning override)
+    // Rain Outlook Box
     if (hasLightning) {
       rainOutlookCallout.className = 'callout-box callout-bad';
       rainOutlookCallout.innerHTML = `<span class="callout-title">Rain & Lightning</span>THUNDERSTORM RISK FORECAST ⚡ Clear the course immediately if thunder sounds!`;
