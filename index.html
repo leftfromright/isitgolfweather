@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather — Plan Your Round with Confidence</title>
+  <title>Is it golf weather? — Plan Your Round with Confidence</title>
   <meta name="description" content="Check UK golf course weather, wind impact, turf firmness, rain outlook, and daylight remaining before your tee time.">
   <link rel="canonical" href="https://isitgolfweather.com/">
   
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Is It Golf Weather">
+  <meta name="apple-mobile-web-app-title" content="Is it golf weather?">
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⛳</text></svg>">
 
@@ -83,7 +83,7 @@
       overflow-x: hidden;
     }
 
-    /* Single-Image CSS Atmospheric Stage */
+    /* Single-Image CSS Atmospheric Stage (Using root background.avif) */
     .bg-stage {
       position: fixed;
       inset: 0;
@@ -96,7 +96,7 @@
     .bg-base {
       position: absolute;
       inset: -24px;
-      background-image: url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=1920&q=85');
+      background-image: url('background.avif');
       background-size: cover;
       background-position: center bottom;
       filter: brightness(1.04) contrast(1.02) saturate(1.12) sepia(0) hue-rotate(0deg) grayscale(0);
@@ -275,7 +275,7 @@
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.35rem;
     }
 
     .pill-toggle {
@@ -291,7 +291,7 @@
       color: #d8e6de;
       font-size: 0.78rem;
       font-weight: 700;
-      padding: 0.25rem 0.65rem;
+      padding: 0.25rem 0.55rem;
       border-radius: 999px;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -306,9 +306,9 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       cursor: pointer;
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.45rem;
       border-radius: 999px;
       display: flex;
       align-items: center;
@@ -316,6 +316,15 @@
       transition: background 0.2s;
     }
     .header-icon-btn:hover { background: rgba(255, 255, 255, 0.22); }
+
+    .theme-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.2rem 0.3rem;
+    }
 
     /* Main Content Container */
     .app-container {
@@ -583,7 +592,7 @@
       height: 1px;
     }
 
-    /* Tee Time Slider Card (Fixed Minimum Height to Prevent Layout Jumps) */
+    /* Tee Time Slider Card (Fixed Minimum Height + Golf Ball Thumb) */
     .slider-bar {
       padding: 0.8rem 1.2rem;
       min-height: 122px;
@@ -628,15 +637,31 @@
       margin: 0.2rem 0;
     }
 
+    /* Golf Ball Slider Thumb Styling */
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      background: #2e7d32;
-      border: 2px solid #ffffff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 60%, #cbd5e1 100%);
+      border: 1px solid #94a3b8;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.8);
+      cursor: pointer;
+      /* Subtle dimple pattern illusion via radial dot gradient */
+      background-image: 
+        radial-gradient(circle at 35% 35%, #ffffff 0%, #f1f5f9 60%, #cbd5e1 100%),
+        radial-gradient(circle at 65% 65%, rgba(0,0,0,0.06) 0%, transparent 40%),
+        radial-gradient(circle at 25% 70%, rgba(0,0,0,0.05) 0%, transparent 35%);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 60%, #cbd5e1 100%);
+      border: 1px solid #94a3b8;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.8);
       cursor: pointer;
     }
 
@@ -957,7 +982,7 @@
 
     /* Mobile Responsive Adjustments (≤ 600px) */
     @media (max-width: 600px) {
-      .brand h1 { font-size: 0.98rem; }
+      .brand h1 { font-size: 0.94rem; }
       .hero-card { grid-template-columns: 132px 1fr; gap: 0.8rem; padding: 0.95rem; }
       .dial-box { width: 130px; height: 130px; }
       .dial-pct { font-size: 1.85rem; }
@@ -993,7 +1018,7 @@
 </head>
 <body>
 
-  <!-- Single-Image CSS Atmospheric Background Stage + Dynamic Rain Layer -->
+  <!-- Local Background Stage + Dynamic Rain Layer -->
   <div id="bgStage" class="bg-stage scene-sunny">
     <div class="bg-base"></div>
     <div class="bg-atmosphere"></div>
@@ -1008,8 +1033,8 @@
     <div class="top-bar-inner">
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
-        <h1>is it golf weather</h1>
-        <span class="version-pill" id="versionTag">v4.4</span>
+        <h1>Is it golf weather?</h1>
+        <span class="version-pill" id="versionTag">v4.5</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -1085,7 +1110,7 @@
     <!-- 7-Day Date Selector Row -->
     <section class="date-row" id="dateBar"></section>
 
-    <!-- Tee Time Slider Card (Fixed Minimum Height to Prevent Layout Jumps) -->
+    <!-- Tee Time Slider Card (Fixed Height + Golf Ball Thumb) -->
     <section class="glass-card slider-bar">
       <div>
         <div class="slider-top">
@@ -1230,8 +1255,8 @@
   <!-- Version & Hidden Developer Sandbox Modal -->
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
-      <h3>Is It Golf Weather</h3>
-      <p>Version 4.4 (Header Share & Refined UI)<br>Made by KW in November 2026</p>
+      <h3>Is it golf weather?</h3>
+      <p>Version 4.5 (Golf Ball Slider & Local Asset)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -1555,7 +1580,7 @@
     });
   });
 
-  // Single-Image CSS Atmospheric Controller + Dynamic Rain Layer
+  // Background Atmospheric Controller + Dynamic Rain Layer
   function updateBackgroundScene(sceneKey, rainTier) {
     const isRaining = rainTier !== 'none';
     bgStage.className = `bg-stage scene-${sceneKey}${isRaining ? ' is-raining' : ''}`;
