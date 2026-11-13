@@ -275,7 +275,7 @@
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.45rem;
     }
 
     .pill-toggle {
@@ -302,14 +302,20 @@
       color: #ffffff;
     }
 
-    .theme-btn {
-      background: transparent;
-      border: none;
+    .header-icon-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: #ffffff;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       cursor: pointer;
-      padding: 0.25rem 0.4rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
     }
+    .header-icon-btn:hover { background: rgba(255, 255, 255, 0.22); }
 
     /* Main Content Container */
     .app-container {
@@ -577,7 +583,7 @@
       height: 1px;
     }
 
-    /* Tee Time Slider Card with Fixed Height Container to Prevent Layout Jumps */
+    /* Tee Time Slider Card (Fixed Minimum Height to Prevent Layout Jumps) */
     .slider-bar {
       padding: 0.8rem 1.2rem;
       min-height: 122px;
@@ -634,7 +640,7 @@
       cursor: pointer;
     }
 
-    /* Refactored Sleek Glassmorphic Warning Banners */
+    /* Sleek Glassmorphic Warning Banners */
     .daylight-banner {
       display: none;
       margin-top: 0.35rem;
@@ -938,26 +944,11 @@
     }
     .dev-field select option { background: #14261c; color: #ffffff; }
 
-    .modal-action-btns {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-    .modal-share-btn {
-      background: rgba(46, 125, 50, 0.18);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 0.55rem 1rem;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
     .modal-close-btn {
       background: #2e7d32;
       color: #ffffff;
       border: none;
-      padding: 0.55rem 1.4rem;
+      padding: 0.55rem 1.6rem;
       border-radius: 999px;
       font-weight: 700;
       font-size: 0.85rem;
@@ -1018,13 +1009,14 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>is it golf weather</h1>
-        <span class="version-pill" id="versionTag">v4.3</span>
+        <span class="version-pill" id="versionTag">v4.4</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
           <button id="unitToggle" class="active">°C</button>
           <button id="speedToggle">mph</button>
         </div>
+        <button id="shareLinkBtn" class="header-icon-btn" title="Share Forecast Link">🔗</button>
         <button id="themeToggle" class="theme-btn" title="Toggle dark glass">🌙</button>
       </div>
     </div>
@@ -1239,7 +1231,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is It Golf Weather</h3>
-      <p>Version 4.3 (Share Link & Refined UI)<br>Made by KW in November 2026</p>
+      <p>Version 4.4 (Header Share & Refined UI)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -1302,10 +1294,7 @@
         </div>
       </div>
 
-      <div class="modal-action-btns">
-        <button class="modal-share-btn" id="shareLinkBtn">🔗 Share Forecast</button>
-        <button class="modal-close-btn" id="closeModalBtn">Close</button>
-      </div>
+      <button class="modal-close-btn" id="closeModalBtn">Close</button>
     </div>
   </div>
 
@@ -1553,15 +1542,16 @@
   }
   devResetBtn.addEventListener('click', resetDevOverrides);
 
-  // Share Forecast Link Button
+  // Top Header Share Forecast Link Button
   shareLinkBtn.addEventListener('click', () => {
     if (!currentData) return;
     const lat = currentData.latitude;
     const lon = currentData.longitude;
     const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${lat}&lon=${lon}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
-      shareLinkBtn.textContent = '✅ Copied Link!';
-      setTimeout(() => { shareLinkBtn.textContent = '🔗 Share Forecast'; }, 2000);
+      const originalHTML = shareLinkBtn.innerHTML;
+      shareLinkBtn.innerHTML = '✅';
+      setTimeout(() => { shareLinkBtn.innerHTML = originalHTML; }, 2000);
     });
   });
 
@@ -2393,7 +2383,6 @@
   function getUserLocation() {
     const hashData = parseUrlHash();
     if (hashData) {
-      // Load location & state from hash link
       fetchWeather(hashData.lat, hashData.lon, '', hashData.day, hashData.tee);
     } else if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
