@@ -111,7 +111,7 @@
       transition: background 1.1s ease-in-out, opacity 1.1s ease-in-out;
     }
 
-    /* Dynamic Drops + Splats Rain Overlay (Active Over Any Scene When Raining) */
+    /* Dynamic Drops + Splats Rain Overlay */
     .rain-overlay-wrap {
       position: absolute;
       inset: 0;
@@ -187,87 +187,40 @@
       100% { opacity: 0; transform: scale(1.5); }
     }
 
-    /* Weather Scene States on the Single Base Image */
-    .bg-stage.scene-sunny .bg-base {
-      filter: brightness(1.05) contrast(1.03) saturate(1.18) sepia(0.06) hue-rotate(0deg) grayscale(0);
-    }
-    .bg-stage.scene-sunny .bg-atmosphere {
-      background: radial-gradient(circle at 82% 14%, rgba(255, 242, 185, 0.34) 0%, rgba(255, 255, 255, 0) 58%);
-    }
+    /* Weather Scene States */
+    .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18) sepia(0.06) hue-rotate(0deg) grayscale(0); }
+    .bg-stage.scene-sunny .bg-atmosphere { background: radial-gradient(circle at 82% 14%, rgba(255, 242, 185, 0.34) 0%, rgba(255, 255, 255, 0) 58%); }
 
-    .bg-stage.scene-cloudy .bg-base {
-      filter: brightness(0.88) contrast(0.95) saturate(0.65) sepia(0) hue-rotate(0deg) grayscale(0.12);
-    }
-    .bg-stage.scene-cloudy .bg-atmosphere {
-      background: linear-gradient(180deg, rgba(110, 124, 134, 0.45) 0%, rgba(145, 156, 162, 0.18) 55%, rgba(0, 0, 0, 0.08) 100%);
-    }
+    .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) sepia(0) hue-rotate(0deg) grayscale(0.12); }
+    .bg-stage.scene-cloudy .bg-atmosphere { background: linear-gradient(180deg, rgba(110, 124, 134, 0.45) 0%, rgba(145, 156, 162, 0.18) 55%, rgba(0, 0, 0, 0.08) 100%); }
 
     .bg-stage.scene-windy .bg-base {
       filter: brightness(0.94) contrast(1.04) saturate(0.85) sepia(0) hue-rotate(4deg) grayscale(0.05);
       animation: windBreeze 7s ease-in-out infinite alternate;
     }
-    .bg-stage.scene-windy .bg-atmosphere {
-      background: linear-gradient(165deg, rgba(160, 185, 198, 0.26) 0%, rgba(255, 255, 255, 0) 60%);
-    }
+    .bg-stage.scene-windy .bg-atmosphere { background: linear-gradient(165deg, rgba(160, 185, 198, 0.26) 0%, rgba(255, 255, 255, 0) 60%); }
+    @keyframes windBreeze { 0% { transform: scale(1.01) translateX(-5px); } 100% { transform: scale(1.025) translateX(6px); } }
 
-    @keyframes windBreeze {
-      0% { transform: scale(1.01) translateX(-5px); }
-      100% { transform: scale(1.025) translateX(6px); }
-    }
+    .bg-stage.scene-rain .bg-base { filter: brightness(0.54) contrast(1.26) saturate(0.85) sepia(0) hue-rotate(14deg) grayscale(0.2); }
+    .bg-stage.scene-rain .bg-atmosphere { background: linear-gradient(180deg, rgba(20, 28, 36, 0.76) 0%, rgba(30, 42, 52, 0.45) 55%, rgba(14, 24, 20, 0.52) 100%); }
 
-    .bg-stage.scene-rain .bg-base {
-      filter: brightness(0.54) contrast(1.26) saturate(0.85) sepia(0) hue-rotate(14deg) grayscale(0.2);
-    }
-    .bg-stage.scene-rain .bg-atmosphere {
-      background: linear-gradient(180deg, rgba(20, 28, 36, 0.76) 0%, rgba(30, 42, 52, 0.45) 55%, rgba(14, 24, 20, 0.52) 100%);
-    }
+    .bg-stage.scene-ice .bg-base { filter: brightness(1.04) contrast(1.12) saturate(0.38) sepia(0) hue-rotate(175deg) grayscale(0.2); }
+    .bg-stage.scene-ice .bg-atmosphere { background: linear-gradient(180deg, rgba(190, 225, 248, 0.34) 0%, rgba(220, 240, 255, 0.25) 65%, rgba(235, 248, 255, 0.42) 100%); }
 
-    .bg-stage.scene-ice .bg-base {
-      filter: brightness(1.04) contrast(1.12) saturate(0.38) sepia(0) hue-rotate(175deg) grayscale(0.2);
-    }
-    .bg-stage.scene-ice .bg-atmosphere {
-      background: linear-gradient(180deg, rgba(190, 225, 248, 0.34) 0%, rgba(220, 240, 255, 0.25) 65%, rgba(235, 248, 255, 0.42) 100%);
-    }
+    .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) sepia(0) hue-rotate(180deg) grayscale(0.85); }
+    .bg-stage.scene-snow .bg-atmosphere { background: linear-gradient(180deg, rgba(225, 236, 244, 0.48) 0%, rgba(245, 250, 255, 0.35) 55%, rgba(255, 255, 255, 0.58) 100%); }
 
-    .bg-stage.scene-snow .bg-base {
-      filter: brightness(1.24) contrast(1.08) saturate(0.15) sepia(0) hue-rotate(180deg) grayscale(0.85);
-    }
-    .bg-stage.scene-snow .bg-atmosphere {
-      background: linear-gradient(180deg, rgba(225, 236, 244, 0.48) 0%, rgba(245, 250, 255, 0.35) 55%, rgba(255, 255, 255, 0.58) 100%);
-    }
+    .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32) hue-rotate(-14deg) grayscale(0); }
+    .bg-stage.scene-dusk .bg-atmosphere { background: radial-gradient(circle at 78% 26%, rgba(255, 145, 55, 0.46) 0%, rgba(165, 72, 48, 0.26) 48%, rgba(28, 24, 48, 0.45) 100%); }
 
-    .bg-stage.scene-dusk .bg-base {
-      filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32) hue-rotate(-14deg) grayscale(0);
-    }
-    .bg-stage.scene-dusk .bg-atmosphere {
-      background: radial-gradient(circle at 78% 26%, rgba(255, 145, 55, 0.46) 0%, rgba(165, 72, 48, 0.26) 48%, rgba(28, 24, 48, 0.45) 100%);
-    }
-
-    .bg-stage.scene-night .bg-base {
-      filter: brightness(0.28) contrast(1.25) saturate(0.60) sepia(0) hue-rotate(195deg) grayscale(0.25);
-    }
-    .bg-stage.scene-night .bg-atmosphere {
-      background: radial-gradient(circle at 80% 16%, rgba(180, 210, 255, 0.14) 0%, rgba(10, 18, 34, 0.62) 65%);
-    }
+    .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) sepia(0) hue-rotate(195deg) grayscale(0.25); }
+    .bg-stage.scene-night .bg-atmosphere { background: radial-gradient(circle at 80% 16%, rgba(180, 210, 255, 0.14) 0%, rgba(10, 18, 34, 0.62) 65%); }
 
     /* Inline Animated Meteocons SVG Keyframes */
-    @keyframes mcSpin {
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes mcDrift {
-      0%, 100% { transform: translateX(-2.5px); }
-      50% { transform: translateX(2.5px); }
-    }
-    @keyframes mcDrop {
-      0% { transform: translateY(-2px); opacity: 0.2; }
-      50% { opacity: 1; }
-      100% { transform: translateY(4px); opacity: 0.15; }
-    }
-    @keyframes mcFlash {
-      0%, 82%, 100% { opacity: 1; }
-      86% { opacity: 0.15; }
-      90% { opacity: 1; }
-    }
+    @keyframes mcSpin { 100% { transform: rotate(360deg); } }
+    @keyframes mcDrift { 0%, 100% { transform: translateX(-2.5px); } 50% { transform: translateX(2.5px); } }
+    @keyframes mcDrop { 0% { transform: translateY(-2px); opacity: 0.2; } 50% { opacity: 1; } 100% { transform: translateY(4px); opacity: 0.15; } }
+    @keyframes mcFlash { 0%, 82%, 100% { opacity: 1; } 86% { opacity: 0.15; } 90% { opacity: 1; } }
     .mc-spin { transform-origin: 32px 32px; animation: mcSpin 16s linear infinite; }
     .mc-drift { animation: mcDrift 4s ease-in-out infinite; }
     .mc-drop-1 { animation: mcDrop 1.3s ease-in infinite; }
@@ -322,28 +275,7 @@
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
-    }
-
-    /* Developer Tickbox Pill */
-    .dev-checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #e2ede6;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.22rem 0.52rem;
-      border-radius: 999px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .dev-checkbox-label input {
-      accent-color: #66bb6a;
-      cursor: pointer;
+      gap: 0.55rem;
     }
 
     .pill-toggle {
@@ -377,76 +309,6 @@
       font-size: 1.05rem;
       cursor: pointer;
       padding: 0.25rem 0.4rem;
-    }
-
-    /* Developer Testing Strip */
-    .dev-panel {
-      display: none;
-      background: rgba(18, 34, 24, 0.94);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(102, 187, 106, 0.45);
-      border-radius: 14px;
-      padding: 0.8rem 0.95rem;
-      color: #eef6f1;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .dev-panel.visible {
-      display: flex;
-    }
-
-    .dev-panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #81c784;
-    }
-
-    .dev-reset-btn {
-      background: rgba(255,255,255,0.14);
-      color: #ffffff;
-      border: none;
-      border-radius: 999px;
-      padding: 0.22rem 0.65rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .dev-controls-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.55rem;
-    }
-
-    .dev-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: #b7cebf;
-    }
-
-    .dev-field select {
-      background: rgba(255,255,255,0.12);
-      color: #ffffff;
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 8px;
-      padding: 0.35rem 0.45rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      outline: none;
-    }
-
-    .dev-field select option {
-      background: #14261c;
-      color: #ffffff;
     }
 
     /* Main Content Container */
@@ -655,9 +517,7 @@
       box-shadow: 0 6px 16px rgba(27, 94, 32, 0.15);
     }
 
-    .mini-stat:active {
-      transform: scale(0.98);
-    }
+    .mini-stat:active { transform: scale(0.98); }
 
     .mini-stat-header {
       display: flex;
@@ -666,35 +526,11 @@
       margin-bottom: 0.25rem;
     }
 
-    .mini-stat-icon {
-      font-size: 1.55rem;
-      line-height: 1.1;
-    }
-
-    .mini-info-hint {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--accent);
-      opacity: 0.75;
-    }
-
-    .mini-stat-label {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .mini-stat-val {
-      font-size: 1.2rem;
-      font-weight: 800;
-      margin: 0.1rem 0;
-    }
-
-    .mini-stat-sub {
-      font-size: 0.76rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
+    .mini-stat-icon { font-size: 1.55rem; line-height: 1.1; }
+    .mini-info-hint { font-size: 0.68rem; font-weight: 700; color: var(--accent); opacity: 0.75; }
+    .mini-stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+    .mini-stat-val { font-size: 1.2rem; font-weight: 800; margin: 0.1rem 0; }
+    .mini-stat-sub { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
 
     /* 7-Day Forecast Row */
     .date-row {
@@ -729,21 +565,9 @@
       transform: translateY(-2px);
     }
 
-    .date-pill .d-name {
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    .date-pill .d-icon {
-      font-size: 1.25rem;
-      margin: 0.2rem 0;
-    }
-
-    .date-pill .d-temps {
-      font-size: 0.74rem;
-      font-weight: 600;
-      opacity: 0.92;
-    }
+    .date-pill .d-name { font-size: 0.8rem; font-weight: 700; }
+    .date-pill .d-icon { font-size: 1.25rem; margin: 0.2rem 0; }
+    .date-pill .d-temps { font-size: 0.74rem; font-weight: 600; opacity: 0.92; }
 
     #hiddenDatePicker {
       position: absolute;
@@ -753,16 +577,20 @@
       height: 1px;
     }
 
-    /* Tee Time Slider Bar */
+    /* Tee Time Slider Card with Fixed Height Container to Prevent Layout Jumps */
     .slider-bar {
       padding: 0.8rem 1.2rem;
+      min-height: 122px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .slider-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.45rem;
+      margin-bottom: 0.35rem;
     }
 
     .slider-title {
@@ -791,6 +619,7 @@
       -webkit-appearance: none;
       appearance: none;
       cursor: pointer;
+      margin: 0.2rem 0;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -805,17 +634,41 @@
       cursor: pointer;
     }
 
+    /* Refactored Sleek Glassmorphic Warning Banners */
     .daylight-banner {
       display: none;
-      margin-top: 0.5rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: 8px;
+      margin-top: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 10px;
       font-size: 0.76rem;
       font-weight: 600;
-      text-align: center;
+      text-align: left;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
-    .daylight-banner.warn { background: rgba(255, 243, 224, 0.9); color: #b75400; border: 1px solid #f57c00; }
-    .daylight-banner.danger { background: rgba(255, 235, 238, 0.9); color: #b71c1c; border: 1px solid #c62828; }
+    .daylight-banner.warn {
+      background: rgba(255, 243, 224, 0.75);
+      color: #934300;
+      border: 1px solid rgba(245, 124, 0, 0.3);
+      border-left: 4px solid #f57c00;
+    }
+    .daylight-banner.danger {
+      background: rgba(255, 235, 238, 0.75);
+      color: #a31515;
+      border: 1px solid rgba(198, 40, 40, 0.3);
+      border-left: 4px solid #c62828;
+    }
+    [data-theme="dark"] .daylight-banner.warn {
+      background: rgba(54, 38, 20, 0.82);
+      color: #ffb74d;
+      border-color: rgba(245, 124, 0, 0.4);
+    }
+    [data-theme="dark"] .daylight-banner.danger {
+      background: rgba(52, 22, 22, 0.82);
+      color: #ef5350;
+      border-color: rgba(198, 40, 40, 0.4);
+    }
 
     /* Section Card Headings */
     .card-header {
@@ -836,10 +689,7 @@
       flex-shrink: 0;
     }
 
-    .meteocon-header svg {
-      width: 100%;
-      height: 100%;
-    }
+    .meteocon-header svg { width: 100%; height: 100%; }
 
     /* Forecast Details Card with Meteocons */
     .forecast-grid {
@@ -865,27 +715,11 @@
       filter: drop-shadow(0 3px 6px rgba(0,0,0,0.14));
     }
 
-    .meteocon-main svg {
-      width: 100%;
-      height: 100%;
-    }
+    .meteocon-main svg { width: 100%; height: 100%; }
 
-    .forecast-temp-stack .f-temp {
-      font-size: 1.65rem;
-      font-weight: 800;
-      line-height: 1.05;
-    }
-
-    .forecast-temp-stack .f-feels {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .forecast-temp-stack .f-cond {
-      font-size: 0.82rem;
-      font-weight: 700;
-      margin-top: 0.1rem;
-    }
+    .forecast-temp-stack .f-temp { font-size: 1.65rem; font-weight: 800; line-height: 1.05; }
+    .forecast-temp-stack .f-feels { font-size: 0.72rem; color: var(--text-muted); }
+    .forecast-temp-stack .f-cond { font-size: 0.82rem; font-weight: 700; margin-top: 0.1rem; }
 
     .detail-box {
       background: var(--glass-card-inner);
@@ -901,10 +735,7 @@
       border-color: var(--accent);
       box-shadow: 0 6px 16px rgba(27, 94, 32, 0.14);
     }
-
-    .detail-box:active {
-      transform: scale(0.98);
-    }
+    .detail-box:active { transform: scale(0.98); }
 
     .detail-box .db-label-row {
       display: flex;
@@ -913,25 +744,9 @@
       margin-bottom: 0.2rem;
     }
 
-    .detail-box .db-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .detail-box .db-val {
-      font-size: 0.95rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .detail-box .db-sub {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-top: 0.15rem;
-    }
+    .detail-box .db-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .detail-box .db-val { font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 0.25rem; }
+    .detail-box .db-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
 
     /* 24-Hour Chart */
     .chart-box {
@@ -945,17 +760,8 @@
       padding: 0.35rem 0.35rem;
     }
 
-    .chart-y {
-      width: 34px;
-      height: 100%;
-      flex-shrink: 0;
-    }
-
-    .chart-main {
-      flex: 1;
-      height: 100%;
-      min-width: 0;
-    }
+    .chart-y { width: 34px; height: 100%; flex-shrink: 0; }
+    .chart-main { flex: 1; height: 100%; min-width: 0; }
 
     svg { width: 100%; height: 100%; overflow: visible; }
     .chart-text { fill: var(--text-muted); font-size: 10.5px; text-anchor: middle; font-weight: 600; }
@@ -980,13 +786,7 @@
       color: var(--text-muted);
     }
 
-    .legend-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 4px;
-    }
+    .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
 
     /* Day Summary Grid (6 Items: 3x2) */
     .summary-3col {
@@ -1005,21 +805,9 @@
       gap: 0.65rem;
     }
 
-    .summary-pill .sp-icon {
-      font-size: 1.45rem;
-      line-height: 1;
-    }
-
-    .summary-pill .sp-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .summary-pill .sp-val {
-      font-size: 0.96rem;
-      font-weight: 800;
-    }
+    .summary-pill .sp-icon { font-size: 1.45rem; line-height: 1; }
+    .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+    .summary-pill .sp-val { font-size: 0.96rem; font-weight: 800; }
 
     /* Course Condition Callouts with Dynamic Severity Border */
     .callouts-grid {
@@ -1074,16 +862,19 @@
       border-radius: 18px;
       padding: 1.35rem 1.4rem;
       width: 100%;
-      max-width: 360px;
+      max-width: 380px;
       text-align: center;
       box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
       color: var(--text);
+      max-height: 90vh;
+      overflow-y: auto;
     }
     [data-theme="dark"] .modal-card {
       background: rgba(20, 36, 27, 0.96);
     }
     .modal-card h3 { font-size: 1.1rem; margin-bottom: 0.45rem; }
     .modal-card p { font-size: 0.86rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4; }
+    
     .modal-detail-list {
       text-align: left;
       background: rgba(120, 140, 128, 0.12);
@@ -1102,38 +893,86 @@
       padding-bottom: 0.3rem;
     }
     .modal-detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* Developer Sandbox Inside Information Modal */
+    .dev-modal-section {
+      text-align: left;
+      background: rgba(18, 34, 24, 0.85);
+      border: 1px solid rgba(102, 187, 106, 0.35);
+      border-radius: 12px;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      color: #eef6f1;
+    }
+    .dev-modal-header {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #81c784;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dev-modal-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.45rem;
+    }
+    .dev-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #b7cebf;
+    }
+    .dev-field select {
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      padding: 0.3rem 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      outline: none;
+    }
+    .dev-field select option { background: #14261c; color: #ffffff; }
+
+    .modal-action-btns {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .modal-share-btn {
+      background: rgba(46, 125, 50, 0.18);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
     .modal-close-btn {
       background: #2e7d32;
       color: #ffffff;
       border: none;
-      padding: 0.55rem 1.5rem;
+      padding: 0.55rem 1.4rem;
       border-radius: 999px;
       font-weight: 700;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
     /* Mobile Responsive Adjustments (≤ 600px) */
     @media (max-width: 600px) {
       .brand h1 { font-size: 0.98rem; }
-      .dev-controls-grid { grid-template-columns: 1fr; }
-
-      .hero-card {
-        grid-template-columns: 132px 1fr;
-        gap: 0.8rem;
-        padding: 0.95rem;
-      }
-      .dial-box {
-        width: 130px;
-        height: 130px;
-      }
+      .hero-card { grid-template-columns: 132px 1fr; gap: 0.8rem; padding: 0.95rem; }
+      .dial-box { width: 130px; height: 130px; }
       .dial-pct { font-size: 1.85rem; }
       .dial-temp { font-size: 0.84rem; margin: 0.18rem 0 0.08rem 0; }
       .dial-status { font-size: 0.88rem; }
-      .hero-right {
-        border-left: none;
-        padding-left: 0;
-        gap: 0.65rem;
-      }
+      .hero-right { border-left: none; padding-left: 0; gap: 0.65rem; }
       .verdict-headline { font-size: 0.92rem; }
       .hero-mini-grid { gap: 0.35rem; }
       .mini-stat { padding: 0.42rem 0.38rem; }
@@ -1142,65 +981,22 @@
       .mini-stat-val { font-size: 0.82rem; }
       .mini-stat-sub { font-size: 0.62rem; }
 
-      .date-row {
-        grid-template-columns: repeat(7, minmax(56px, 1fr));
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
+      .date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; }
       .date-row::-webkit-scrollbar { display: none; }
 
-      /* Mobile Forecast Tab: Centred Top Weather + 3 Boxes Side-by-Side on 1 Row */
-      .forecast-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.4rem;
-      }
-      .forecast-main {
-        grid-column: span 3;
-        justify-content: center;
-        text-align: center;
-        flex-direction: column;
-        padding: 0.25rem 0 0.5rem 0;
-        gap: 0.3rem;
-      }
-      .meteocon-main {
-        width: 74px;
-        height: 74px;
-      }
-      .forecast-temp-stack {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .detail-box {
-        padding: 0.5rem 0.42rem;
-        text-align: center;
-      }
-      .detail-box .db-label-row {
-        justify-content: center;
-        gap: 3px;
-      }
-      .detail-box .db-label {
-        font-size: 0.65rem;
-        white-space: nowrap;
-      }
-      .detail-box .db-val {
-        font-size: 0.82rem;
-        justify-content: center;
-        gap: 0.15rem;
-      }
-      .detail-box .db-sub {
-        font-size: 0.62rem;
-      }
+      .forecast-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+      .forecast-main { grid-column: span 3; justify-content: center; text-align: center; flex-direction: column; padding: 0.25rem 0 0.5rem 0; gap: 0.3rem; }
+      .meteocon-main { width: 74px; height: 74px; }
+      .forecast-temp-stack { display: flex; flex-direction: column; align-items: center; }
+      .detail-box { padding: 0.5rem 0.42rem; text-align: center; }
+      .detail-box .db-label-row { justify-content: center; gap: 3px; }
+      .detail-box .db-label { font-size: 0.65rem; white-space: nowrap; }
+      .detail-box .db-val { font-size: 0.82rem; justify-content: center; gap: 0.15rem; }
+      .detail-box .db-sub { font-size: 0.62rem; }
 
-      .summary-3col {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .callouts-grid {
-        grid-template-columns: 1fr;
-      }
-      .callout-item.span-2 {
-        grid-column: span 1;
-      }
+      .summary-3col { grid-template-columns: repeat(2, 1fr); }
+      .callouts-grid { grid-template-columns: 1fr; }
+      .callout-item.span-2 { grid-column: span 1; }
     }
   </style>
 </head>
@@ -1222,13 +1018,9 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>is it golf weather</h1>
-        <span class="version-pill" id="versionTag">v4.2</span>
+        <span class="version-pill" id="versionTag">v4.3</span>
       </div>
       <div class="header-controls">
-        <label class="dev-checkbox-label" title="Toggle Developer Scene & Time Tester">
-          <input type="checkbox" id="devModeCheckbox">
-          <span>Dev</span>
-        </label>
         <div class="pill-toggle">
           <button id="unitToggle" class="active">°C</button>
           <button id="speedToggle">mph</button>
@@ -1240,67 +1032,6 @@
 
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
-
-    <!-- Developer Scene, Rain Intensity & Icon Sandbox -->
-    <section id="devPanel" class="dev-panel">
-      <div class="dev-panel-header">
-        <span>🛠️ Developer Scene, Rain & Icon Sandbox</span>
-        <button id="devResetBtn" class="dev-reset-btn">Reset to Live</button>
-      </div>
-      <div class="dev-controls-grid">
-        <div class="dev-field">
-          <label for="devSceneSelect">Background Scene</label>
-          <select id="devSceneSelect">
-            <option value="auto">Auto (Live Forecast)</option>
-            <option value="sunny">☀️ Sunny</option>
-            <option value="cloudy">☁️ Cloudy / Overcast</option>
-            <option value="windy">💨 Windy Breeze</option>
-            <option value="rain">🌧️ Rain / Storm</option>
-            <option value="ice">🧊 Frost / Ice</option>
-            <option value="snow">❄️ Snow Cover</option>
-            <option value="dusk">🌅 Golden Dusk</option>
-            <option value="night">🌙 Night / Dark</option>
-          </select>
-        </div>
-        <div class="dev-field">
-          <label for="devRainIntensitySelect">Rain Overlay & Velocity</label>
-          <select id="devRainIntensitySelect">
-            <option value="auto">Auto (Forecast Rainfall)</option>
-            <option value="none">Off (Dry)</option>
-            <option value="light">🌦️ Light Drizzle (Slow)</option>
-            <option value="moderate">🌧️ Moderate Rain (Medium)</option>
-            <option value="heavy">⛈️ Heavy Downpour (Fast)</option>
-          </select>
-        </div>
-        <div class="dev-field">
-          <label for="devIconSelect">Forecast Meteocon Icon</label>
-          <select id="devIconSelect">
-            <option value="auto">Auto (Live Code)</option>
-            <option value="0">Clear Sky (0)</option>
-            <option value="2">Partly Cloudy (2)</option>
-            <option value="3">Overcast (3)</option>
-            <option value="45">Foggy (45)</option>
-            <option value="51">Drizzle (51)</option>
-            <option value="63">Moderate Rain (63)</option>
-            <option value="65">Heavy Rain (65)</option>
-            <option value="73">Snowfall (73)</option>
-            <option value="95">Thunderstorm (95)</option>
-          </select>
-        </div>
-        <div class="dev-field">
-          <label for="devHourSelect">Test Time of Day</label>
-          <select id="devHourSelect">
-            <option value="auto">Sync w/ Tee Slider</option>
-            <option value="6">06:00 AM (Dawn)</option>
-            <option value="9">09:00 AM (Morning)</option>
-            <option value="13">01:00 PM (Midday)</option>
-            <option value="16">04:00 PM (Late Afternoon)</option>
-            <option value="19">07:00 PM (Evening)</option>
-            <option value="22">10:00 PM (Night)</option>
-          </select>
-        </div>
-      </div>
-    </section>
 
     <!-- Search Bar -->
     <div class="search-wrapper">
@@ -1362,17 +1093,19 @@
     <!-- 7-Day Date Selector Row -->
     <section class="date-row" id="dateBar"></section>
 
-    <!-- Tee Time Slider Card -->
+    <!-- Tee Time Slider Card (Fixed Minimum Height to Prevent Layout Jumps) -->
     <section class="glass-card slider-bar">
-      <div class="slider-top">
-        <div class="slider-title">🚩 Tee Time</div>
-        <div class="slider-time-readout">🕒 <span id="teeTimeDisplay">08:00 AM</span></div>
+      <div>
+        <div class="slider-top">
+          <div class="slider-title">🚩 Tee Time</div>
+          <div class="slider-time-readout">🕒 <span id="teeTimeDisplay">08:00 AM</span></div>
+        </div>
+        <input type="range" id="teeTimeSlider" min="6" max="20" value="8" step="1">
       </div>
-      <input type="range" id="teeTimeSlider" min="6" max="20" value="8" step="1">
       <div id="daylightWarning" class="daylight-banner"></div>
     </section>
 
-    <!-- Forecast Breakdown Card (Self-Contained Animated Meteocons + 3 Clickable Boxes) -->
+    <!-- Forecast Breakdown Card -->
     <section class="glass-card">
       <div class="card-header">
         <span id="forecastHeaderIcon" class="meteocon-header"></span>
@@ -1438,7 +1171,7 @@
       </div>
     </section>
 
-    <!-- Day Summary (6 Items) -->
+    <!-- Day Summary -->
     <section class="glass-card">
       <div class="card-header">📅 Day Summary</div>
       <div class="summary-3col">
@@ -1487,7 +1220,7 @@
       </div>
     </section>
 
-    <!-- Course Conditions & Carry (5 Items with Dynamic Severity Left Border) -->
+    <!-- Course Conditions & Carry -->
     <section class="glass-card">
       <div class="card-header">🏌️ Course & Club Guidance</div>
       <div class="callouts-grid">
@@ -1502,12 +1235,77 @@
     <div class="footer-note">🏌️ Plan your round with confidence</div>
   </main>
 
-  <!-- Version Modal -->
+  <!-- Version & Hidden Developer Sandbox Modal -->
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is It Golf Weather</h3>
-      <p>Version 4.2 (Dynamic Rain Velocity & Meteocons)<br>Made by KW in November 2026</p>
-      <button class="modal-close-btn" id="closeModalBtn">Close</button>
+      <p>Version 4.3 (Share Link & Refined UI)<br>Made by KW in November 2026</p>
+      
+      <!-- Hidden Developer Sandbox Section Inside Info Popup -->
+      <div class="dev-modal-section">
+        <div class="dev-modal-header">
+          <span>🛠️ Developer Sandbox</span>
+          <button id="devResetBtn" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:0.15rem 0.45rem; border-radius:99px; font-size:0.65rem; cursor:pointer;">Reset</button>
+        </div>
+        <div class="dev-modal-grid">
+          <div class="dev-field">
+            <label for="devSceneSelect">Background Scene</label>
+            <select id="devSceneSelect">
+              <option value="auto">Auto (Live Forecast)</option>
+              <option value="sunny">☀️ Sunny</option>
+              <option value="cloudy">☁️ Cloudy / Overcast</option>
+              <option value="windy">💨 Windy Breeze</option>
+              <option value="rain">🌧️ Rain / Storm</option>
+              <option value="ice">🧊 Frost / Ice</option>
+              <option value="snow">❄️ Snow Cover</option>
+              <option value="dusk">🌅 Golden Dusk</option>
+              <option value="night">🌙 Night / Dark</option>
+            </select>
+          </div>
+          <div class="dev-field">
+            <label for="devRainIntensitySelect">Rain Overlay & Velocity</label>
+            <select id="devRainIntensitySelect">
+              <option value="auto">Auto (Forecast Rainfall)</option>
+              <option value="none">Off (Dry)</option>
+              <option value="light">🌦️ Light Drizzle (Slow)</option>
+              <option value="moderate">🌧️ Moderate Rain (Medium)</option>
+              <option value="heavy">⛈️ Heavy Downpour (Fast)</option>
+            </select>
+          </div>
+          <div class="dev-field">
+            <label for="devIconSelect">Forecast Meteocon Icon</label>
+            <select id="devIconSelect">
+              <option value="auto">Auto (Live Code)</option>
+              <option value="0">Clear Sky (0)</option>
+              <option value="2">Partly Cloudy (2)</option>
+              <option value="3">Overcast (3)</option>
+              <option value="45">Foggy (45)</option>
+              <option value="51">Drizzle (51)</option>
+              <option value="63">Moderate Rain (63)</option>
+              <option value="65">Heavy Rain (65)</option>
+              <option value="73">Snowfall (73)</option>
+              <option value="95">Thunderstorm (95)</option>
+            </select>
+          </div>
+          <div class="dev-field">
+            <label for="devHourSelect">Test Time of Day</label>
+            <select id="devHourSelect">
+              <option value="auto">Sync w/ Tee Slider</option>
+              <option value="6">06:00 AM (Dawn)</option>
+              <option value="9">09:00 AM (Morning)</option>
+              <option value="13">01:00 PM (Midday)</option>
+              <option value="16">04:00 PM (Late Afternoon)</option>
+              <option value="19">07:00 PM (Evening)</option>
+              <option value="22">10:00 PM (Night)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-action-btns">
+        <button class="modal-share-btn" id="shareLinkBtn">🔗 Share Forecast</button>
+        <button class="modal-close-btn" id="closeModalBtn">Close</button>
+      </div>
     </div>
   </div>
 
@@ -1543,6 +1341,26 @@
   let devIconOverride = 'auto';
   let devHourOverride = 'auto';
 
+  // Parse URL Hash Deep-Link on Startup (#lat=X&lon=Y&day=D&tee=H)
+  function parseUrlHash() {
+    const hash = window.location.hash.substring(1);
+    if (!hash) return null;
+    const params = new URLSearchParams(hash);
+    const lat = params.get('lat');
+    const lon = params.get('lon');
+    const day = params.get('day');
+    const tee = params.get('tee');
+    if (lat && lon) {
+      return {
+        lat: parseFloat(lat),
+        lon: parseFloat(lon),
+        day: day !== null ? parseInt(day) : 0,
+        tee: tee !== null ? parseInt(tee) : 8
+      };
+    }
+    return null;
+  }
+
   // DOM Elements
   const bgStage = document.getElementById('bgStage');
   const rainFrontRow = document.getElementById('rainFrontRow');
@@ -1550,9 +1368,8 @@
   const versionTag = document.getElementById('versionTag');
   const creatorModal = document.getElementById('creatorModal');
   const closeModalBtn = document.getElementById('closeModalBtn');
+  const shareLinkBtn = document.getElementById('shareLinkBtn');
 
-  const devModeCheckbox = document.getElementById('devModeCheckbox');
-  const devPanel = document.getElementById('devPanel');
   const devSceneSelect = document.getElementById('devSceneSelect');
   const devRainIntensitySelect = document.getElementById('devRainIntensitySelect');
   const devIconSelect = document.getElementById('devIconSelect');
@@ -1588,28 +1405,27 @@
 
   teeTimeSlider.value = selectedTeeHour;
 
-  // Dynamic Rainfall Generator: Scales Velocity & Drop Density by Forecast Rainfall Tier
+  // Dynamic Rainfall Generator
   function makeItRain(tier) {
     rainFrontRow.innerHTML = '';
     rainBackRow.innerHTML = '';
 
     if (tier === 'none') return;
 
-    // Configure fall duration (velocity) and spacing (density) per tier
     let baseDuration = 0.62;
     let stepMin = 3;
     let stepSpan = 4;
 
     if (tier === 'light') {
-      baseDuration = 0.88; // Slower drizzle
+      baseDuration = 0.88;
       stepMin = 6;
       stepSpan = 5;
     } else if (tier === 'moderate') {
-      baseDuration = 0.60; // Steady rain
+      baseDuration = 0.60;
       stepMin = 3;
       stepSpan = 4;
     } else if (tier === 'heavy') {
-      baseDuration = 0.40; // Fast driving downpour
+      baseDuration = 0.40;
       stepMin = 2;
       stepSpan = 3;
     }
@@ -1653,7 +1469,7 @@
     return 'light';
   }
 
-  // Self-Contained Animated Meteocons SVG Generator (Zero External Links)
+  // Self-Contained Animated Meteocons SVG Generator
   function getMeteoconSVG(type) {
     const sunCore = `
       <defs>
@@ -1701,21 +1517,8 @@
     return icons[type] || icons['partly-cloudy-day'];
   }
 
-  // Developer Controls Event Wiring
-  devModeCheckbox.addEventListener('change', () => {
-    if (devModeCheckbox.checked) {
-      devPanel.classList.add('visible');
-    } else {
-      devPanel.classList.remove('visible');
-      resetDevOverrides();
-    }
-  });
-
-  devSceneSelect.addEventListener('change', (e) => {
-    devSceneOverride = e.target.value;
-    render();
-  });
-
+  // Developer Controls Event Wiring (Inside Info Modal)
+  devSceneSelect.addEventListener('change', (e) => { devSceneOverride = e.target.value; render(); });
   devRainIntensitySelect.addEventListener('change', (e) => {
     devRainIntensityOverride = e.target.value;
     if (devRainIntensityOverride !== 'auto' && devRainIntensityOverride !== 'none' && devSceneOverride === 'auto') {
@@ -1724,12 +1527,7 @@
     }
     render();
   });
-
-  devIconSelect.addEventListener('change', (e) => {
-    devIconOverride = e.target.value;
-    render();
-  });
-
+  devIconSelect.addEventListener('change', (e) => { devIconOverride = e.target.value; render(); });
   devHourSelect.addEventListener('change', (e) => {
     devHourOverride = e.target.value;
     if (devHourOverride !== 'auto') {
@@ -1753,8 +1551,19 @@
     activeRainTier = 'none';
     render();
   }
-
   devResetBtn.addEventListener('click', resetDevOverrides);
+
+  // Share Forecast Link Button
+  shareLinkBtn.addEventListener('click', () => {
+    if (!currentData) return;
+    const lat = currentData.latitude;
+    const lon = currentData.longitude;
+    const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${lat}&lon=${lon}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      shareLinkBtn.textContent = '✅ Copied Link!';
+      setTimeout(() => { shareLinkBtn.textContent = '🔗 Share Forecast'; }, 2000);
+    });
+  });
 
   // Single-Image CSS Atmospheric Controller + Dynamic Rain Layer
   function updateBackgroundScene(sceneKey, rainTier) {
@@ -2039,7 +1848,7 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
-  async function fetchWeather(lat, lon, overrideName = '') {
+  async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTee = 8) {
     try {
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
       const [weatherData, locationName] = await Promise.all([
@@ -2050,6 +1859,10 @@
       currentData = weatherData;
       currentCityName = locationName;
       locationInput.value = currentCityName;
+
+      selectedDayIndex = Math.max(0, Math.min(15, targetDay));
+      selectedTeeHour = Math.max(6, Math.min(20, targetTee));
+      teeTimeSlider.value = selectedTeeHour;
 
       buildDateBar();
       updateTeeTimeDisplay();
@@ -2206,7 +2019,6 @@
     const maxRain = Math.max(...hourlyPrecip, 2);
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
-    // Horizontal Gridlines & Y-Axis Labels
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -2227,7 +2039,6 @@
       svg.appendChild(gridLine);
     }
 
-    // Faint Vertical Hour Gridlines (every 2 hours)
     for (let hIdx = 0; hIdx <= 23; hIdx += 2) {
       const vx = paddingLeft + hIdx * stepX;
       const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -2239,7 +2050,6 @@
       svg.appendChild(vLine);
     }
 
-    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       if (rain > 0) {
         const x = paddingLeft + i * stepX - (stepX * 0.3);
@@ -2361,12 +2171,10 @@
     const daylightRemaining = sunsetHourDec - activeEvalHour;
     const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
 
-    // Update Single-Image CSS Atmospheric Scene + Dynamic Rain Velocity Layer
     const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
     const rainTier = determineRainTier(windowRainSum, activeHourCode);
     updateBackgroundScene(bgScene, rainTier);
 
-    // Golf Score Calculation
     const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
     let rawScorePct = evalObj.score;
     const subScores = evalObj.scores;
@@ -2422,20 +2230,18 @@
       }
     }
 
-    // Daylight Banner
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-banner danger';
-      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — not enough daylight for 9 or 18 holes.`;
+      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — insufficient daylight remaining for a full round.`;
     } else if (daylightRemaining <= 4.0) {
       daylightWarning.style.display = 'block';
       daylightWarning.className = 'daylight-banner warn';
-      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — enough daylight for 9 holes (~2h), tight for 18.`;
+      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — daylight is tight for 18 holes; 9 holes recommended.`;
     } else {
       daylightWarning.style.display = 'none';
     }
 
-    // Hero Right Mini-Cards
     const windLabel = getWindLabel(windowMaxWind);
     document.getElementById('heroWindVal').textContent = toSpeed(windowMaxWind);
     document.getElementById('heroWindSub').textContent = windLabel;
@@ -2446,7 +2252,6 @@
     document.getElementById('heroTempVal').textContent = toTemp(windowAvgTemp);
     document.getElementById('heroTempSub').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
 
-    // Forecast Breakdown Card with Self-Contained Animated Meteocons
     const isNightHour = activeEvalHour >= sunsetHourDec || activeEvalHour < sunriseHourDec;
     const weatherInfo = getWeatherInfo(activeHourCode, isNightHour);
     const svgHTML = getMeteoconSVG(weatherInfo.mcKey);
@@ -2465,7 +2270,6 @@
     document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
     document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
 
-    // Day Summary Card
     const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
     document.getElementById('sunriseTime').textContent = sunriseStr;
     document.getElementById('sunsetTime').textContent = sunsetStrRaw;
@@ -2474,7 +2278,6 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
-    // Course & Club Guidance Callouts with Colour-Coded Left Border
     const groundCallout = document.getElementById('groundCallout');
     let groundShort = 'Firm & Dry';
     if (subScores[0] >= 15) {
@@ -2538,7 +2341,6 @@
     else if (windowAvgTemp <= 11 || windowRainSum > 0.1 || windowMaxWind / 1.609 > 15) setCardStatus(gearCallout, 'warn');
     else setCardStatus(gearCallout, 'good');
 
-    // Populate Interactive Popup Data for Hero & Forecast Cards
     activeRoundMetrics = {
       teeLabel: formatHourLabel(activeEvalHour),
       hours: [0, 1, 2, 3].map(offset => formatHourLabel(activeEvalHour + offset)),
@@ -2556,7 +2358,6 @@
       penaltyYards
     };
 
-    // Render Crisp 24-Hour Chart
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
@@ -2568,7 +2369,6 @@
     if (currentData) render();
   });
 
-  // Unit & Theme Controls
   unitToggle.addEventListener('click', () => {
     currentUnit = currentUnit === 'C' ? 'F' : 'C';
     unitToggle.textContent = `°${currentUnit}`;
@@ -2591,7 +2391,11 @@
   geoBtn.addEventListener('click', getUserLocation);
 
   function getUserLocation() {
-    if (navigator.geolocation) {
+    const hashData = parseUrlHash();
+    if (hashData) {
+      // Load location & state from hash link
+      fetchWeather(hashData.lat, hashData.lon, '', hashData.day, hashData.tee);
+    } else if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
         () => fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, GB')
