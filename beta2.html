@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is It Golf Weather v0.1 (Beta 2)</title>
+  <title>Is It Golf Weather v0.2 (Beta 2)</title>
   <link rel="canonical" href="https://isitgolfweather.com/">
   
   <meta name="mobile-web-app-capable" content="yes">
@@ -25,9 +25,12 @@
       --accent-dark: #1b5e20;
       --shadow: 0 8px 32px rgba(15, 35, 22, 0.14);
 
-      --gauge-good: #43a047;
-      --gauge-med: #f57f17;
-      --gauge-bad: #d32f2f;
+      /* 5-Tier Dial Gauge Palette */
+      --gauge-great: #2e7d32;
+      --gauge-good: #689f38;
+      --gauge-med: #f9a825;
+      --gauge-poor: #ef6c00;
+      --gauge-bad: #c62828;
 
       --chart-line: #2e7d32;
       --chart-bar: #1e88e5;
@@ -48,8 +51,10 @@
       --accent-dark: #2e7d32;
       --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 
-      --gauge-good: #66bb6a;
-      --gauge-med: #fbc02d;
+      --gauge-great: #4caf50;
+      --gauge-good: #9ccc65;
+      --gauge-med: #fdd835;
+      --gauge-poor: #fb8c00;
       --gauge-bad: #ef5350;
 
       --chart-line: #66bb6a;
@@ -91,7 +96,7 @@
       opacity: 1;
     }
 
-    /* Weather-specific atmospheric photo layers + CSS atmospheric lighting */
+    /* Golf-Course Weather Photo Layers (No Roads) */
     #bg-sunny {
       background-image: url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=1920&q=85');
       filter: brightness(1.02) saturate(1.1);
@@ -109,8 +114,14 @@
       filter: brightness(1.05) saturate(0.65);
     }
     #bg-ice {
-      background-image: url('https://images.unsplash.com/photo-1519817914152-22d216bb9170?auto=format&fit=crop&w=1920&q=85');
-      filter: brightness(0.98) saturate(0.75) hue-rotate(175deg);
+      /* Frosty golf course fairway & pines instead of road */
+      background-image: url('https://images.unsplash.com/photo-1516912481808-3406841bd33c?auto=format&fit=crop&w=1920&q=85');
+      filter: brightness(0.96) saturate(0.65) hue-rotate(185deg) contrast(1.08);
+    }
+    #bg-dusk {
+      /* Warm golden-hour twilight golf course when daylight < 4h */
+      background-image: url('https://images.unsplash.com/photo-1500932334442-8761ee4810a7?auto=format&fit=crop&w=1920&q=85');
+      filter: brightness(0.82) saturate(1.3) contrast(1.08);
     }
     #bg-night {
       background-image: url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=1920&q=85');
@@ -140,7 +151,7 @@
       100% { background-position: -40px 120px; }
     }
 
-    /* Top Dark Header Bar (Matches Mockup) */
+    /* Top Dark Header Bar */
     .top-bar {
       position: relative;
       z-index: 10;
@@ -318,9 +329,9 @@
     .hero-card {
       display: grid;
       grid-template-columns: 165px 1fr;
-      gap: 1.1rem;
+      gap: 1.15rem;
       align-items: center;
-      padding: 1.15rem 1.25rem;
+      padding: 1.2rem 1.3rem;
     }
 
     .dial-box {
@@ -344,12 +355,12 @@
 
     .dial-arc {
       fill: none;
-      stroke: var(--gauge-good);
+      stroke: var(--gauge-great);
       stroke-width: 14;
       stroke-linecap: round;
       stroke-dasharray: 440;
       stroke-dashoffset: 440;
-      transition: stroke-dashoffset 0.5s ease-out, stroke 0.3s ease;
+      transition: stroke-dashoffset 0.5s ease-out, stroke 0.35s ease;
     }
 
     .dial-center {
@@ -385,49 +396,52 @@
     .hero-right {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
     .verdict-headline {
-      font-size: 1.05rem;
+      font-size: 1.08rem;
       font-weight: 600;
       line-height: 1.35;
       color: var(--text);
     }
 
+    /* Desktop Larger Font & Icons for Hero Mini-Stats */
     .hero-mini-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
+      gap: 0.65rem;
     }
 
     .mini-stat {
       background: var(--glass-card-inner);
       border: 1px solid var(--glass-border);
-      border-radius: 11px;
-      padding: 0.5rem 0.55rem;
+      border-radius: 12px;
+      padding: 0.65rem 0.7rem;
     }
 
     .mini-stat-icon {
-      font-size: 1rem;
-      margin-bottom: 0.15rem;
+      font-size: 1.45rem;
+      line-height: 1.1;
+      margin-bottom: 0.25rem;
     }
 
     .mini-stat-label {
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       font-weight: 600;
     }
 
     .mini-stat-val {
-      font-size: 0.88rem;
+      font-size: 1.15rem;
       font-weight: 800;
-      margin: 0.05rem 0;
+      margin: 0.1rem 0;
     }
 
     .mini-stat-sub {
-      font-size: 0.65rem;
+      font-size: 0.76rem;
       color: var(--text-muted);
+      font-weight: 500;
     }
 
     /* 7-Day Forecast Row */
@@ -560,7 +574,7 @@
       gap: 0.4rem;
     }
 
-    /* Forecast Details Card (4-Column Grid) */
+    /* Forecast Details Card (4-Column Grid on Desktop) */
     .forecast-grid {
       display: grid;
       grid-template-columns: 1.2fr 1fr 1fr 1fr;
@@ -677,25 +691,26 @@
       margin-right: 4px;
     }
 
-    /* Day Summary Row */
+    /* Day Summary Grid (6 Items: 3x2) */
     .summary-3col {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 0.65rem;
+      gap: 0.6rem;
     }
 
     .summary-pill {
       background: var(--glass-card-inner);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
-      padding: 0.65rem 0.85rem;
+      padding: 0.65rem 0.8rem;
       display: flex;
       align-items: center;
       gap: 0.65rem;
     }
 
     .summary-pill .sp-icon {
-      font-size: 1.4rem;
+      font-size: 1.45rem;
+      line-height: 1;
     }
 
     .summary-pill .sp-label {
@@ -705,11 +720,11 @@
     }
 
     .summary-pill .sp-val {
-      font-size: 0.98rem;
+      font-size: 0.96rem;
       font-weight: 800;
     }
 
-    /* Course Condition Callouts (Collapsible/Compact) */
+    /* Course Condition Callouts (5 Items) */
     .callouts-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -721,10 +736,11 @@
       border: 1px solid var(--glass-border);
       border-left: 4px solid var(--accent);
       border-radius: 10px;
-      padding: 0.55rem 0.75rem;
+      padding: 0.6rem 0.75rem;
       font-size: 0.8rem;
     }
-    .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.78rem; }
+    .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.8rem; }
+    .callout-item.span-2 { grid-column: span 2; }
 
     /* Footer Tagline */
     .footer-note {
@@ -786,25 +802,51 @@
       .dial-pct { font-size: 1.8rem; }
       .verdict-headline { font-size: 0.92rem; }
       .hero-mini-grid { gap: 0.35rem; }
-      .mini-stat { padding: 0.4rem 0.4rem; }
-      .mini-stat-val { font-size: 0.78rem; }
+      .mini-stat { padding: 0.45rem 0.4rem; }
+      .mini-stat-icon { font-size: 1.05rem; margin-bottom: 0.15rem; }
+      .mini-stat-label { font-size: 0.7rem; }
+      .mini-stat-val { font-size: 0.82rem; }
+      .mini-stat-sub { font-size: 0.65rem; }
+
       .date-row {
         grid-template-columns: repeat(7, minmax(56px, 1fr));
         overflow-x: auto;
         scrollbar-width: none;
       }
       .date-row::-webkit-scrollbar { display: none; }
+
+      /* Mobile Forecast Tab: Full-Width Stacked Detail Cards + Centred Main Weather */
       .forecast-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
+        gap: 0.55rem;
       }
       .forecast-main {
-        grid-column: span 2;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        padding: 0.35rem 0 0.5rem 0;
+        gap: 0.35rem;
       }
+      .forecast-big-icon {
+        font-size: 2.75rem;
+      }
+      .forecast-temp-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .detail-box {
+        width: 100%;
+      }
+
       .summary-3col {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
       .callouts-grid {
         grid-template-columns: 1fr;
+      }
+      .callout-item.span-2 {
+        grid-column: span 1;
       }
     }
   </style>
@@ -818,6 +860,7 @@
     <div id="bg-rain" class="bg-layer"></div>
     <div id="bg-snow" class="bg-layer"></div>
     <div id="bg-ice" class="bg-layer"></div>
+    <div id="bg-dusk" class="bg-layer"></div>
     <div id="bg-night" class="bg-layer"></div>
     <div id="rainOverlay" class="rain-overlay"></div>
   </div>
@@ -828,7 +871,7 @@
       <div class="brand">
         <span style="font-size: 1.25rem;">⛳</span>
         <h1>is it golf weather</h1>
-        <span class="version-pill" id="versionTag">v0.1</span>
+        <span class="version-pill" id="versionTag">v0.2</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -961,42 +1004,64 @@
       </div>
     </section>
 
-    <!-- Day Summary -->
+    <!-- Day Summary (6 Items with Updated Icons) -->
     <section class="glass-card">
       <div class="card-header">📅 Day Summary</div>
       <div class="summary-3col">
         <div class="summary-pill">
-          <div class="sp-icon">🌅</div>
+          <div class="sp-icon">☀️</div>
           <div>
             <div class="sp-label">Sunrise</div>
             <div id="sunriseTime" class="sp-val">--:--</div>
           </div>
         </div>
         <div class="summary-pill">
-          <div class="sp-icon">🌇</div>
+          <div class="sp-icon">🌙</div>
           <div>
             <div class="sp-label">Sunset</div>
             <div id="sunsetTime" class="sp-val">--:--</div>
           </div>
         </div>
         <div class="summary-pill">
-          <div class="sp-icon">🌡️</div>
+          <div class="sp-icon">📊</div>
           <div>
             <div class="sp-label">High / Low</div>
             <div id="tempRange" class="sp-val">-- / --</div>
           </div>
         </div>
+        <div class="summary-pill">
+          <div class="sp-icon">⏳</div>
+          <div>
+            <div class="sp-label">Daylight Left</div>
+            <div id="daylightLeft" class="sp-val">-- hrs</div>
+          </div>
+        </div>
+        <div class="summary-pill">
+          <div class="sp-icon">🌧️</div>
+          <div>
+            <div class="sp-label">Daily Rain</div>
+            <div id="todayRain" class="sp-val">--</div>
+          </div>
+        </div>
+        <div class="summary-pill">
+          <div class="sp-icon">💨</div>
+          <div>
+            <div class="sp-label">Max Wind</div>
+            <div id="maxWind" class="sp-val">--</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Course Conditions & Carry -->
+    <!-- Course Conditions & Carry (5 Items including Rain Outlook) -->
     <section class="glass-card">
       <div class="card-header">🏌️ Course & Club Guidance</div>
       <div class="callouts-grid">
         <div id="groundCallout" class="callout-item"></div>
         <div id="windCallout" class="callout-item"></div>
+        <div id="rainOutlookCallout" class="callout-item"></div>
         <div id="distancePenaltyCallout" class="callout-item"></div>
-        <div id="gearCallout" class="callout-item"></div>
+        <div id="gearCallout" class="callout-item span-2"></div>
       </div>
     </section>
 
@@ -1007,7 +1072,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is It Golf Weather</h3>
-      <p>Beta 2 • Version 0.1<br>Made by KW in November 2026</p>
+      <p>Beta 2 • Version 0.2<br>Made by KW in November 2026</p>
       <button class="modal-close-btn" id="closeModalBtn">Close</button>
     </div>
   </div>
@@ -1056,7 +1121,7 @@
 
   // Dynamic Background Cross-fader
   function updateBackgroundScene(sceneKey) {
-    const layers = ['sunny', 'cloudy', 'rain', 'snow', 'ice', 'night'];
+    const layers = ['sunny', 'cloudy', 'rain', 'snow', 'ice', 'dusk', 'night'];
     layers.forEach(key => {
       const el = document.getElementById(`bg-${key}`);
       if (el) {
@@ -1070,11 +1135,13 @@
     else rainOverlay.classList.remove('visible');
   }
 
-  function determineBackgroundScene(weatherCode, tempC, rainMm, snowMm, hasSnowCover, isPastSunset) {
+  function determineBackgroundScene(weatherCode, tempC, rainMm, snowMm, hasSnowCover, isPastSunset, daylightRemaining) {
     if (isPastSunset) return 'night';
     if (snowMm > 0 || hasSnowCover || [71, 73, 75, 77, 85, 86].includes(weatherCode)) return 'snow';
     if (tempC <= 0.5) return 'ice';
     if (rainMm > 0.2 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(weatherCode)) return 'rain';
+    // Switch to dusk background if not enough time for 18 holes (< 4h) or 9 holes (< 2h)
+    if (daylightRemaining > 0 && daylightRemaining < 4.0) return 'dusk';
     if ([2, 3, 45, 48].includes(weatherCode)) return 'cloudy';
     return 'sunny';
   }
@@ -1360,13 +1427,16 @@
     };
   }
 
+  // 5-Step Colour Scale for the Dial Gauge
   function updateDialGauge(percentage) {
     const fraction = Math.max(0, Math.min(100, percentage)) / 100;
     const offset = circumference - (fraction * circumference);
     dialArc.style.strokeDashoffset = offset;
 
-    if (percentage >= 80) dialArc.style.stroke = 'var(--gauge-good)';
+    if (percentage >= 85) dialArc.style.stroke = 'var(--gauge-great)';
+    else if (percentage >= 70) dialArc.style.stroke = 'var(--gauge-good)';
     else if (percentage >= 50) dialArc.style.stroke = 'var(--gauge-med)';
+    else if (percentage >= 30) dialArc.style.stroke = 'var(--gauge-poor)';
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
@@ -1526,8 +1596,8 @@
     const daylightRemaining = sunsetHourDec - selectedTeeHour;
     const isPastSunset = selectedTeeHour >= sunsetHourDec || selectedTeeHour < (sunriseHourDec - 1);
 
-    // Trigger Cross-fading Background Image Based on Selected Date/Time Conditions
-    const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowRainSum, windowSnow, hasSnowCover, isPastSunset);
+    // Trigger Cross-fading Background Image (Switches to Dusk if < 4h daylight left)
+    const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
     updateBackgroundScene(bgScene);
 
     // Calculate Golf Score
@@ -1628,13 +1698,16 @@
     document.getElementById('forecastRain').textContent = toPrecip(windowRainSum);
     document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'Dry';
 
-    // Day Summary Card
+    // Day Summary Card (All 6 Fields)
     const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
     document.getElementById('sunriseTime').textContent = sunriseStr;
     document.getElementById('sunsetTime').textContent = sunsetStrRaw;
     document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
+    document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
+    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
+    document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
-    // Course & Club Guidance Callouts
+    // Course & Club Guidance Callouts (5 Items including Rain Outlook)
     const groundCallout = document.getElementById('groundCallout');
     if (subScores[0] >= 15) groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll.`;
     else if (subScores[0] >= 5) groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d rain). Less roll.`;
@@ -1644,6 +1717,15 @@
     if (subScores[1] >= 15) windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Light breeze (${toSpeed(windowMaxWind)}). Minimal flight effect.`;
     else if (subScores[1] === 10) windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Moderate wind (${toSpeed(windowMaxWind)}). Club up 1 into wind.`;
     else windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Strong wind (${toSpeed(windowMaxWind)}). Take 2+ extra clubs.`;
+
+    const rainOutlookCallout = document.getElementById('rainOutlookCallout');
+    if (hasLightning) {
+      rainOutlookCallout.innerHTML = `<strong>⚡ Rain & Lightning</strong>Thunderstorm risk! Clear the course immediately.`;
+    } else if (windowRainSum > 0) {
+      rainOutlookCallout.innerHTML = `<strong>☔ Rain Outlook</strong>${toPrecip(windowRainSum)} rain forecast during your 4h round.`;
+    } else {
+      rainOutlookCallout.innerHTML = `<strong>☔ Rain Outlook</strong>Bone dry skies forecast for your round (0.0 mm).`;
+    }
 
     const tempDiffC = 22 - windowAvgTemp;
     const penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
