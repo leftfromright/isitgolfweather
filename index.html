@@ -111,7 +111,7 @@
       transition: background 1.1s ease-in-out, opacity 1.1s ease-in-out;
     }
 
-    /* Optional Rain FX Layers (for Options A, B, C) */
+    /* Optional Rain FX Layers (Options A, B, C) */
     .bg-rain-streaks {
       position: absolute;
       inset: -40px;
@@ -141,6 +141,81 @@
     @keyframes rainFall {
       0% { background-position: 0px 0px; }
       100% { background-position: -42px 160px; }
+    }
+
+    /* Option D: CodePen Drops + Splats Rain Layer */
+    .rain-codepen-wrap {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+    }
+
+    .bg-stage.scene-rain.rain-opt-d .rain-codepen-wrap {
+      display: block;
+    }
+
+    .rain-row {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .rain-row.back-row {
+      z-index: 1;
+      bottom: 60px;
+      opacity: 0.5;
+    }
+
+    .rain-codepen-wrap .drop {
+      position: absolute;
+      bottom: 100%;
+      width: 15px;
+      height: 120px;
+      pointer-events: none;
+      animation: cpDrop 0.5s linear infinite;
+    }
+
+    @keyframes cpDrop {
+      0% { transform: translateY(0vh); }
+      75% { transform: translateY(90vh); }
+      100% { transform: translateY(90vh); }
+    }
+
+    .rain-codepen-wrap .stem {
+      width: 1.5px;
+      height: 60%;
+      margin-left: 7px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.45));
+      animation: cpStem 0.5s linear infinite;
+    }
+
+    @keyframes cpStem {
+      0% { opacity: 1; }
+      65% { opacity: 1; }
+      75% { opacity: 0; }
+      100% { opacity: 0; }
+    }
+
+    .rain-codepen-wrap .splat {
+      width: 15px;
+      height: 10px;
+      border-top: 2px dotted rgba(255, 255, 255, 0.65);
+      border-radius: 50%;
+      opacity: 1;
+      transform: scale(0);
+      animation: cpSplat 0.5s linear infinite;
+      display: block;
+    }
+
+    @keyframes cpSplat {
+      0% { opacity: 1; transform: scale(0); }
+      80% { opacity: 1; transform: scale(0); }
+      90% { opacity: 0.65; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.5); }
     }
 
     /* Weather Scene States on the Single Base Image */
@@ -203,6 +278,14 @@
     .bg-stage.scene-rain.rain-opt-c .bg-rain-streaks {
       opacity: 0.65;
       animation: rainFall 0.65s linear infinite;
+    }
+
+    /* Rain Option D: CodePen Drops + Splats over Storm Backdrop */
+    .bg-stage.scene-rain.rain-opt-d .bg-base {
+      filter: brightness(0.54) contrast(1.26) saturate(0.85) sepia(0) hue-rotate(14deg) grayscale(0.2);
+    }
+    .bg-stage.scene-rain.rain-opt-d .bg-atmosphere {
+      background: linear-gradient(180deg, rgba(20, 28, 36, 0.76) 0%, rgba(30, 42, 52, 0.45) 55%, rgba(14, 24, 20, 0.52) 100%);
     }
 
     .bg-stage.scene-ice .bg-base {
@@ -1195,6 +1278,10 @@
     <div class="bg-atmosphere"></div>
     <div class="bg-rain-mist"></div>
     <div class="bg-rain-streaks"></div>
+    <div id="rainCodepenWrap" class="rain-codepen-wrap">
+      <div id="rainFrontRow" class="rain-row front-row"></div>
+      <div id="rainBackRow" class="rain-row back-row"></div>
+    </div>
   </div>
 
   <!-- Top Dark Header -->
@@ -1244,12 +1331,13 @@
           </select>
         </div>
         <div class="dev-field">
-          <label for="devRainStyleSelect">Rain Scene Effect (A / B / C)</label>
+          <label for="devRainStyleSelect">Rain Scene Effect (A / B / C / D)</label>
           <select id="devRainStyleSelect">
             <option value="default">Default (Dark Wet Tone)</option>
             <option value="opt-a">Option A: Falling Rain Streaks</option>
             <option value="opt-b">Option B: Storm Sky + Wet Sheen + Mist</option>
             <option value="opt-c">Option C: Combined (Streaks + Mist)</option>
+            <option value="opt-d">Option D: Drops + Splats (CodePen)</option>
           </select>
         </div>
         <div class="dev-field">
@@ -1524,6 +1612,8 @@
 
   // DOM Elements
   const bgStage = document.getElementById('bgStage');
+  const rainFrontRow = document.getElementById('rainFrontRow');
+  const rainBackRow = document.getElementById('rainBackRow');
   const versionTag = document.getElementById('versionTag');
   const creatorModal = document.getElementById('creatorModal');
   const closeModalBtn = document.getElementById('closeModalBtn');
@@ -1564,6 +1654,41 @@
   const dialSub = document.getElementById('dialSub');
 
   teeTimeSlider.value = selectedTeeHour;
+
+  // Vanilla JS Port of CodePen Rain Generator (Option D)
+  function makeItRain() {
+    rainFrontRow.innerHTML = '';
+    rainBackRow.innerHTML = '';
+
+    let increment = 0;
+    let drops = '';
+    let backDrops = '';
+
+    while (increment < 100) {
+      const randoHundo = Math.floor(Math.random() * 98) + 1;
+      const randoFiver = Math.floor(Math.random() * 4) + 2;
+      increment += randoFiver;
+
+      const bottomOffset = randoFiver + randoFiver - 1 + 100;
+      const delay = `0.${randoHundo}s`;
+      const duration = `0.5${randoHundo}s`;
+
+      drops += `
+        <div class="drop" style="left: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};">
+          <div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
+          <div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
+        </div>`;
+
+      backDrops += `
+        <div class="drop" style="right: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};">
+          <div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
+          <div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
+        </div>`;
+    }
+
+    rainFrontRow.innerHTML = drops;
+    rainBackRow.innerHTML = backDrops;
+  }
 
   // Self-Contained Animated Meteocons SVG Generator (Zero External Links)
   function getMeteoconSVG(type) {
@@ -1662,6 +1787,8 @@
     devRainStyleSelect.value = 'default';
     devIconSelect.value = 'auto';
     devHourSelect.value = 'auto';
+    rainFrontRow.innerHTML = '';
+    rainBackRow.innerHTML = '';
     render();
   }
 
@@ -1674,6 +1801,13 @@
       classes += ` rain-${devRainStyleOverride}`;
     }
     bgStage.className = classes;
+
+    if (sceneKey === 'rain' && devRainStyleOverride === 'opt-d') {
+      if (!rainFrontRow.hasChildNodes()) makeItRain();
+    } else if (rainFrontRow.hasChildNodes()) {
+      rainFrontRow.innerHTML = '';
+      rainBackRow.innerHTML = '';
+    }
   }
 
   function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, hasSnowCover, isPastSunset, daylightRemaining) {
