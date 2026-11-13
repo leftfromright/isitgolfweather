@@ -111,16 +111,17 @@
       transition: background 1.1s ease-in-out, opacity 1.1s ease-in-out;
     }
 
-    /* Drops + Splats Rain Layer (Dynamic Velocity) */
-    .rain-layer-wrap {
+    /* Dynamic Drops + Splats Rain Overlay (Active Over Any Scene When Raining) */
+    .rain-overlay-wrap {
       position: absolute;
       inset: 0;
       pointer-events: none;
       display: none;
       overflow: hidden;
+      z-index: 3;
     }
 
-    .bg-stage.scene-rain .rain-layer-wrap {
+    .bg-stage.is-raining .rain-overlay-wrap {
       display: block;
     }
 
@@ -138,7 +139,7 @@
       opacity: 0.5;
     }
 
-    .rain-layer-wrap .drop {
+    .rain-overlay-wrap .drop {
       position: absolute;
       bottom: 100%;
       width: 15px;
@@ -153,7 +154,7 @@
       100% { transform: translateY(90vh); }
     }
 
-    .rain-layer-wrap .stem {
+    .rain-overlay-wrap .stem {
       width: 1.5px;
       height: 60%;
       margin-left: 7px;
@@ -168,7 +169,7 @@
       100% { opacity: 0; }
     }
 
-    .rain-layer-wrap .splat {
+    .rain-overlay-wrap .splat {
       width: 15px;
       height: 10px;
       border-top: 2px dotted rgba(255, 255, 255, 0.65);
@@ -214,7 +215,6 @@
       100% { transform: scale(1.025) translateX(6px); }
     }
 
-    /* Rain Scene Backdrop */
     .bg-stage.scene-rain .bg-base {
       filter: brightness(0.54) contrast(1.26) saturate(0.85) sepia(0) hue-rotate(14deg) grayscale(0.2);
     }
@@ -1206,11 +1206,11 @@
 </head>
 <body>
 
-  <!-- Single-Image CSS Atmospheric Background Stage -->
+  <!-- Single-Image CSS Atmospheric Background Stage + Dynamic Rain Layer -->
   <div id="bgStage" class="bg-stage scene-sunny">
     <div class="bg-base"></div>
     <div class="bg-atmosphere"></div>
-    <div id="rainLayerWrap" class="rain-layer-wrap">
+    <div id="rainOverlayWrap" class="rain-overlay-wrap">
       <div id="rainFrontRow" class="rain-row front-row"></div>
       <div id="rainBackRow" class="rain-row back-row"></div>
     </div>
@@ -1241,7 +1241,7 @@
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
 
-    <!-- Developer Scene, Rain Velocity & Icon Sandbox -->
+    <!-- Developer Scene, Rain Intensity & Icon Sandbox -->
     <section id="devPanel" class="dev-panel">
       <div class="dev-panel-header">
         <span>🛠️ Developer Scene, Rain & Icon Sandbox</span>
@@ -1263,9 +1263,10 @@
           </select>
         </div>
         <div class="dev-field">
-          <label for="devRainRateSelect">Rain Velocity & Intensity</label>
-          <select id="devRainRateSelect">
-            <option value="auto">Auto (Forecast Volume)</option>
+          <label for="devRainIntensitySelect">Rain Overlay & Velocity</label>
+          <select id="devRainIntensitySelect">
+            <option value="auto">Auto (Forecast Rainfall)</option>
+            <option value="none">Off (Dry)</option>
             <option value="light">🌦️ Light Drizzle (Slow)</option>
             <option value="moderate">🌧️ Moderate Rain (Medium)</option>
             <option value="heavy">⛈️ Heavy Downpour (Fast)</option>
@@ -1533,12 +1534,12 @@
   let savedHomeCourse = null;
 
   let activeRoundMetrics = null;
-  let activeRainTier = null;
+  let activeRainTier = 'none';
   const circumference = 2 * Math.PI * 70;
 
   // Developer Override State
   let devSceneOverride = 'auto';
-  let devRainRateOverride = 'auto';
+  let devRainIntensityOverride = 'auto';
   let devIconOverride = 'auto';
   let devHourOverride = 'auto';
 
@@ -1553,7 +1554,7 @@
   const devModeCheckbox = document.getElementById('devModeCheckbox');
   const devPanel = document.getElementById('devPanel');
   const devSceneSelect = document.getElementById('devSceneSelect');
-  const devRainRateSelect = document.getElementById('devRainRateSelect');
+  const devRainIntensitySelect = document.getElementById('devRainIntensitySelect');
   const devIconSelect = document.getElementById('devIconSelect');
   const devHourSelect = document.getElementById('devHourSelect');
   const devResetBtn = document.getElementById('devResetBtn');
@@ -1587,28 +1588,31 @@
 
   teeTimeSlider.value = selectedTeeHour;
 
-  // Dynamic Velocity & Density Rain Generator (Drops + Splats)
-  function getRainTier(rainMm, weatherCode) {
-    if (devRainRateOverride !== 'auto') return devRainRateOverride;
-    if (rainMm > 2.5 || [65, 82, 95, 96, 99].includes(weatherCode)) return 'heavy';
-    if (rainMm > 0.5 || [55, 61, 63, 81].includes(weatherCode)) return 'moderate';
-    return 'light';
-  }
-
+  // Dynamic Rainfall Generator: Scales Velocity & Drop Density by Forecast Rainfall Tier
   function makeItRain(tier) {
-    if (activeRainTier === tier && rainFrontRow.hasChildNodes()) return;
-    activeRainTier = tier;
-
     rainFrontRow.innerHTML = '';
     rainBackRow.innerHTML = '';
 
-    // Velocity (animation duration in seconds) & Density (step increment) by rainfall amount
-    const presets = {
-      light:    { baseDur: 0.85, minStep: 4, maxStep: 7 }, // Gentle drizzle
-      moderate: { baseDur: 0.55, minStep: 2, maxStep: 5 }, // Steady rain
-      heavy:    { baseDur: 0.34, minStep: 1, maxStep: 3 }  // Fast driving downpour
-    };
-    const cfg = presets[tier] || presets.moderate;
+    if (tier === 'none') return;
+
+    // Configure fall duration (velocity) and spacing (density) per tier
+    let baseDuration = 0.62;
+    let stepMin = 3;
+    let stepSpan = 4;
+
+    if (tier === 'light') {
+      baseDuration = 0.88; // Slower drizzle
+      stepMin = 6;
+      stepSpan = 5;
+    } else if (tier === 'moderate') {
+      baseDuration = 0.60; // Steady rain
+      stepMin = 3;
+      stepSpan = 4;
+    } else if (tier === 'heavy') {
+      baseDuration = 0.40; // Fast driving downpour
+      stepMin = 2;
+      stepSpan = 3;
+    }
 
     let increment = 0;
     let drops = '';
@@ -1616,12 +1620,12 @@
 
     while (increment < 100) {
       const randoHundo = Math.floor(Math.random() * 98) + 1;
-      const randoStep = Math.floor(Math.random() * (cfg.maxStep - cfg.minStep + 1)) + cfg.minStep;
+      const randoStep = Math.floor(Math.random() * stepSpan) + stepMin;
       increment += randoStep;
 
       const bottomOffset = randoStep + randoStep - 1 + 100;
-      const delay = `0.${randoHundo}s`;
-      const duration = `${(cfg.baseDur + (randoHundo / 1000)).toFixed(3)}s`;
+      const delay = `0.${randoHundo < 10 ? '0' + randoHundo : randoHundo}s`;
+      const duration = `${(baseDuration + (randoHundo / 1000)).toFixed(3)}s`;
 
       drops += `
         <div class="drop" style="left: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};">
@@ -1638,6 +1642,15 @@
 
     rainFrontRow.innerHTML = drops;
     rainBackRow.innerHTML = backDrops;
+  }
+
+  function determineRainTier(windowRainMm, weatherCode) {
+    if (devRainIntensityOverride !== 'auto') return devRainIntensityOverride;
+    const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
+    if (windowRainMm <= 0.05 && !rainCodes.includes(weatherCode)) return 'none';
+    if (windowRainMm > 2.5 || [65, 82, 95, 96, 99].includes(weatherCode)) return 'heavy';
+    if (windowRainMm > 0.5 || [55, 63, 81].includes(weatherCode)) return 'moderate';
+    return 'light';
   }
 
   // Self-Contained Animated Meteocons SVG Generator (Zero External Links)
@@ -1703,9 +1716,9 @@
     render();
   });
 
-  devRainRateSelect.addEventListener('change', (e) => {
-    devRainRateOverride = e.target.value;
-    if (devRainRateOverride !== 'auto' && devSceneOverride === 'auto') {
+  devRainIntensitySelect.addEventListener('change', (e) => {
+    devRainIntensityOverride = e.target.value;
+    if (devRainIntensityOverride !== 'auto' && devRainIntensityOverride !== 'none' && devSceneOverride === 'auto') {
       devSceneOverride = 'rain';
       devSceneSelect.value = 'rain';
     }
@@ -1730,29 +1743,27 @@
 
   function resetDevOverrides() {
     devSceneOverride = 'auto';
-    devRainRateOverride = 'auto';
+    devRainIntensityOverride = 'auto';
     devIconOverride = 'auto';
     devHourOverride = 'auto';
     devSceneSelect.value = 'auto';
-    devRainRateSelect.value = 'auto';
+    devRainIntensitySelect.value = 'auto';
     devIconSelect.value = 'auto';
     devHourSelect.value = 'auto';
-    activeRainTier = null;
+    activeRainTier = 'none';
     render();
   }
 
   devResetBtn.addEventListener('click', resetDevOverrides);
 
-  // Single-Image CSS Atmospheric Controller
+  // Single-Image CSS Atmospheric Controller + Dynamic Rain Layer
   function updateBackgroundScene(sceneKey, rainTier) {
-    bgStage.className = `bg-stage scene-${sceneKey}`;
+    const isRaining = rainTier !== 'none';
+    bgStage.className = `bg-stage scene-${sceneKey}${isRaining ? ' is-raining' : ''}`;
 
-    if (sceneKey === 'rain') {
+    if (rainTier !== activeRainTier) {
+      activeRainTier = rainTier;
       makeItRain(rainTier);
-    } else if (rainFrontRow.hasChildNodes()) {
-      rainFrontRow.innerHTML = '';
-      rainBackRow.innerHTML = '';
-      activeRainTier = null;
     }
   }
 
@@ -2118,3 +2129,479 @@
   function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
     if (hasLightning) return { score: 0, scores: [0, 0, 0, 0, 0] };
     if (isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
+
+    const windMph = windSpeedKmh / 1.609;
+
+    let groundPts = 20;
+    if (past7DaysRainMm > 35 || tempC <= 0) groundPts = 0;
+    else if (past7DaysRainMm > 20 || past24RainMm > 12) groundPts = 5;
+    else if (past7DaysRainMm > 10 || past24RainMm > 4) groundPts = 10;
+    else if (past7DaysRainMm >= 5) groundPts = 15;
+
+    let windPts = 20;
+    if (windMph > 28) windPts = 0;
+    else if (windMph >= 22) windPts = 5;
+    else if (windMph >= 15) windPts = 10;
+    else if (windMph >= 8) windPts = 15;
+
+    let rainPts = 20;
+    if (windowRainMm > 5.0) rainPts = 0;
+    else if (windowRainMm > 2.0) rainPts = 5;
+    else if (windowRainMm > 0.5) rainPts = 10;
+    else if (windowRainMm > 0.0) rainPts = 15;
+
+    let tempPts = 20;
+    if (tempC < 3) tempPts = 0;
+    else if (tempC <= 7) tempPts = 5;
+    else if (tempC <= 12) tempPts = 10;
+    else if (tempC <= 17) tempPts = 15;
+
+    let gearPts = 20;
+    if (tempC < 3 || windowRainMm > 5.0) gearPts = 0;
+    else if (tempC <= 5 || windowRainMm > 2.0) gearPts = 5;
+    else if (tempC <= 10 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
+    else if (tempC <= 15 || windMph >= 10) gearPts = 15;
+
+    return {
+      score: groundPts + windPts + rainPts + tempPts + gearPts,
+      scores: [groundPts, windPts, rainPts, tempPts, gearPts]
+    };
+  }
+
+  function updateDialGauge(percentage) {
+    const fraction = Math.max(0, Math.min(100, percentage)) / 100;
+    const offset = circumference - (fraction * circumference);
+    dialArc.style.strokeDashoffset = offset;
+
+    if (percentage >= 85) dialArc.style.stroke = 'var(--gauge-great)';
+    else if (percentage >= 70) dialArc.style.stroke = 'var(--gauge-good)';
+    else if (percentage >= 50) dialArc.style.stroke = 'var(--gauge-med)';
+    else if (percentage >= 30) dialArc.style.stroke = 'var(--gauge-poor)';
+    else dialArc.style.stroke = 'var(--gauge-bad)';
+  }
+
+  function setCardStatus(el, statusLevel) {
+    el.classList.remove('status-good', 'status-warn', 'status-danger');
+    el.classList.add(`status-${statusLevel}`);
+  }
+
+  function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
+    const ySvg = document.getElementById('yAxisSvg');
+    const svg = document.getElementById('hourlyChart');
+    const container = document.getElementById('chartMainContainer');
+    ySvg.innerHTML = '';
+    svg.innerHTML = '';
+
+    const width = Math.max(300, Math.round(container.clientWidth || 640));
+    const height = 138;
+    const paddingLeft = 14;
+    const paddingRight = 18;
+    const paddingBottom = 20;
+    const paddingTop = 18;
+
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+    const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
+    const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
+    const maxRain = Math.max(...hourlyPrecip, 2);
+    const stepX = (width - paddingLeft - paddingRight) / 23;
+
+    // Horizontal Gridlines & Y-Axis Labels
+    for (let i = 0; i < 4; i++) {
+      const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
+      const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', 28);
+      label.setAttribute('y', yPos + 3);
+      label.setAttribute('class', 'chart-y-text');
+      label.textContent = `${tickVal}°`;
+      ySvg.appendChild(label);
+
+      const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      gridLine.setAttribute('x1', 0);
+      gridLine.setAttribute('x2', width);
+      gridLine.setAttribute('y1', yPos);
+      gridLine.setAttribute('y2', yPos);
+      gridLine.setAttribute('class', 'chart-grid-line');
+      svg.appendChild(gridLine);
+    }
+
+    // Faint Vertical Hour Gridlines (every 2 hours)
+    for (let hIdx = 0; hIdx <= 23; hIdx += 2) {
+      const vx = paddingLeft + hIdx * stepX;
+      const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      vLine.setAttribute('x1', vx);
+      vLine.setAttribute('x2', vx);
+      vLine.setAttribute('y1', paddingTop);
+      vLine.setAttribute('y2', height - paddingBottom);
+      vLine.setAttribute('class', 'chart-vgrid-line');
+      svg.appendChild(vLine);
+    }
+
+    // Rain Bars
+    hourlyPrecip.forEach((rain, i) => {
+      if (rain > 0) {
+        const x = paddingLeft + i * stepX - (stepX * 0.3);
+        const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
+        const y = height - paddingBottom - barHeight;
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', Math.max(stepX * 0.6, 4));
+        rect.setAttribute('height', Math.max(barHeight, 2));
+        rect.setAttribute('class', 'chart-bar');
+        svg.appendChild(rect);
+      }
+    });
+
+    const isNarrow = width < 420;
+    const labelInterval = isNarrow ? 6 : 4;
+
+    let points = '';
+    hourlyTemps.forEach((temp, i) => {
+      const x = paddingLeft + i * stepX;
+      const y = height - paddingBottom - ((temp - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
+      points += `${x},${y} `;
+
+      if (i % labelInterval === 0 || i === 23) {
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', height - 4);
+        text.setAttribute('class', 'chart-text');
+        text.textContent = isNarrow ? `${i}h` : `${i < 10 ? '0' + i : i}:00`;
+        svg.appendChild(text);
+      }
+    });
+
+    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    polyline.setAttribute('points', points.trim());
+    polyline.setAttribute('class', 'chart-line');
+    svg.appendChild(polyline);
+
+    const drawMarker = (hourDec, className, emoji) => {
+      if (hourDec >= 0 && hourDec <= 23.5) {
+        const mx = paddingLeft + hourDec * stepX;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', mx); line.setAttribute('x2', mx);
+        line.setAttribute('y1', paddingTop); line.setAttribute('y2', height - paddingBottom);
+        line.setAttribute('class', className);
+        svg.appendChild(line);
+
+        const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        icon.setAttribute('x', mx); icon.setAttribute('y', paddingTop - 4);
+        icon.setAttribute('class', 'chart-icon-marker');
+        icon.textContent = emoji;
+        svg.appendChild(icon);
+      }
+    };
+
+    drawMarker(sunriseHourDec, 'sun-line', '☀️');
+    drawMarker(sunsetHourDec, 'sun-line', '🌙');
+    if (isToday) drawMarker(currentHourDec, 'now-line', '📍');
+    drawMarker(teeHourDec, 'tee-line', '🚩');
+  }
+
+  function render() {
+    if (!currentData) return;
+
+    const isF = currentUnit === 'F';
+    const pastOffset = 7;
+    const currentDayIdx = pastOffset + selectedDayIndex;
+    const h = currentData.hourly;
+    const d = currentData.daily;
+
+    const toTemp = (valC) => isF ? Math.round((valC * 9/5) + 32) + '°F' : Math.round(valC) + '°C';
+    const toSpeed = (valKmh) => speedUnit === 'mph' ? Math.round(valKmh / 1.609) + ' mph' : Math.round(valKmh) + ' km/h';
+    const toPrecip = (valMm) => isF ? (valMm / 25.4).toFixed(2) + ' in' : valMm.toFixed(1) + ' mm';
+
+    document.getElementById('locationName').textContent = currentCityName;
+
+    const isToday = selectedDayIndex === 0;
+    document.getElementById('dayLabel').textContent = isToday ? 'Forecast Today' : `Forecast for ${d.time[currentDayIdx]}`;
+
+    const activeEvalHour = devHourOverride !== 'auto' ? parseInt(devHourOverride) : selectedTeeHour;
+    const startIndex = currentDayIdx * 24;
+    const teeStartHourIndex = startIndex + activeEvalHour;
+
+    const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
+    const windowTemps = h.temperature_2m.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowAvgTemp = windowTemps.reduce((a, b) => a + b, 0) / (windowTemps.length || 1);
+    const windowFeels = h.apparent_temperature ? h.apparent_temperature.slice(teeStartHourIndex, teeStartHourIndex + 4) : windowTemps;
+    const windowAvgFeels = windowFeels.reduce((a, b) => a + b, 0) / (windowFeels.length || 1);
+    const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
+    const windowGusts = h.wind_gusts_10m ? h.wind_gusts_10m.slice(teeStartHourIndex, teeStartHourIndex + 4) : windowWinds;
+    const windowMaxWind = Math.max(...windowWinds, 0);
+
+    const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
+    const past7DaysRain = h.precipitation.slice(0, startIndex).reduce((a, b) => a + b, 0);
+
+    const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
+    const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
+
+    const windowCodes = h.weather_code ? h.weather_code.slice(teeStartHourIndex, teeStartHourIndex + 4) : [];
+    const liveHourCode = windowCodes[0] !== undefined ? windowCodes[0] : d.weather_code[currentDayIdx];
+    const activeHourCode = devIconOverride !== 'auto' ? parseInt(devIconOverride) : liveHourCode;
+    const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code)) || activeHourCode === 95;
+
+    let sunriseHourDec = 6;
+    let sunsetHourDec = 18;
+    const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
+
+    if (d.sunrise[currentDayIdx]) {
+      const parts = d.sunrise[currentDayIdx].split('T')[1].split(':');
+      sunriseHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    }
+    if (d.sunset[currentDayIdx]) {
+      const parts = d.sunset[currentDayIdx].split('T')[1].split(':');
+      sunsetHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
+    }
+
+    const daylightRemaining = sunsetHourDec - activeEvalHour;
+    const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
+
+    // Update Single-Image CSS Atmospheric Scene + Dynamic Rain Velocity Layer
+    const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
+    const rainTier = determineRainTier(windowRainSum, activeHourCode);
+    updateBackgroundScene(bgScene, rainTier);
+
+    // Golf Score Calculation
+    const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
+    let rawScorePct = evalObj.score;
+    const subScores = evalObj.scores;
+    const allBoxesGreen = subScores.every(s => s === 20);
+    let finalPct = allBoxesGreen ? rawScorePct : Math.min(rawScorePct, 82);
+
+    const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
+    const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
+
+    dialTemp.textContent = toTemp(windowAvgTemp);
+
+    if (hasLightning) {
+      finalPct = 0;
+      dialScore.textContent = '0%';
+      updateDialGauge(0);
+      dialVerdict.textContent = 'Lightning ⚡';
+      dialSub.textContent = 'Thunderstorms forecast! Clear the course immediately.';
+    } else if (isPastSunset) {
+      finalPct = 0;
+      dialScore.textContent = '0%';
+      updateDialGauge(0);
+      dialVerdict.textContent = 'Too Dark 🌙';
+      dialSub.textContent = `Sunset is at ${sunsetStrRaw}. Choose an earlier tee time.`;
+    } else {
+      dialScore.textContent = `${finalPct}%`;
+      updateDialGauge(finalPct);
+
+      if (allBoxesGreen && finalPct >= 85) {
+        dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
+        dialSub.textContent = windowRainSum > 0
+          ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).`
+          : `Firm fairways & light breeze. No rain forecast during your round.`;
+      } else if (finalPct >= 70) {
+        dialVerdict.textContent = 'Good 👍';
+        if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
+        else if (subScores[0] < 20) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
+        else if (subScores[1] < 20) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
+        else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
+        else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
+      } else if (finalPct >= 50) {
+        dialVerdict.textContent = 'Not Bad ⛅';
+        if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
+        else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
+        else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
+      } else if (finalPct >= 30) {
+        dialVerdict.textContent = 'Poor 🌧️';
+        dialSub.textContent = windowRainSum > 0
+          ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.`
+          : `Strong winds or wet ground expected. No rain forecast during your round.`;
+      } else {
+        dialVerdict.textContent = 'No Chance ⛔';
+        dialSub.textContent = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
+      }
+    }
+
+    // Daylight Banner
+    if (daylightRemaining < 2.0) {
+      daylightWarning.style.display = 'block';
+      daylightWarning.className = 'daylight-banner danger';
+      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — not enough daylight for 9 or 18 holes.`;
+    } else if (daylightRemaining <= 4.0) {
+      daylightWarning.style.display = 'block';
+      daylightWarning.className = 'daylight-banner warn';
+      daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — enough daylight for 9 holes (~2h), tight for 18.`;
+    } else {
+      daylightWarning.style.display = 'none';
+    }
+
+    // Hero Right Mini-Cards
+    const windLabel = getWindLabel(windowMaxWind);
+    document.getElementById('heroWindVal').textContent = toSpeed(windowMaxWind);
+    document.getElementById('heroWindSub').textContent = windLabel;
+
+    document.getElementById('heroRainVal').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
+    document.getElementById('heroRainSub').textContent = windowRainSum > 0 ? '4h Window' : 'No rain';
+
+    document.getElementById('heroTempVal').textContent = toTemp(windowAvgTemp);
+    document.getElementById('heroTempSub').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
+
+    // Forecast Breakdown Card with Self-Contained Animated Meteocons
+    const isNightHour = activeEvalHour >= sunsetHourDec || activeEvalHour < sunriseHourDec;
+    const weatherInfo = getWeatherInfo(activeHourCode, isNightHour);
+    const svgHTML = getMeteoconSVG(weatherInfo.mcKey);
+    document.getElementById('forecastHeaderIcon').innerHTML = svgHTML;
+    document.getElementById('weatherIcon').innerHTML = svgHTML;
+    document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
+    document.getElementById('feelsLikeTemp').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
+    document.getElementById('currentCondition').textContent = weatherInfo.text;
+
+    document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
+    document.getElementById('windSub').textContent = windLabel;
+
+    document.getElementById('recentRain').textContent = toPrecip(last24hRain);
+    document.getElementById('recentRainSub').textContent = last24hRain > 0 ? 'Past 24 hours' : 'None';
+
+    document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
+    document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
+
+    // Day Summary Card
+    const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
+    document.getElementById('sunriseTime').textContent = sunriseStr;
+    document.getElementById('sunsetTime').textContent = sunsetStrRaw;
+    document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
+    document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
+    document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
+    document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
+
+    // Course & Club Guidance Callouts with Colour-Coded Left Border
+    const groundCallout = document.getElementById('groundCallout');
+    let groundShort = 'Firm & Dry';
+    if (subScores[0] >= 15) {
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll.`;
+      setCardStatus(groundCallout, 'good');
+    } else if (subScores[0] >= 5) {
+      groundShort = 'Soft / Damp';
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d rain). Less roll.`;
+      setCardStatus(groundCallout, 'warn');
+    } else {
+      groundShort = 'Soggy / Frozen';
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf. Check course status.`;
+      setCardStatus(groundCallout, 'danger');
+    }
+
+    const windCallout = document.getElementById('windCallout');
+    let windAdvice = 'Minimal flight effect';
+    if (subScores[1] >= 15) {
+      windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Light breeze (${toSpeed(windowMaxWind)}). Minimal flight effect.`;
+      setCardStatus(windCallout, 'good');
+    } else if (subScores[1] === 10) {
+      windAdvice = 'Club up 1 into wind';
+      windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Moderate wind (${toSpeed(windowMaxWind)}). Club up 1 into wind.`;
+      setCardStatus(windCallout, 'warn');
+    } else {
+      windAdvice = 'Take 2+ extra clubs';
+      windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Strong wind (${toSpeed(windowMaxWind)}). Take 2+ extra clubs.`;
+      setCardStatus(windCallout, 'danger');
+    }
+
+    const rainOutlookCallout = document.getElementById('rainOutlookCallout');
+    if (hasLightning) {
+      rainOutlookCallout.innerHTML = `<strong>⚡ Rain & Lightning</strong>Thunderstorm risk! Clear the course immediately.`;
+      setCardStatus(rainOutlookCallout, 'danger');
+    } else if (windowRainSum > 1.5) {
+      rainOutlookCallout.innerHTML = `<strong>☔ Rain Outlook</strong>${toPrecip(windowRainSum)} rain forecast during your 4h round.`;
+      setCardStatus(rainOutlookCallout, 'danger');
+    } else if (windowRainSum > 0) {
+      rainOutlookCallout.innerHTML = `<strong>🌦️ Rain Outlook</strong>Light showers (${toPrecip(windowRainSum)}) forecast during round.`;
+      setCardStatus(rainOutlookCallout, 'warn');
+    } else {
+      rainOutlookCallout.innerHTML = `<strong>☔ Rain Outlook</strong>No rain forecast during your round.`;
+      setCardStatus(rainOutlookCallout, 'good');
+    }
+
+    const carryCallout = document.getElementById('distancePenaltyCallout');
+    const tempDiffC = 22 - windowAvgTemp;
+    const penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
+    carryCallout.innerHTML = `<strong>🏌️ Carry & Temp</strong>At ${toTemp(windowAvgTemp)}, expect ~${penaltyYards} yds carry loss per club.`;
+    if (windowAvgTemp < 3) setCardStatus(carryCallout, 'danger');
+    else if (windowAvgTemp <= 10) setCardStatus(carryCallout, 'warn');
+    else setCardStatus(carryCallout, 'good');
+
+    const gearCallout = document.getElementById('gearCallout');
+    let gear = 'Polo & light mid-layer 👕';
+    if (windowAvgTemp < 5) gear = 'Thermal base layer, beanie & winter mitts 🥶';
+    else if (windowAvgTemp <= 11) gear = 'Windproof fleece & thermal layer 🧥';
+    if (windowRainSum > 0.1) gear += ' + Waterproofs & umbrella ☔';
+    gearCallout.innerHTML = `<strong>🎒 Recommended Gear</strong>${gear}`;
+    if (windowAvgTemp < 3 || windowRainSum > 2.0) setCardStatus(gearCallout, 'danger');
+    else if (windowAvgTemp <= 11 || windowRainSum > 0.1 || windowMaxWind / 1.609 > 15) setCardStatus(gearCallout, 'warn');
+    else setCardStatus(gearCallout, 'good');
+
+    // Populate Interactive Popup Data for Hero & Forecast Cards
+    activeRoundMetrics = {
+      teeLabel: formatHourLabel(activeEvalHour),
+      hours: [0, 1, 2, 3].map(offset => formatHourLabel(activeEvalHour + offset)),
+      winds: windowWinds.map(w => toSpeed(w)),
+      gusts: windowGusts.map(g => toSpeed(g)),
+      windAdvice,
+      totalRainMm: windowRainSum,
+      totalRainStr: toPrecip(windowRainSum),
+      rains: windowPrecip.map(r => r === 0 ? 'Dry' : toPrecip(r)),
+      last24RainStr: toPrecip(last24hRain),
+      past7RainStr: toPrecip(past7DaysRain),
+      groundShort,
+      temps: windowTemps.map(t => toTemp(t)),
+      feels: windowFeels.map(f => toTemp(f)),
+      penaltyYards
+    };
+
+    // Render Crisp 24-Hour Chart
+    const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
+    const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
+    const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
+
+    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, activeEvalHour, isToday);
+  }
+
+  window.addEventListener('resize', () => {
+    if (currentData) render();
+  });
+
+  // Unit & Theme Controls
+  unitToggle.addEventListener('click', () => {
+    currentUnit = currentUnit === 'C' ? 'F' : 'C';
+    unitToggle.textContent = `°${currentUnit}`;
+    buildDateBar();
+    render();
+  });
+
+  speedToggle.addEventListener('click', () => {
+    speedUnit = speedUnit === 'mph' ? 'kmh' : 'mph';
+    speedToggle.textContent = speedUnit;
+    render();
+  });
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    themeToggle.textContent = isDark ? '🌙' : '☀️';
+  });
+
+  geoBtn.addEventListener('click', getUserLocation);
+
+  function getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, GB')
+      );
+    } else {
+      fetchWeather(52.2917, -1.5367, 'Royal Leamington Spa, GB');
+    }
+  }
+
+  getUserLocation();
+</script>
+</body>
+</html>
