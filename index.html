@@ -40,7 +40,7 @@
 
       --chart-line: #2e7d32;
       --chart-bar: #1e88e5;
-      --chart-grid: rgba(69, 94, 80, 0.15);
+      --chart-grid: rgba(69, 94, 80, 0.18);
       --sun-line: #f57c00;
       --now-line: #d32f2f;
       --tee-line: #1565c0;
@@ -69,7 +69,7 @@
 
       --chart-line: #66bb6a;
       --chart-bar: #64b5f6;
-      --chart-grid: rgba(158, 184, 168, 0.15);
+      --chart-grid: rgba(158, 184, 168, 0.18);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -191,17 +191,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.5rem;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.5rem;
       color: #ffffff;
     }
 
     .brand h1 {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 700;
       letter-spacing: -0.2px;
     }
@@ -220,7 +221,28 @@
     .header-controls {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
+    }
+
+    /* Developer Tickbox Pill */
+    .dev-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2ede6;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.22rem 0.52rem;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .dev-checkbox-label input {
+      accent-color: #66bb6a;
+      cursor: pointer;
     }
 
     .pill-toggle {
@@ -254,6 +276,76 @@
       font-size: 1.05rem;
       cursor: pointer;
       padding: 0.25rem 0.4rem;
+    }
+
+    /* Developer Testing Strip */
+    .dev-panel {
+      display: none;
+      background: rgba(18, 34, 24, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(102, 187, 106, 0.45);
+      border-radius: 14px;
+      padding: 0.75rem 0.95rem;
+      color: #eef6f1;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .dev-panel.visible {
+      display: flex;
+    }
+
+    .dev-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #81c784;
+    }
+
+    .dev-reset-btn {
+      background: rgba(255,255,255,0.14);
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .dev-controls-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.55rem;
+    }
+
+    .dev-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #b7cebf;
+    }
+
+    .dev-field select {
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      padding: 0.35rem 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .dev-field select option {
+      background: #14261c;
+      color: #ffffff;
     }
 
     /* Main Content Container */
@@ -631,10 +723,16 @@
       margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
     }
 
-    /* Forecast Details Card (Interactive Clickable Boxes) */
+    .meteocon-header {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+    }
+
+    /* Forecast Details Card with Meteocons */
     .forecast-grid {
       display: grid;
       grid-template-columns: 1.25fr 1fr 1fr 1fr;
@@ -648,9 +746,11 @@
       gap: 0.65rem;
     }
 
-    .forecast-big-icon {
-      font-size: 2.3rem;
-      line-height: 1;
+    .meteocon-main {
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
     }
 
     .forecast-temp-stack .f-temp {
@@ -744,6 +844,7 @@
     .chart-text { fill: var(--text-muted); font-size: 10.5px; text-anchor: middle; font-weight: 600; }
     .chart-y-text { fill: var(--text-muted); font-size: 10px; text-anchor: end; font-weight: 600; }
     .chart-grid-line { stroke: var(--chart-grid); stroke-width: 1; stroke-dasharray: 2,3; }
+    .chart-vgrid-line { stroke: var(--chart-grid); stroke-width: 1; stroke-dasharray: 2,3; }
     .chart-line { fill: none; stroke: var(--chart-line); stroke-width: 2.5; stroke-linecap: round; }
     .chart-bar { fill: var(--chart-bar); opacity: 0.85; rx: 2px; }
     .sun-line { stroke: var(--sun-line); stroke-width: 1.5; stroke-dasharray: 3,3; }
@@ -896,6 +997,9 @@
 
     /* Mobile Responsive Adjustments (≤ 600px) */
     @media (max-width: 600px) {
+      .brand h1 { font-size: 0.98rem; }
+      .dev-controls-grid { grid-template-columns: 1fr; }
+
       .hero-card {
         grid-template-columns: 132px 1fr;
         gap: 0.8rem;
@@ -941,8 +1045,9 @@
         padding: 0.25rem 0 0.5rem 0;
         gap: 0.3rem;
       }
-      .forecast-big-icon {
-        font-size: 2.6rem;
+      .meteocon-main {
+        width: 72px;
+        height: 72px;
       }
       .forecast-temp-stack {
         display: flex;
@@ -994,11 +1099,15 @@
   <header class="top-bar">
     <div class="top-bar-inner">
       <div class="brand">
-        <span style="font-size: 1.25rem;">⛳</span>
+        <span style="font-size: 1.2rem;">⛳</span>
         <h1>is it golf weather</h1>
         <span class="version-pill" id="versionTag">v4.1</span>
       </div>
       <div class="header-controls">
+        <label class="dev-checkbox-label" title="Toggle Developer Scene & Time Tester">
+          <input type="checkbox" id="devModeCheckbox">
+          <span>Dev</span>
+        </label>
         <div class="pill-toggle">
           <button id="unitToggle" class="active">°C</button>
           <button id="speedToggle">mph</button>
@@ -1010,6 +1119,56 @@
 
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
+
+    <!-- Developer Scene & Time Test Strip -->
+    <section id="devPanel" class="dev-panel">
+      <div class="dev-panel-header">
+        <span>🛠️ Developer Scene & Icon Sandbox</span>
+        <button id="devResetBtn" class="dev-reset-btn">Reset to Live</button>
+      </div>
+      <div class="dev-controls-grid">
+        <div class="dev-field">
+          <label for="devSceneSelect">Background Scene</label>
+          <select id="devSceneSelect">
+            <option value="auto">Auto (Live Forecast)</option>
+            <option value="sunny">☀️ Sunny</option>
+            <option value="cloudy">☁️ Cloudy / Overcast</option>
+            <option value="windy">💨 Windy Breeze</option>
+            <option value="rain">🌧️ Rain / Storm</option>
+            <option value="ice">🧊 Frost / Ice</option>
+            <option value="snow">❄️ Snow Cover</option>
+            <option value="dusk">🌅 Golden Dusk</option>
+            <option value="night">🌙 Night / Dark</option>
+          </select>
+        </div>
+        <div class="dev-field">
+          <label for="devIconSelect">Forecast Weather</label>
+          <select id="devIconSelect">
+            <option value="auto">Auto (Live Code)</option>
+            <option value="0">Clear Sky (0)</option>
+            <option value="2">Partly Cloudy (2)</option>
+            <option value="3">Overcast (3)</option>
+            <option value="45">Foggy (45)</option>
+            <option value="51">Drizzle (51)</option>
+            <option value="63">Moderate Rain (63)</option>
+            <option value="73">Snowfall (73)</option>
+            <option value="95">Thunderstorm (95)</option>
+          </select>
+        </div>
+        <div class="dev-field">
+          <label for="devHourSelect">Test Time of Day</label>
+          <select id="devHourSelect">
+            <option value="auto">Sync w/ Tee Slider</option>
+            <option value="6">06:00 AM (Dawn)</option>
+            <option value="9">09:00 AM (Morning)</option>
+            <option value="13">01:00 PM (Midday)</option>
+            <option value="16">04:00 PM (Late Afternoon)</option>
+            <option value="19">07:00 PM (Evening)</option>
+            <option value="22">10:00 PM (Night)</option>
+          </select>
+        </div>
+      </div>
+    </section>
 
     <!-- Search Bar -->
     <div class="search-wrapper">
@@ -1081,16 +1240,16 @@
       <div id="daylightWarning" class="daylight-banner"></div>
     </section>
 
-    <!-- Forecast Breakdown Card (3 Clickable Boxes) -->
+    <!-- Forecast Breakdown Card (Animated Meteocons + 3 Clickable Boxes) -->
     <section class="glass-card">
       <div class="card-header">
-        <span id="forecastHeaderIcon">⛅</span>
+        <img id="forecastHeaderIcon" class="meteocon-header" src="https://basmilius.github.io/weather-icons/production/fill/all/partly-cloudy-day.svg" alt="">
         <span><span id="dayLabel">Forecast</span> — <span id="locationName">---</span></span>
       </div>
 
       <div class="forecast-grid">
         <div class="forecast-main">
-          <div id="weatherIcon" class="forecast-big-icon">⛅</div>
+          <img id="weatherIcon" class="meteocon-main" src="https://basmilius.github.io/weather-icons/production/fill/all/partly-cloudy-day.svg" alt="Forecast icon">
           <div class="forecast-temp-stack">
             <div id="currentTemp" class="f-temp">--°C</div>
             <div id="feelsLikeTemp" class="f-feels">Feels like --°C</div>
@@ -1215,7 +1374,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is It Golf Weather</h3>
-      <p>Version 4.1 (CSS Atmosphere Engine)<br>Made by KW in November 2026</p>
+      <p>Version 4.1 (Meteocons & CSS Atmosphere)<br>Made by KW in November 2026</p>
       <button class="modal-close-btn" id="closeModalBtn">Close</button>
     </div>
   </div>
@@ -1245,11 +1404,23 @@
   let activeRoundMetrics = null;
   const circumference = 2 * Math.PI * 70;
 
+  // Developer Override State
+  let devSceneOverride = 'auto';
+  let devIconOverride = 'auto';
+  let devHourOverride = 'auto';
+
   // DOM Elements
   const bgStage = document.getElementById('bgStage');
   const versionTag = document.getElementById('versionTag');
   const creatorModal = document.getElementById('creatorModal');
   const closeModalBtn = document.getElementById('closeModalBtn');
+
+  const devModeCheckbox = document.getElementById('devModeCheckbox');
+  const devPanel = document.getElementById('devPanel');
+  const devSceneSelect = document.getElementById('devSceneSelect');
+  const devIconSelect = document.getElementById('devIconSelect');
+  const devHourSelect = document.getElementById('devHourSelect');
+  const devResetBtn = document.getElementById('devResetBtn');
 
   const metricModal = document.getElementById('metricModal');
   const metricModalTitle = document.getElementById('metricModalTitle');
@@ -1280,12 +1451,56 @@
 
   teeTimeSlider.value = selectedTeeHour;
 
+  // Developer Controls Event Wiring
+  devModeCheckbox.addEventListener('change', () => {
+    if (devModeCheckbox.checked) {
+      devPanel.classList.add('visible');
+    } else {
+      devPanel.classList.remove('visible');
+      resetDevOverrides();
+    }
+  });
+
+  devSceneSelect.addEventListener('change', (e) => {
+    devSceneOverride = e.target.value;
+    render();
+  });
+
+  devIconSelect.addEventListener('change', (e) => {
+    devIconOverride = e.target.value;
+    render();
+  });
+
+  devHourSelect.addEventListener('change', (e) => {
+    devHourOverride = e.target.value;
+    if (devHourOverride !== 'auto') {
+      const hr = parseInt(devHourOverride);
+      selectedTeeHour = hr;
+      if (hr >= 6 && hr <= 20) teeTimeSlider.value = hr;
+      updateTeeTimeDisplay();
+    }
+    render();
+  });
+
+  function resetDevOverrides() {
+    devSceneOverride = 'auto';
+    devIconOverride = 'auto';
+    devHourOverride = 'auto';
+    devSceneSelect.value = 'auto';
+    devIconSelect.value = 'auto';
+    devHourSelect.value = 'auto';
+    render();
+  }
+
+  devResetBtn.addEventListener('click', resetDevOverrides);
+
   // Single-Image CSS Atmospheric Controller
   function updateBackgroundScene(sceneKey) {
     bgStage.className = `bg-stage scene-${sceneKey}`;
   }
 
   function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, hasSnowCover, isPastSunset, daylightRemaining) {
+    if (devSceneOverride !== 'auto') return devSceneOverride;
     if (isPastSunset) return 'night';
     if (snowMm > 0 || hasSnowCover || [71, 73, 75, 77, 85, 86].includes(weatherCode)) return 'snow';
     if (tempC <= 0.5) return 'ice';
@@ -1491,6 +1706,10 @@
 
   teeTimeSlider.addEventListener('input', (e) => {
     selectedTeeHour = parseInt(e.target.value);
+    if (devHourSelect.value !== 'auto') {
+      devHourSelect.value = 'auto';
+      devHourOverride = 'auto';
+    }
     updateTeeTimeDisplay();
     render();
   });
@@ -1506,26 +1725,33 @@
     teeTimeDisplay.textContent = formatHourLabel(selectedTeeHour);
   }
 
-  function getWeatherInfo(code) {
+  // Meteocons Animated SVG Mapping + Emoji for 7-Day Pills
+  function getWeatherInfo(code, isNight = false) {
+    const base = 'https://basmilius.github.io/weather-icons/production/fill/all';
     const codes = {
-      0: { text: 'Clear sky', icon: '☀️' },
-      1: { text: 'Mainly clear', icon: '🌤️' },
-      2: { text: 'Partly cloudy', icon: '⛅' },
-      3: { text: 'Overcast', icon: '☁️' },
-      45: { text: 'Foggy', icon: '🌫️' },
-      48: { text: 'Freezing fog', icon: '❄️🌫️' },
-      51: { text: 'Drizzle', icon: '🌦️' },
-      61: { text: 'Slight rain', icon: '🌧️' },
-      63: { text: 'Moderate rain', icon: '🌧️' },
-      65: { text: 'Heavy rain', icon: '🌧️☔' },
-      71: { text: 'Slight snow', icon: '❄️' },
-      73: { text: 'Moderate snow', icon: '❄️' },
-      75: { text: 'Heavy snow', icon: '❄️🌨️' },
-      95: { text: 'Thunderstorm', icon: '⚡' },
-      96: { text: 'Thunderstorm w/ hail', icon: '⚡⛈️' },
-      99: { text: 'Heavy thunderstorm', icon: '⚡⛈️' }
+      0: { text: 'Clear sky', icon: '☀️', meteocon: isNight ? `${base}/clear-night.svg` : `${base}/clear-day.svg` },
+      1: { text: 'Mainly clear', icon: '🌤️', meteocon: isNight ? `${base}/partly-cloudy-night.svg` : `${base}/partly-cloudy-day.svg` },
+      2: { text: 'Partly cloudy', icon: '⛅', meteocon: isNight ? `${base}/partly-cloudy-night.svg` : `${base}/partly-cloudy-day.svg` },
+      3: { text: 'Overcast', icon: '☁️', meteocon: `${base}/overcast.svg` },
+      45: { text: 'Foggy', icon: '🌫️', meteocon: isNight ? `${base}/fog-night.svg` : `${base}/fog-day.svg` },
+      48: { text: 'Freezing fog', icon: '❄️🌫️', meteocon: `${base}/fog.svg` },
+      51: { text: 'Drizzle', icon: '🌦️', meteocon: `${base}/drizzle.svg` },
+      53: { text: 'Moderate drizzle', icon: '🌦️', meteocon: `${base}/drizzle.svg` },
+      55: { text: 'Dense drizzle', icon: '🌧️', meteocon: `${base}/rain.svg` },
+      61: { text: 'Slight rain', icon: '🌧️', meteocon: `${base}/rain.svg` },
+      63: { text: 'Moderate rain', icon: '🌧️', meteocon: `${base}/rain.svg` },
+      65: { text: 'Heavy rain', icon: '🌧️☔', meteocon: `${base}/extreme-rain.svg` },
+      71: { text: 'Slight snow', icon: '❄️', meteocon: `${base}/snow.svg` },
+      73: { text: 'Moderate snow', icon: '❄️', meteocon: `${base}/snow.svg` },
+      75: { text: 'Heavy snow', icon: '❄️🌨️', meteocon: `${base}/extreme-snow.svg` },
+      80: { text: 'Rain showers', icon: '🌦️', meteocon: isNight ? `${base}/partly-cloudy-night-rain.svg` : `${base}/partly-cloudy-day-rain.svg` },
+      81: { text: 'Moderate showers', icon: '🌧️', meteocon: `${base}/rain.svg` },
+      82: { text: 'Heavy showers', icon: '🌧️☔', meteocon: `${base}/extreme-rain.svg` },
+      95: { text: 'Thunderstorm', icon: '⚡', meteocon: isNight ? `${base}/thunderstorms-night.svg` : `${base}/thunderstorms-day.svg` },
+      96: { text: 'Thunderstorm w/ hail', icon: '⚡⛈️', meteocon: `${base}/thunderstorms-rain.svg` },
+      99: { text: 'Heavy thunderstorm', icon: '⚡⛈️', meteocon: `${base}/thunderstorms-extreme-rain.svg` }
     };
-    return codes[code] || { text: 'Cloudy', icon: '⛅' };
+    return codes[code] || { text: 'Cloudy', icon: '⛅', meteocon: `${base}/cloudy.svg` };
   }
 
   function getWindLabel(speedKmh) {
@@ -1581,7 +1807,7 @@
     for (let idx = 0; idx < Math.min(6, days.length); idx++) {
       const d = new Date(days[idx]);
       const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
-      const dayWeatherInfo = getWeatherInfo(weatherCodes[idx]);
+      const dayWeatherInfo = getWeatherInfo(weatherCodes[idx], false);
       const tMax = fmtT(maxTemps[idx]);
       const tMin = fmtT(minTemps[idx]);
 
@@ -1713,6 +1939,7 @@
     const maxRain = Math.max(...hourlyPrecip, 2);
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
+    // Horizontal Gridlines & Y-Axis Labels
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
@@ -1733,6 +1960,19 @@
       svg.appendChild(gridLine);
     }
 
+    // Faint Vertical Hour Gridlines (every 2 hours)
+    for (let hIdx = 0; hIdx <= 23; hIdx += 2) {
+      const vx = paddingLeft + hIdx * stepX;
+      const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      vLine.setAttribute('x1', vx);
+      vLine.setAttribute('x2', vx);
+      vLine.setAttribute('y1', paddingTop);
+      vLine.setAttribute('y2', height - paddingBottom);
+      vLine.setAttribute('class', 'chart-vgrid-line');
+      svg.appendChild(vLine);
+    }
+
+    // Rain Bars
     hourlyPrecip.forEach((rain, i) => {
       if (rain > 0) {
         const x = paddingLeft + i * stepX - (stepX * 0.3);
@@ -1813,8 +2053,9 @@
     const isToday = selectedDayIndex === 0;
     document.getElementById('dayLabel').textContent = isToday ? 'Forecast Today' : `Forecast for ${d.time[currentDayIdx]}`;
 
+    const activeEvalHour = devHourOverride !== 'auto' ? parseInt(devHourOverride) : selectedTeeHour;
     const startIndex = currentDayIdx * 24;
-    const teeStartHourIndex = startIndex + selectedTeeHour;
+    const teeStartHourIndex = startIndex + activeEvalHour;
 
     const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
@@ -1833,8 +2074,9 @@
     const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
 
     const windowCodes = h.weather_code ? h.weather_code.slice(teeStartHourIndex, teeStartHourIndex + 4) : [];
-    const activeHourCode = windowCodes[0] !== undefined ? windowCodes[0] : d.weather_code[currentDayIdx];
-    const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code));
+    const liveHourCode = windowCodes[0] !== undefined ? windowCodes[0] : d.weather_code[currentDayIdx];
+    const activeHourCode = devIconOverride !== 'auto' ? parseInt(devIconOverride) : liveHourCode;
+    const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code)) || activeHourCode === 95;
 
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
@@ -1849,8 +2091,8 @@
       sunsetHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
     }
 
-    const daylightRemaining = sunsetHourDec - selectedTeeHour;
-    const isPastSunset = selectedTeeHour >= sunsetHourDec || selectedTeeHour < (sunriseHourDec - 1);
+    const daylightRemaining = sunsetHourDec - activeEvalHour;
+    const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
 
     // Update Single-Image CSS Atmospheric Scene
     const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
@@ -1936,10 +2178,11 @@
     document.getElementById('heroTempVal').textContent = toTemp(windowAvgTemp);
     document.getElementById('heroTempSub').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
 
-    // Forecast Breakdown Card
-    const weatherInfo = getWeatherInfo(activeHourCode);
-    document.getElementById('forecastHeaderIcon').textContent = weatherInfo.icon;
-    document.getElementById('weatherIcon').textContent = weatherInfo.icon;
+    // Forecast Breakdown Card with Meteocons
+    const isNightHour = activeEvalHour >= sunsetHourDec || activeEvalHour < sunriseHourDec;
+    const weatherInfo = getWeatherInfo(activeHourCode, isNightHour);
+    document.getElementById('forecastHeaderIcon').src = weatherInfo.meteocon;
+    document.getElementById('weatherIcon').src = weatherInfo.meteocon;
     document.getElementById('currentTemp').textContent = toTemp(windowAvgTemp);
     document.getElementById('feelsLikeTemp').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
     document.getElementById('currentCondition').textContent = weatherInfo.text;
@@ -2028,8 +2271,8 @@
 
     // Populate Interactive Popup Data for Hero & Forecast Cards
     activeRoundMetrics = {
-      teeLabel: formatHourLabel(selectedTeeHour),
-      hours: [0, 1, 2, 3].map(offset => formatHourLabel(selectedTeeHour + offset)),
+      teeLabel: formatHourLabel(activeEvalHour),
+      hours: [0, 1, 2, 3].map(offset => formatHourLabel(activeEvalHour + offset)),
       winds: windowWinds.map(w => toSpeed(w)),
       gusts: windowGusts.map(g => toSpeed(g)),
       windAdvice,
@@ -2049,7 +2292,7 @@
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
-    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, selectedTeeHour, isToday);
+    renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, activeEvalHour, isToday);
   }
 
   window.addEventListener('resize', () => {
