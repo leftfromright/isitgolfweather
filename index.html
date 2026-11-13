@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Is it golf weather? — Plan Your Round with Confidence</title>
-  <meta name="description" content="Check UK golf course weather, wind impact, turf firmness, rain outlook, and daylight remaining before your tee time.">
+  <title id="pageTitle">Is it golf weather? — Plan Your Round with Confidence</title>
+  <meta id="metaDescription" name="description" content="Check UK golf course weather, wind impact, turf firmness, rain outlook, and daylight remaining before your tee time.">
   <link rel="canonical" href="https://isitgolfweather.com/">
   
   <meta name="mobile-web-app-capable" content="yes">
@@ -408,10 +408,12 @@
       border-bottom: 1px solid rgba(0,0,0,0.06);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 0.55rem;
     }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover { background: rgba(46, 125, 50, 0.15); }
+    .distance-tag { font-size: 0.75rem; color: var(--accent); font-weight: 700; background: rgba(46,125,50,0.12); padding: 2px 6px; border-radius: 99px; }
 
     /* Frosted Glass Card Base */
     .glass-card {
@@ -592,7 +594,7 @@
       height: 1px;
     }
 
-    /* Tee Time Slider Card (Fixed Minimum Height + Golf Ball Thumb) */
+    /* Tee Time Slider Card (Fixed Height + Golf Ball Thumb) */
     .slider-bar {
       padding: 0.8rem 1.2rem;
       min-height: 122px;
@@ -648,7 +650,6 @@
       border: 1px solid #94a3b8;
       box-shadow: 0 3px 8px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.8);
       cursor: pointer;
-      /* Subtle dimple pattern illusion via radial dot gradient */
       background-image: 
         radial-gradient(circle at 35% 35%, #ffffff 0%, #f1f5f9 60%, #cbd5e1 100%),
         radial-gradient(circle at 65% 65%, rgba(0,0,0,0.06) 0%, transparent 40%),
@@ -840,10 +841,10 @@
     .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
     .summary-pill .sp-val { font-size: 0.96rem; font-weight: 800; }
 
-    /* Course Condition Callouts with Dynamic Severity Border */
+    /* Course Condition Callouts Stacked in 1 Column (Desktop & Mobile) */
     .callouts-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
       gap: 0.55rem;
     }
 
@@ -861,7 +862,6 @@
     .callout-item.status-danger { border-left-color: var(--status-danger); }
 
     .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.8rem; }
-    .callout-item.span-2 { grid-column: span 2; }
 
     /* Footer Tagline */
     .footer-note {
@@ -1011,8 +1011,6 @@
       .detail-box .db-sub { font-size: 0.62rem; }
 
       .summary-3col { grid-template-columns: repeat(2, 1fr); }
-      .callouts-grid { grid-template-columns: 1fr; }
-      .callout-item.span-2 { grid-column: span 1; }
     }
   </style>
 </head>
@@ -1034,7 +1032,7 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>Is it golf weather?</h1>
-        <span class="version-pill" id="versionTag">v4.5</span>
+        <span class="version-pill" id="versionTag">v4.6</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -1050,10 +1048,11 @@
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
 
-    <!-- Search Bar -->
+    <!-- Search Bar with Courses Nearby Button -->
     <div class="search-wrapper">
       <span style="font-size: 1.05rem;">📍</span>
       <input type="text" id="locationInput" placeholder="Search UK golf club or location..." autocomplete="off">
+      <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">⛳</button>
       <button id="geoBtn" class="search-icon-btn" title="Use current location">🎯</button>
       <button id="homeCourseBtn" class="search-icon-btn" title="Save/Load Home Course">⭐</button>
       <div id="autocompleteList" class="autocomplete-list"></div>
@@ -1237,7 +1236,7 @@
       </div>
     </section>
 
-    <!-- Course Conditions & Carry -->
+    <!-- Course Conditions & Carry (Stacked in 1 Column) -->
     <section class="glass-card">
       <div class="card-header">🏌️ Course & Club Guidance</div>
       <div class="callouts-grid">
@@ -1245,7 +1244,7 @@
         <div id="windCallout" class="callout-item"></div>
         <div id="rainOutlookCallout" class="callout-item"></div>
         <div id="distancePenaltyCallout" class="callout-item"></div>
-        <div id="gearCallout" class="callout-item span-2"></div>
+        <div id="gearCallout" class="callout-item"></div>
       </div>
     </section>
 
@@ -1256,7 +1255,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 4.5 (Golf Ball Slider & Local Asset)<br>Made by KW in November 2026</p>
+      <p>Version 4.6 (SEO, Curated Courses & Stacked Guidance)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -1344,10 +1343,31 @@
   let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
   let debounceTimer = null;
   let savedHomeCourse = null;
+  let lastLat = 52.2917;
+  let lastLon = -1.5367;
 
   let activeRoundMetrics = null;
   let activeRainTier = 'none';
   const circumference = 2 * Math.PI * 70;
+
+  // Curated UK Golf Courses Database for Smart Prioritization & Nearby Search
+  const curatedGolfCourses = [
+    { name: "Leamington & County Golf Club", region: "Warwickshire", lat: 52.2831, lon: -1.5322 },
+    { name: "The Belfry Hotel & Resort", region: "West Midlands", lat: 52.5512, lon: -1.7214 },
+    { name: "St Andrews Links (Old Course)", region: "Fife", lat: 56.3417, lon: -2.8093 },
+    { name: "Wentworth Club", region: "Surrey", lat: 51.3934, lon: -0.5921 },
+    { name: "Royal Birkdale Golf Club", region: "Merseyside", lat: 53.6141, lon: -3.0335 },
+    { name: "Royal Liverpool Golf Club", region: "Merseyside", lat: 53.3852, lon: -3.2084 },
+    { name: "Royal Troon Golf Club", region: "Ayrshire", lat: 55.5562, lon: -4.6625 },
+    { name: "Carnoustie Golf Links", region: "Angus", lat: 56.5118, lon: -2.7154 },
+    { name: "Sunningdale Golf Club", region: "Berkshire", lat: 51.3802, lon: -0.6384 },
+    { name: "Walton Heath Golf Club", region: "Surrey", lat: 51.2783, lon: -0.2281 },
+    { name: "Woodhall Spa Golf Club", region: "Lincolnshire", lat: 53.1534, lon: -0.2132 },
+    { name: "Celtic Manor Resort", region: "Newport", lat: 51.5833, lon: -2.9333 },
+    { name: "Gleneagles Hotel (PGA Centenary)", region: "Perthshire", lat: 56.2845, lon: -3.7542 },
+    { name: "Warwickshire Golf Club", region: "Warwickshire", lat: 52.3321, lon: -1.5812 },
+    { name: "Stoneleigh Deer Park Golf Club", region: "Warwickshire", lat: 52.3489, lon: -1.5342 }
+  ];
 
   // Developer Override State
   let devSceneOverride = 'auto';
@@ -1400,6 +1420,7 @@
   const speedToggle = document.getElementById('speedToggle');
   const themeToggle = document.getElementById('themeToggle');
   const geoBtn = document.getElementById('geoBtn');
+  const nearbyBtn = document.getElementById('nearbyBtn');
   const homeCourseBtn = document.getElementById('homeCourseBtn');
 
   const locationInput = document.getElementById('locationInput');
@@ -1721,67 +1742,96 @@
     } else if (savedHomeCourse && locationInput.value !== savedHomeCourse.name) {
       fetchWeather(savedHomeCourse.lat, savedHomeCourse.lon, savedHomeCourse.name);
     } else if (currentCityName) {
-      savedHomeCourse = { name: currentCityName, lat: currentData.latitude, lon: currentData.longitude };
+      savedHomeCourse = { name: currentCityName, lat: lastLat, lon: lastLon };
       localStorage.setItem('golf_home_course', JSON.stringify(savedHomeCourse));
       homeCourseBtn.style.filter = 'drop-shadow(0 0 3px #fbc02d)';
     }
   });
 
-  // Autocomplete Search
+  // Haversine Distance Formula (km)
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  // Courses Nearby Button Handler
+  nearbyBtn.addEventListener('click', () => {
+    const sortedCourses = curatedGolfCourses.map(course => {
+      const distKm = calculateDistance(lastLat, lastLon, course.lat, course.lon);
+      return { ...course, distMiles: (distKm * 0.621371).toFixed(1) };
+    }).sort((a, b) => parseFloat(a.distMiles) - parseFloat(b.distMiles));
+
+    autocompleteList.innerHTML = '';
+    sortedCourses.slice(0, 8).forEach(course => {
+      const item = document.createElement('div');
+      item.className = 'autocomplete-item';
+      item.innerHTML = `<span>⛳ ${course.name} (${course.region})</span> <span class="distance-tag">${course.distMiles} mi</span>`;
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        locationInput.value = `${course.name}, ${course.region}`;
+        autocompleteList.style.display = 'none';
+        selectedDayIndex = 0;
+        fetchWeather(course.lat, course.lon, `${course.name}, ${course.region}`);
+      });
+      autocompleteList.appendChild(item);
+    });
+    autocompleteList.style.display = 'block';
+  });
+
+  // Smart Curated + Geocoding Autocomplete Search
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
-    const query = locationInput.value.trim();
+    const query = locationInput.value.trim().toLowerCase();
     if (query.length < 2) {
       autocompleteList.style.display = 'none';
       return;
     }
-    debounceTimer = setTimeout(() => searchAutocomplete(query), 250);
+    debounceTimer = setTimeout(() => searchAutocomplete(query), 220);
   });
 
-  async function searchAutocomplete(rawQuery) {
+  async function searchAutocomplete(query) {
     try {
-      let cleanQuery = rawQuery.replace(/royal/gi, '').trim() || rawQuery;
-      const [resNormal, resUK, resGolf] = await Promise.all([
-        fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=6&language=en&format=json`).then(r => r.json()),
-        fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery + " UK")}&count=6&language=en&format=json`).then(r => r.json()),
-        fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery + " golf club")}&count=6&language=en&format=json`).then(r => r.json())
-      ]);
+      // 1. Filter Curated Courses first
+      const matches = curatedGolfCourses.filter(c => 
+        c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)
+      ).map(c => ({
+        name: c.name,
+        admin1: c.region,
+        country_code: 'GB',
+        latitude: c.lat,
+        longitude: c.lon,
+        isCurated: true
+      }));
 
-      const combined = [];
-      const seenIds = new Set();
-      [resGolf, resUK, resNormal].forEach(list => {
-        if (list && list.results) {
-          list.results.forEach(place => {
-            if (!seenIds.has(place.id)) {
-              seenIds.add(place.id);
-              combined.push(place);
-            }
-          });
-        }
-      });
+      // 2. Fetch Geocoding API results in parallel
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+      const data = await res.json();
+      const apiResults = data && data.results ? data.results : [];
 
-      combined.sort((a, b) => {
-        const scoreA = (a.country_code === 'GB' ? 2 : 0) + (a.name.toLowerCase().includes('golf') ? 1 : 0);
-        const scoreB = (b.country_code === 'GB' ? 2 : 0) + (b.name.toLowerCase().includes('golf') ? 1 : 0);
-        return scoreB - scoreA;
-      });
-
+      const combined = [...matches, ...apiResults];
       autocompleteList.innerHTML = '';
+
       if (combined.length > 0) {
         combined.slice(0, 6).forEach(place => {
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
-          const isGolf = place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
+          const isGolf = place.isCurated || place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
           const region = place.admin1 ? `, ${place.admin1}` : '';
-          const fullName = `${place.name}${region}, ${place.country_code}`;
+          const fullName = `${place.name}${region}, ${place.country_code || 'GB'}`;
 
-          item.innerHTML = `<span>${isGolf}</span> <span>${fullName}</span>`;
+          item.innerHTML = `<span>${isGolf} ${fullName}</span>${place.isCurated ? '<span class="distance-tag">UK Course</span>' : ''}`;
           item.addEventListener('click', (e) => {
             e.stopPropagation();
             locationInput.value = fullName;
             autocompleteList.style.display = 'none';
             selectedDayIndex = 0;
-            fetchWeather(place.latitude, place.longitude, `${place.name}, ${place.country_code}`);
+            fetchWeather(place.latitude, place.longitude, fullName);
           });
           autocompleteList.appendChild(item);
         });
@@ -1865,6 +1915,8 @@
 
   async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTee = 8) {
     try {
+      lastLat = lat;
+      lastLon = lon;
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
       const [weatherData, locationName] = await Promise.all([
         fetch(weatherUrl).then(r => r.json()),
@@ -1874,6 +1926,10 @@
       currentData = weatherData;
       currentCityName = locationName;
       locationInput.value = currentCityName;
+
+      // Dynamic SEO Meta Tag Updates
+      document.getElementById('pageTitle').textContent = `Is it golf weather at ${currentCityName}? — Forecast & Conditions`;
+      document.getElementById('metaDescription').setAttribute('content', `Live golf forecast for ${currentCityName}. Check tee time weather, wind impact, fairway turf firmness, rain outlook, and daylight remaining.`);
 
       selectedDayIndex = Math.max(0, Math.min(15, targetDay));
       selectedTeeHour = Math.max(6, Math.min(20, targetTee));
