@@ -413,7 +413,20 @@
     }
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover { background: rgba(46, 125, 50, 0.15); }
-    .distance-tag { font-size: 0.75rem; color: var(--accent); font-weight: 700; background: rgba(46,125,50,0.12); padding: 2px 6px; border-radius: 99px; }
+    
+    /* Standardized Distance Tags (Fixed width, no line wrapping) */
+    .distance-tag { 
+      font-size: 0.75rem; 
+      color: var(--accent); 
+      font-weight: 700; 
+      background: rgba(46,125,50,0.12); 
+      padding: 2px 8px; 
+      border-radius: 99px;
+      min-width: 58px;
+      text-align: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
 
     /* Frosted Glass Card Base */
     .glass-card {
@@ -666,7 +679,7 @@
       cursor: pointer;
     }
 
-    /* Redesigned Dark Blue/Black Glassmorphic Sunset Warnings */
+    /* Redesigned Dark Blue/Black Centered Sunset Warnings */
     .daylight-banner {
       display: none;
       margin-top: 0.35rem;
@@ -674,8 +687,8 @@
       border-radius: 10px;
       font-size: 0.76rem;
       font-weight: 600;
-      text-align: left;
-      background: rgba(16, 28, 44, 0.85);
+      text-align: center;
+      background: rgba(16, 28, 44, 0.88);
       color: #e2e8f0;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
@@ -684,9 +697,12 @@
     }
     .daylight-banner.warn {
       border-left: 4px solid #f59e0b;
+      border-right: 4px solid #f59e0b;
     }
     .daylight-banner.danger {
-      border-left: 4px solid #38bdf8;
+      border-left: 4px solid #ef4444;
+      border-right: 4px solid #ef4444;
+      border-color: rgba(239, 68, 68, 0.35);
     }
 
     /* Section Card Headings */
@@ -1019,7 +1035,7 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>Is it golf weather?</h1>
-        <span class="version-pill" id="versionTag">v4.7</span>
+        <span class="version-pill" id="versionTag">v4.8</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -1035,13 +1051,12 @@
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
 
-    <!-- Search Bar with Courses Nearby Button -->
+    <!-- Search Bar (Favourite button removed, updated icons) -->
     <div class="search-wrapper">
       <span style="font-size: 1.05rem;">📍</span>
       <input type="text" id="locationInput" placeholder="Search UK golf club or location..." autocomplete="off">
-      <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">⛳</button>
-      <button id="geoBtn" class="search-icon-btn" title="Use current location">🎯</button>
-      <button id="homeCourseBtn" class="search-icon-btn" title="Save/Load Home Course">⭐</button>
+      <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">🗺️</button>
+      <button id="geoBtn" class="search-icon-btn" title="Use current location">📡</button>
       <div id="autocompleteList" class="autocomplete-list"></div>
     </div>
 
@@ -1242,7 +1257,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 4.7 (Scoring Logic & Dark Blue Sunset Warning)<br>Made by KW in November 2026</p>
+      <p>Version 4.8 (Refined UI, Icons & Ground Logic)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -1329,7 +1344,6 @@
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
   let debounceTimer = null;
-  let savedHomeCourse = null;
   let lastLat = 52.2917;
   let lastLon = -1.5367;
 
@@ -1408,7 +1422,6 @@
   const themeToggle = document.getElementById('themeToggle');
   const geoBtn = document.getElementById('geoBtn');
   const nearbyBtn = document.getElementById('nearbyBtn');
-  const homeCourseBtn = document.getElementById('homeCourseBtn');
 
   const locationInput = document.getElementById('locationInput');
   const autocompleteList = document.getElementById('autocompleteList');
@@ -1710,31 +1723,6 @@
   document.getElementById('forecastRecentBtn').addEventListener('click', () => openMetricPopup('recent'));
   document.getElementById('forecastRoundRainBtn').addEventListener('click', () => openMetricPopup('rain'));
 
-  // Home Course Storage
-  try {
-    const saved = localStorage.getItem('golf_home_course');
-    if (saved) {
-      savedHomeCourse = JSON.parse(saved);
-      homeCourseBtn.style.filter = 'drop-shadow(0 0 3px #fbc02d)';
-    }
-  } catch (e) {}
-
-  homeCourseBtn.addEventListener('click', () => {
-    if (savedHomeCourse && locationInput.value === savedHomeCourse.name) {
-      if (confirm(`Remove "${savedHomeCourse.name}" as saved Home Course?`)) {
-        savedHomeCourse = null;
-        localStorage.removeItem('golf_home_course');
-        homeCourseBtn.style.filter = 'none';
-      }
-    } else if (savedHomeCourse && locationInput.value !== savedHomeCourse.name) {
-      fetchWeather(savedHomeCourse.lat, savedHomeCourse.lon, savedHomeCourse.name);
-    } else if (currentCityName) {
-      savedHomeCourse = { name: currentCityName, lat: lastLat, lon: lastLon };
-      localStorage.setItem('golf_home_course', JSON.stringify(savedHomeCourse));
-      homeCourseBtn.style.filter = 'drop-shadow(0 0 3px #fbc02d)';
-    }
-  });
-
   // Haversine Distance Formula (km)
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
@@ -1999,7 +1987,6 @@
     dateBar.appendChild(moreBtn);
   }
 
-  // Improved Scoring Logic (Heavy rain / active precipitation properly tanks score and verdict)
   function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
     if (hasLightning) return { score: 0, scores: [0, 0, 0, 0, 0] };
     if (isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
@@ -2351,19 +2338,20 @@
     const isCurrentlyRaining = windowRainSum > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(activeHourCode);
 
     if (isCurrentlyRaining) {
-      groundShort = 'Active Rain / Wet';
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Active precipitation / wet turf during round window.`;
+      groundShort = 'Raining right now';
+      const recentDesc = last24hRain > 0 ? ` (${toPrecip(last24hRain)} past 24h)` : '';
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now during round window${recentDesc}.`;
       setCardStatus(groundCallout, 'warn');
     } else if (subScores[0] >= 15) {
       groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll.`;
       setCardStatus(groundCallout, 'good');
     } else if (subScores[0] >= 5) {
       groundShort = 'Soft / Damp';
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d rain). Less roll.`;
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d rain, ${toPrecip(last24hRain)} past 24h). Less roll.`;
       setCardStatus(groundCallout, 'warn');
     } else {
       groundShort = 'Soggy / Frozen';
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf. Check course status.`;
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf (${toPrecip(last24hRain)} past 24h). Check course status.`;
       setCardStatus(groundCallout, 'danger');
     }
 
