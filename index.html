@@ -666,40 +666,27 @@
       cursor: pointer;
     }
 
-    /* Sleek Glassmorphic Warning Banners */
+    /* Redesigned Dark Blue/Black Glassmorphic Sunset Warnings */
     .daylight-banner {
       display: none;
       margin-top: 0.35rem;
-      padding: 0.4rem 0.75rem;
+      padding: 0.45rem 0.8rem;
       border-radius: 10px;
       font-size: 0.76rem;
       font-weight: 600;
       text-align: left;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      background: rgba(16, 28, 44, 0.85);
+      color: #e2e8f0;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      border: 1px solid rgba(100, 160, 255, 0.25);
     }
     .daylight-banner.warn {
-      background: rgba(255, 243, 224, 0.75);
-      color: #934300;
-      border: 1px solid rgba(245, 124, 0, 0.3);
-      border-left: 4px solid #f57c00;
+      border-left: 4px solid #f59e0b;
     }
     .daylight-banner.danger {
-      background: rgba(255, 235, 238, 0.75);
-      color: #a31515;
-      border: 1px solid rgba(198, 40, 40, 0.3);
-      border-left: 4px solid #c62828;
-    }
-    [data-theme="dark"] .daylight-banner.warn {
-      background: rgba(54, 38, 20, 0.82);
-      color: #ffb74d;
-      border-color: rgba(245, 124, 0, 0.4);
-    }
-    [data-theme="dark"] .daylight-banner.danger {
-      background: rgba(52, 22, 22, 0.82);
-      color: #ef5350;
-      border-color: rgba(198, 40, 40, 0.4);
+      border-left: 4px solid #38bdf8;
     }
 
     /* Section Card Headings */
@@ -841,7 +828,7 @@
     .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
     .summary-pill .sp-val { font-size: 0.96rem; font-weight: 800; }
 
-    /* Course Condition Callouts Stacked in 1 Column (Desktop & Mobile) */
+    /* Course Condition Callouts Stacked in 1 Column */
     .callouts-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -1032,7 +1019,7 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>Is it golf weather?</h1>
-        <span class="version-pill" id="versionTag">v4.6</span>
+        <span class="version-pill" id="versionTag">v4.7</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -1255,7 +1242,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 4.6 (SEO, Curated Courses & Stacked Guidance)<br>Made by KW in November 2026</p>
+      <p>Version 4.7 (Scoring Logic & Dark Blue Sunset Warning)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -1389,7 +1376,7 @@
         lat: parseFloat(lat),
         lon: parseFloat(lon),
         day: day !== null ? parseInt(day) : 0,
-        tee: tee !== null ? parseInt(tee) : 8
+        tee: tee !== null ? parseInt(tee) : Math.max(6, Math.min(20, new Date().getHours()))
       };
     }
     return null;
@@ -1797,7 +1784,6 @@
 
   async function searchAutocomplete(query) {
     try {
-      // 1. Filter Curated Courses first
       const matches = curatedGolfCourses.filter(c => 
         c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)
       ).map(c => ({
@@ -1809,7 +1795,6 @@
         isCurated: true
       }));
 
-      // 2. Fetch Geocoding API results in parallel
       const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
       const data = await res.json();
       const apiResults = data && data.results ? data.results : [];
@@ -1913,7 +1898,7 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
-  async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTee = 8) {
+  async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTee = null) {
     try {
       lastLat = lat;
       lastLon = lon;
@@ -1927,12 +1912,16 @@
       currentCityName = locationName;
       locationInput.value = currentCityName;
 
-      // Dynamic SEO Meta Tag Updates
       document.getElementById('pageTitle').textContent = `Is it golf weather at ${currentCityName}? — Forecast & Conditions`;
       document.getElementById('metaDescription').setAttribute('content', `Live golf forecast for ${currentCityName}. Check tee time weather, wind impact, fairway turf firmness, rain outlook, and daylight remaining.`);
 
       selectedDayIndex = Math.max(0, Math.min(15, targetDay));
-      selectedTeeHour = Math.max(6, Math.min(20, targetTee));
+      
+      if (targetTee !== null) {
+        selectedTeeHour = Math.max(6, Math.min(20, targetTee));
+      } else {
+        selectedTeeHour = Math.max(6, Math.min(20, new Date().getHours()));
+      }
       teeTimeSlider.value = selectedTeeHour;
 
       buildDateBar();
@@ -2010,6 +1999,7 @@
     dateBar.appendChild(moreBtn);
   }
 
+  // Improved Scoring Logic (Heavy rain / active precipitation properly tanks score and verdict)
   function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
     if (hasLightning) return { score: 0, scores: [0, 0, 0, 0, 0] };
     if (isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
@@ -2029,10 +2019,10 @@
     else if (windMph >= 8) windPts = 15;
 
     let rainPts = 20;
-    if (windowRainMm > 5.0) rainPts = 0;
-    else if (windowRainMm > 2.0) rainPts = 5;
-    else if (windowRainMm > 0.5) rainPts = 10;
-    else if (windowRainMm > 0.0) rainPts = 15;
+    if (windowRainMm > 4.0) rainPts = 0;
+    else if (windowRainMm > 1.5) rainPts = 4;
+    else if (windowRainMm > 0.4) rainPts = 10;
+    else if (windowRainMm > 0.0) rainPts = 14;
 
     let tempPts = 20;
     if (tempC < 3) tempPts = 0;
@@ -2041,13 +2031,20 @@
     else if (tempC <= 17) tempPts = 15;
 
     let gearPts = 20;
-    if (tempC < 3 || windowRainMm > 5.0) gearPts = 0;
-    else if (tempC <= 5 || windowRainMm > 2.0) gearPts = 5;
+    if (tempC < 3 || windowRainMm > 4.0) gearPts = 0;
+    else if (tempC <= 5 || windowRainMm > 1.5) gearPts = 5;
     else if (tempC <= 10 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
     else if (tempC <= 15 || windMph >= 10) gearPts = 15;
 
+    let totalScore = groundPts + windPts + rainPts + tempPts + gearPts;
+    if (windowRainMm > 1.5) {
+      totalScore = Math.min(totalScore, 42);
+    } else if (windowRainMm > 0.4) {
+      totalScore = Math.min(totalScore, 62);
+    }
+
     return {
-      score: groundPts + windPts + rainPts + tempPts + gearPts,
+      score: totalScore,
       scores: [groundPts, windPts, rainPts, tempPts, gearPts]
     };
   }
@@ -2247,10 +2244,8 @@
     updateBackgroundScene(bgScene, rainTier);
 
     const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
-    let rawScorePct = evalObj.score;
+    let finalPct = evalObj.score;
     const subScores = evalObj.scores;
-    const allBoxesGreen = subScores.every(s => s === 20);
-    let finalPct = allBoxesGreen ? rawScorePct : Math.min(rawScorePct, 82);
 
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
     const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
@@ -2273,7 +2268,7 @@
       dialScore.textContent = `${finalPct}%`;
       updateDialGauge(finalPct);
 
-      if (allBoxesGreen && finalPct >= 85) {
+      if (finalPct >= 85) {
         dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
         dialSub.textContent = windowRainSum > 0
           ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).`
@@ -2296,8 +2291,10 @@
           ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.`
           : `Strong winds or wet ground expected. No rain forecast during your round.`;
       } else {
-        dialVerdict.textContent = 'No Chance ⛔';
-        dialSub.textContent = hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
+        dialVerdict.textContent = 'Heavy Rain / Wet 🌧️';
+        dialSub.textContent = windowRainSum > 0
+          ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.`
+          : hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
       }
     }
 
@@ -2351,7 +2348,13 @@
 
     const groundCallout = document.getElementById('groundCallout');
     let groundShort = 'Firm & Dry';
-    if (subScores[0] >= 15) {
+    const isCurrentlyRaining = windowRainSum > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(activeHourCode);
+
+    if (isCurrentlyRaining) {
+      groundShort = 'Active Rain / Wet';
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Active precipitation / wet turf during round window.`;
+      setCardStatus(groundCallout, 'warn');
+    } else if (subScores[0] >= 15) {
       groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll.`;
       setCardStatus(groundCallout, 'good');
     } else if (subScores[0] >= 5) {
