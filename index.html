@@ -338,7 +338,7 @@
       gap: 0.85rem;
     }
 
-    /* Search Bar Pill */
+    /* Search Bar Pill (Restored ⛳ and 📍 icons) */
     .search-wrapper {
       position: relative;
       z-index: 150;
@@ -1035,7 +1035,7 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>Is it golf weather?</h1>
-        <span class="version-pill" id="versionTag">v4.8</span>
+        <span class="version-pill" id="versionTag">v4.9</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -1051,12 +1051,12 @@
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
 
-    <!-- Search Bar (Favourite button removed, updated icons) -->
+    <!-- Search Bar (Restored ⛳ nearby and 📍 GPS icons) -->
     <div class="search-wrapper">
       <span style="font-size: 1.05rem;">📍</span>
       <input type="text" id="locationInput" placeholder="Search UK golf club or location..." autocomplete="off">
-      <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">🗺️</button>
-      <button id="geoBtn" class="search-icon-btn" title="Use current location">📡</button>
+      <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">⛳</button>
+      <button id="geoBtn" class="search-icon-btn" title="Use current location">📍</button>
       <div id="autocompleteList" class="autocomplete-list"></div>
     </div>
 
@@ -1257,7 +1257,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 4.8 (Refined UI, Icons & Ground Logic)<br>Made by KW in November 2026</p>
+      <p>Version 4.9 (Restored Icons & Ground Status Raining Logic)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -2339,19 +2339,19 @@
 
     if (isCurrentlyRaining) {
       groundShort = 'Raining right now';
-      const recentDesc = last24hRain > 0 ? ` (${toPrecip(last24hRain)} past 24h)` : '';
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now during round window${recentDesc}.`;
-      setCardStatus(groundCallout, 'warn');
+      const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over the past 24 hours (${toPrecip(past7DaysRain)} past 7 days)` : ` (${toPrecip(past7DaysRain)} past 7 days total)`;
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now and getting wetter${recentDesc}.`;
+      setCardStatus(groundCallout, 'danger');
     } else if (subScores[0] >= 15) {
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll.`;
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d).`;
       setCardStatus(groundCallout, 'good');
     } else if (subScores[0] >= 5) {
       groundShort = 'Soft / Damp';
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d rain, ${toPrecip(last24hRain)} past 24h). Less roll.`;
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d total, ${toPrecip(last24hRain)} past 24h). Less roll.`;
       setCardStatus(groundCallout, 'warn');
     } else {
       groundShort = 'Soggy / Frozen';
-      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf (${toPrecip(last24hRain)} past 24h). Check course status.`;
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d). Check course status.`;
       setCardStatus(groundCallout, 'danger');
     }
 
