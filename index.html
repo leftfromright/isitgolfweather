@@ -361,11 +361,11 @@
     .verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
 
 
-    .hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
     .mini-stat {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
       border-left: 4px solid var(--glass-border);
-      border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease, background 0.6s ease, border-color 0.6s ease;
+      border-radius: 12px; padding: 0.5rem 0.55rem; cursor: pointer; transition: transform 0.18s ease, background 0.6s ease, border-color 0.6s ease;
     }
     .mini-stat.status-good { border-left-color: var(--status-good); }
     .mini-stat.status-warn { border-left-color: var(--status-warn); }
@@ -373,12 +373,12 @@
 
 
     .mini-stat:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.15); }
-    .mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem; }
-    .mini-stat-icon { font-size: 1.55rem; line-height: 1.1; }
-    .mini-info-hint { font-size: 0.68rem; font-weight: 700; color: var(--accent); opacity: 0.75; }
-    .mini-stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
-    .mini-stat-val { font-size: 1.2rem; font-weight: 800; margin: 0.1rem 0; }
-    .mini-stat-sub { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
+    .mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.15rem; }
+    .mini-stat-icon { font-size: 1.35rem; line-height: 1; }
+    .mini-info-hint { font-size: 0.65rem; font-weight: 700; color: var(--accent); opacity: 0.75; }
+    .mini-stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+    .mini-stat-val { font-size: 1.05rem; font-weight: 800; margin: 0.05rem 0; }
+    .mini-stat-sub { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 
     /* Date Row */
@@ -559,7 +559,8 @@
       .hero-right { border-left: none; padding-left: 0; gap: 0.65rem; }
       .verdict-headline { font-size: 0.92rem; }
       .hero-mini-grid { gap: 0.35rem; }
-      .mini-stat { padding: 0.42rem 0.38rem; }
+      .mini-stat { padding: 0.45rem 0.4rem; }
+      .mini-stat-val { font-size: 0.96rem; }
       .date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; }
       .date-row::-webkit-scrollbar { display: none; }
       .forecast-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
@@ -808,7 +809,7 @@
 <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
 <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.13</span>
+  <span class="version-pill" id="versionTag">v5.14</span>
 </div>
   </main>
 
@@ -817,7 +818,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.13 (Reverted Horizontal Mini-Cards & Smooth Transitions)<br>Made by KW in November 2026</p>
+      <p>Version 5.14 (Compact Horizontal Mini-Cards & Smooth Themes)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
     <div class="dev-modal-header">
