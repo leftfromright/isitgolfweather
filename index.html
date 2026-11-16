@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title id="pageTitle">Is it golf weather? — Plan Your Round with Confidence</title>
-  <meta id="metaDescription" name="description" content="Check UK golf course weather, wind impact, turf firmness, rain outlook, and daylight remaining before your tee time.">
+  <meta id="metaDescription" name="description" content="Check golf course weather, wind impact, turf firmness, rain outlook, and daylight remaining before your tee time.">
   <link rel="canonical" href="https://isitgolfweather.com/">
   
   <meta name="mobile-web-app-capable" content="yes">
@@ -83,7 +83,7 @@
       overflow-x: hidden;
     }
 
-    /* Single-Image CSS Atmospheric Stage (Using root background.avif) */
+    /* Single-Image CSS Atmospheric Stage */
     .bg-stage {
       position: fixed;
       inset: 0;
@@ -610,7 +610,7 @@
       height: 1px;
     }
 
-    /* Tee Time Slider Card (Fixed Height + Golf Ball Thumb) */
+    /* Tee Time Slider Card */
     .slider-bar {
       padding: 0.8rem 1.2rem;
       min-height: 122px;
@@ -682,7 +682,6 @@
       cursor: pointer;
     }
 
-    /* Redesigned Dark Blue/Black Centered Sunset Warnings */
     .daylight-banner {
       display: none;
       margin-top: 0.35rem;
@@ -729,7 +728,7 @@
 
     .meteocon-header svg { width: 100%; height: 100%; }
 
-    /* Forecast Details Card with Meteocons */
+    /* Forecast Details Card */
     .forecast-grid {
       display: grid;
       grid-template-columns: 1.25fr 1fr 1fr 1fr;
@@ -826,7 +825,7 @@
 
     .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
 
-    /* Day Summary Grid (6 Items: 3x2) */
+    /* Day Summary Grid */
     .summary-3col {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -847,7 +846,7 @@
     .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
     .summary-pill .sp-val { font-size: 0.96rem; font-weight: 800; }
 
-    /* Course Condition Callouts Stacked in 1 Column */
+    /* Course Condition Callouts */
     .callouts-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -1064,7 +1063,7 @@
     <!-- Search Bar -->
     <div class="search-wrapper">
       <span style="font-size: 1.05rem;">📍</span>
-      <input type="text" id="locationInput" placeholder="Search UK golf club or location..." autocomplete="off">
+      <input type="text" id="locationInput" placeholder="Search golf club or location..." autocomplete="off">
       <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">⛳</button>
       <button id="geoBtn" class="search-icon-btn" title="Use current location">📍</button>
       <div id="autocompleteList" class="autocomplete-list"></div>
@@ -1260,21 +1259,20 @@
       </div>
     </section>
 
-    <!-- Footer Tagline & Relocated Bottom Bar with Install Button & v4.10 Pill -->
+    <!-- Footer Tagline & Bottom Bar -->
     <div class="footer-note">🏌️ Plan your round with confidence</div>
     <div class="footer-bottom-bar">
       <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
-      <span class="version-pill" id="versionTag">v4.10</span>
+      <span class="version-pill" id="versionTag">v4.11</span>
     </div>
   </main>
 
-  <!-- Version & Hidden Developer Sandbox Modal -->
+  <!-- Version & Developer Sandbox Modal -->
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 4.10 (Footer Install Button & Relocated Version Pill)<br>Made by KW in November 2026</p>
+      <p>Version 4.11 (Global JSON Lazy-Loading & Install Fallback)<br>Made by KW in November 2026</p>
       
-      <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
         <div class="dev-modal-header">
           <span>🛠️ Developer Sandbox</span>
@@ -1339,6 +1337,20 @@
     </div>
   </div>
 
+  <!-- Install Fallback Modal -->
+  <div class="modal-overlay" id="installModal">
+    <div class="modal-card">
+      <h3>📲 Install App</h3>
+      <p id="installModalText">To install this app on your device for quick home-screen access:</p>
+      <div id="installInstructions" class="modal-detail-list" style="text-align: left; font-size: 0.82rem; line-height: 1.4;">
+        <strong>Desktop (Chrome / Edge):</strong> Click the ⊕ or install icon on the right side of your browser address bar.<br><br>
+        <strong>iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> button at the bottom of Safari and select <strong>"Add to Home Screen"</strong>.<br><br>
+        <strong>Android (Chrome):</strong> Tap the menu (three dots) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+      </div>
+      <button class="modal-close-btn" id="closeInstallModalBtn">Got it</button>
+    </div>
+  </div>
+
   <!-- Interactive Metric Detail Modal -->
   <div class="modal-overlay" id="metricModal">
     <div class="modal-card">
@@ -1366,14 +1378,21 @@
   let activeRainTier = 'none';
   const circumference = 2 * Math.PI * 70;
 
-  // PWA Install Prompt Handler
+  // Global Courses Lazy-Loading Cache
+  let globalCoursesCache = null;
+
+  // PWA Install Prompt Handler & Fallback Modal
   let deferredInstallPrompt = null;
   const installAppBtn = document.getElementById('installAppBtn');
+  const installModal = document.getElementById('installModal');
+  const closeInstallModalBtn = document.getElementById('closeInstallModalBtn');
+
+  // Always show the Install App button in footer
+  installAppBtn.style.display = 'inline-flex';
 
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
-    installAppBtn.style.display = 'inline-flex';
   });
 
   installAppBtn.addEventListener('click', async () => {
@@ -1382,36 +1401,21 @@
       const { outcome } = await deferredInstallPrompt.userChoice;
       if (outcome === 'accepted') {
         deferredInstallPrompt = null;
-        installAppBtn.style.display = 'none';
       }
     } else {
-      alert('To install this app on your device, use your browser menu (e.g. "Add to Home Screen" or "Install app").');
+      installModal.style.display = 'flex';
     }
+  });
+
+  closeInstallModalBtn.addEventListener('click', () => { installModal.style.display = 'none'; });
+  installModal.addEventListener('click', (e) => {
+    if (e.target === installModal) installModal.style.display = 'none';
   });
 
   window.addEventListener('appinstalled', () => {
     installAppBtn.style.display = 'none';
     deferredInstallPrompt = null;
   });
-
-  // Curated UK Golf Courses Database
-  const curatedGolfCourses = [
-    { name: "Leamington & County Golf Club", region: "Warwickshire", lat: 52.2831, lon: -1.5322 },
-    { name: "The Belfry Hotel & Resort", region: "West Midlands", lat: 52.5512, lon: -1.7214 },
-    { name: "St Andrews Links (Old Course)", region: "Fife", lat: 56.3417, lon: -2.8093 },
-    { name: "Wentworth Club", region: "Surrey", lat: 51.3934, lon: -0.5921 },
-    { name: "Royal Birkdale Golf Club", region: "Merseyside", lat: 53.6141, lon: -3.0335 },
-    { name: "Royal Liverpool Golf Club", region: "Merseyside", lat: 53.3852, lon: -3.2084 },
-    { name: "Royal Troon Golf Club", region: "Ayrshire", lat: 55.5562, lon: -4.6625 },
-    { name: "Carnoustie Golf Links", region: "Angus", lat: 56.5118, lon: -2.7154 },
-    { name: "Sunningdale Golf Club", region: "Berkshire", lat: 51.3802, lon: -0.6384 },
-    { name: "Walton Heath Golf Club", region: "Surrey", lat: 51.2783, lon: -0.2281 },
-    { name: "Woodhall Spa Golf Club", region: "Lincolnshire", lat: 53.1534, lon: -0.2132 },
-    { name: "Celtic Manor Resort", region: "Newport", lat: 51.5833, lon: -2.9333 },
-    { name: "Gleneagles Hotel (PGA Centenary)", region: "Perthshire", lat: 56.2845, lon: -3.7542 },
-    { name: "Warwickshire Golf Club", region: "Warwickshire", lat: 52.3321, lon: -1.5812 },
-    { name: "Stoneleigh Deer Park Golf Club", region: "Warwickshire", lat: 52.3489, lon: -1.5342 }
-  ];
 
   let devSceneOverride = 'auto';
   let devRainIntensityOverride = 'auto';
@@ -1483,26 +1487,15 @@
   function makeItRain(tier) {
     rainFrontRow.innerHTML = '';
     rainBackRow.innerHTML = '';
-
     if (tier === 'none') return;
 
     let baseDuration = 0.62;
     let stepMin = 3;
     let stepSpan = 4;
 
-    if (tier === 'light') {
-      baseDuration = 0.88;
-      stepMin = 6;
-      stepSpan = 5;
-    } else if (tier === 'moderate') {
-      baseDuration = 0.60;
-      stepMin = 3;
-      stepSpan = 4;
-    } else if (tier === 'heavy') {
-      baseDuration = 0.40;
-      stepMin = 2;
-      stepSpan = 3;
-    }
+    if (tier === 'light') { baseDuration = 0.88; stepMin = 6; stepSpan = 5; }
+    else if (tier === 'moderate') { baseDuration = 0.60; stepMin = 3; stepSpan = 4; }
+    else if (tier === 'heavy') { baseDuration = 0.40; stepMin = 2; stepSpan = 3; }
 
     let increment = 0;
     let drops = '';
@@ -1512,24 +1505,13 @@
       const randoHundo = Math.floor(Math.random() * 98) + 1;
       const randoStep = Math.floor(Math.random() * stepSpan) + stepMin;
       increment += randoStep;
-
       const bottomOffset = randoStep + randoStep - 1 + 100;
       const delay = `0.${randoHundo < 10 ? '0' + randoHundo : randoHundo}s`;
       const duration = `${(baseDuration + (randoHundo / 1000)).toFixed(3)}s`;
 
-      drops += `
-        <div class="drop" style="left: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};">
-          <div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
-          <div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
-        </div>`;
-
-      backDrops += `
-        <div class="drop" style="right: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};">
-          <div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
-          <div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div>
-        </div>`;
+      drops += `<div class="drop" style="left: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};"><div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div><div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div></div>`;
+      backDrops += `<div class="drop" style="right: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};"><div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div><div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div></div>`;
     }
-
     rainFrontRow.innerHTML = drops;
     rainBackRow.innerHTML = backDrops;
   }
@@ -1544,35 +1526,11 @@
   }
 
   function getMeteoconSVG(type) {
-    const sunCore = `
-      <defs>
-        <radialGradient id="mcSunGrad" cx="40%" cy="40%" r="60%">
-          <stop offset="0%" stop-color="#fff3bf"/>
-          <stop offset="55%" stop-color="#fcc419"/>
-          <stop offset="100%" stop-color="#f59f00"/>
-        </radialGradient>
-      </defs>
-      <g class="mc-spin" stroke="#f59f00" stroke-width="3.2" stroke-linecap="round">
-        <line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/>
-        <line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/>
-        <line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/>
-        <line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/>
-      </g>
-      <circle cx="32" cy="32" r="13" fill="url(#mcSunGrad)"/>`;
-
-    const moonCore = `
-      <path d="M40 16a15 15 0 1 0 12 24 12 12 0 1 1-12-24z" fill="#ffd43b" stroke="#fab005" stroke-width="1.5" stroke-linejoin="round"/>
-      <circle cx="47" cy="18" r="1.5" fill="#fff3bf"/>
-      <circle cx="52" cy="25" r="1.1" fill="#fff3bf"/>`;
-
-    const lightCloud = `
-      <path class="mc-drift" d="M20 48h26a9 9 0 0 0 .7-17.9A13 13 0 0 0 21.5 26 11 11 0 0 0 20 48z" fill="#f1f3f5" stroke="#ced4da" stroke-width="1.8" stroke-linejoin="round"/>`;
-
-    const darkCloud = `
-      <path class="mc-drift" d="M18 42h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 21.5 10.5 10.5 0 0 0 18 42z" fill="#adb5bd" stroke="#868e96" stroke-width="1.8" stroke-linejoin="round"/>`;
-
-    const stormCloud = `
-      <path class="mc-drift" d="M18 40h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 19.5 10.5 10.5 0 0 0 18 40z" fill="#495057" stroke="#343a40" stroke-width="1.8" stroke-linejoin="round"/>`;
+    const sunCore = `<defs><radialGradient id="mcSunGrad" cx="40%" cy="40%" r="60%"><stop offset="0%" stop-color="#fff3bf"/><stop offset="55%" stop-color="#fcc419"/><stop offset="100%" stop-color="#f59f00"/></radialGradient></defs><g class="mc-spin" stroke="#f59f00" stroke-width="3.2" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/><line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/><line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/><line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/></g><circle cx="32" cy="32" r="13" fill="url(#mcSunGrad)"/>`;
+    const moonCore = `<path d="M40 16a15 15 0 1 0 12 24 12 12 0 1 1-12-24z" fill="#ffd43b" stroke="#fab005" stroke-width="1.5" stroke-linejoin="round"/><circle cx="47" cy="18" r="1.5" fill="#fff3bf"/><circle cx="52" cy="25" r="1.1" fill="#fff3bf"/>`;
+    const lightCloud = `<path class="mc-drift" d="M20 48h26a9 9 0 0 0 .7-17.9A13 13 0 0 0 21.5 26 11 11 0 0 0 20 48z" fill="#f1f3f5" stroke="#ced4da" stroke-width="1.8" stroke-linejoin="round"/>`;
+    const darkCloud = `<path class="mc-drift" d="M18 42h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 21.5 10.5 10.5 0 0 0 18 42z" fill="#adb5bd" stroke="#868e96" stroke-width="1.8" stroke-linejoin="round"/>`;
+    const stormCloud = `<path class="mc-drift" d="M18 40h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 19.5 10.5 10.5 0 0 0 18 40z" fill="#495057" stroke="#343a40" stroke-width="1.8" stroke-linejoin="round"/>`;
 
     const icons = {
       'clear-day': `<svg viewBox="0 0 64 64">${sunCore}</svg>`,
@@ -1627,9 +1585,7 @@
 
   shareLinkBtn.addEventListener('click', () => {
     if (!currentData) return;
-    const lat = currentData.latitude;
-    const lon = currentData.longitude;
-    const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${lat}&lon=${lon}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${currentData.latitude}&lon=${currentData.longitude}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
       const originalHTML = shareLinkBtn.innerHTML;
       shareLinkBtn.innerHTML = '✅';
@@ -1640,7 +1596,6 @@
   function updateBackgroundScene(sceneKey, rainTier) {
     const isRaining = rainTier !== 'none';
     bgStage.className = `bg-stage scene-${sceneKey}${isRaining ? ' is-raining' : ''}`;
-
     if (rainTier !== activeRainTier) {
       activeRainTier = rainTier;
       makeItRain(rainTier);
@@ -1661,14 +1616,10 @@
 
   versionTag.addEventListener('click', () => { creatorModal.style.display = 'flex'; });
   closeModalBtn.addEventListener('click', () => { creatorModal.style.display = 'none'; });
-  creatorModal.addEventListener('click', (e) => {
-    if (e.target === creatorModal) creatorModal.style.display = 'none';
-  });
+  creatorModal.addEventListener('click', (e) => { if (e.target === creatorModal) creatorModal.style.display = 'none'; });
 
   closeMetricModalBtn.addEventListener('click', () => { metricModal.style.display = 'none'; });
-  metricModal.addEventListener('click', (e) => {
-    if (e.target === metricModal) metricModal.style.display = 'none';
-  });
+  metricModal.addEventListener('click', (e) => { if (e.target === metricModal) metricModal.style.display = 'none'; });
 
   function openMetricPopup(type) {
     if (!activeRoundMetrics) return;
@@ -1679,78 +1630,34 @@
       metricModalTitle.textContent = '💨 Round Wind Breakdown';
       metricModalSubtitle.textContent = `4-hour playing window starting at ${m.teeLabel}`;
       m.hours.forEach((hr, i) => {
-        metricModalBody.innerHTML += `
-          <div class="modal-detail-row">
-            <span>${hr}</span>
-            <strong>${m.winds[i]} (Gusts ${m.gusts[i]})</strong>
-          </div>`;
+        metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>${m.winds[i]} (Gusts ${m.gusts[i]})</strong></div>`;
       });
-      metricModalBody.innerHTML += `
-        <div class="modal-detail-row" style="margin-top:4px; color:var(--accent);">
-          <span>Club Impact</span>
-          <strong>${m.windAdvice}</strong>
-        </div>`;
+      metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Club Impact</span><strong>${m.windAdvice}</strong></div>`;
     } else if (type === 'recent') {
       metricModalTitle.textContent = '🌧️ Ground & Recent Rainfall';
       metricModalSubtitle.textContent = 'Course saturation & fairway roll assessment';
-      metricModalBody.innerHTML += `
-        <div class="modal-detail-row">
-          <span>Past 24 Hours</span>
-          <strong>${m.last24RainStr}</strong>
-        </div>
-        <div class="modal-detail-row">
-          <span>Past 7 Days Total</span>
-          <strong>${m.past7RainStr}</strong>
-        </div>
-        <div class="modal-detail-row" style="margin-top:4px; color:var(--accent);">
-          <span>Fairway Turf</span>
-          <strong>${m.groundShort}</strong>
-        </div>`;
+      metricModalBody.innerHTML += `<div class="modal-detail-row"><span>Past 24 Hours</span><strong>${m.last24RainStr}</strong></div><div class="modal-detail-row"><span>Past 7 Days Total</span><strong>${m.past7RainStr}</strong></div><div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
     } else if (type === 'rain') {
       metricModalTitle.textContent = '💧 Round Rain & Turf Outlook';
-      metricModalSubtitle.textContent = m.totalRainMm === 0
-        ? 'No rain forecast during your round'
-        : `Total ${m.totalRainStr} expected over 4 hours`;
+      metricModalSubtitle.textContent = m.totalRainMm === 0 ? 'No rain forecast during your round' : `Total ${m.totalRainStr} expected over 4 hours`;
       m.hours.forEach((hr, i) => {
-        metricModalBody.innerHTML += `
-          <div class="modal-detail-row">
-            <span>${hr}</span>
-            <strong>${m.rains[i]}</strong>
-          </div>`;
+        metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>${m.rains[i]}</strong></div>`;
       });
-      metricModalBody.innerHTML += `
-        <div class="modal-detail-row" style="margin-top:4px;">
-          <span>Prior 24h Rain</span>
-          <strong>${m.last24RainStr}</strong>
-        </div>
-        <div class="modal-detail-row">
-          <span>Fairway Turf</span>
-          <strong>${m.groundShort}</strong>
-        </div>`;
+      metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px;"><span>Prior 24h Rain</span><strong>${m.last24RainStr}</strong></div><div class="modal-detail-row"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
     } else if (type === 'temp') {
       metricModalTitle.textContent = '🌡️ Temperature & Carry Impact';
       metricModalSubtitle.textContent = `4-hour playing window starting at ${m.teeLabel}`;
       m.hours.forEach((hr, i) => {
-        metricModalBody.innerHTML += `
-          <div class="modal-detail-row">
-            <span>${hr}</span>
-            <strong>${m.temps[i]} (Feels ${m.feels[i]})</strong>
-          </div>`;
+        metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>${m.temps[i]} (Feels ${m.feels[i]})</strong></div>`;
       });
-      metricModalBody.innerHTML += `
-        <div class="modal-detail-row" style="margin-top:4px; color:var(--accent);">
-          <span>Carry Adjustment</span>
-          <strong>~${m.penaltyYards} yds shorter per club</strong>
-        </div>`;
+      metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Carry Adjustment</span><strong>~${m.penaltyYards} yds shorter per club</strong></div>`;
     }
-
     metricModal.style.display = 'flex';
   }
 
   document.getElementById('windCardBtn').addEventListener('click', () => openMetricPopup('wind'));
   document.getElementById('rainCardBtn').addEventListener('click', () => openMetricPopup('rain'));
   document.getElementById('tempCardBtn').addEventListener('click', () => openMetricPopup('temp'));
-
   document.getElementById('forecastWindBtn').addEventListener('click', () => openMetricPopup('wind'));
   document.getElementById('forecastRecentBtn').addEventListener('click', () => openMetricPopup('recent'));
   document.getElementById('forecastRoundRainBtn').addEventListener('click', () => openMetricPopup('rain'));
@@ -1759,15 +1666,26 @@
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-  nearbyBtn.addEventListener('click', () => {
-    const sortedCourses = curatedGolfCourses.map(course => {
+  // Lazy-load global courses JSON when clicking Nearby (⛳)
+  nearbyBtn.addEventListener('click', async () => {
+    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Loading global golf database...</div>`;
+    autocompleteList.style.display = 'block';
+
+    if (!globalCoursesCache) {
+      try {
+        const res = await fetch('courses.json');
+        globalCoursesCache = await res.json();
+      } catch (err) {
+        autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:#ef4444;">⚠️ Failed to load courses.json</div>`;
+        return;
+      }
+    }
+
+    const sortedCourses = globalCoursesCache.map(course => {
       const distKm = calculateDistance(lastLat, lastLon, course.lat, course.lon);
       return { ...course, distMiles: (distKm * 0.621371).toFixed(1) };
     }).sort((a, b) => parseFloat(a.distMiles) - parseFloat(b.distMiles));
@@ -1801,16 +1719,20 @@
 
   async function searchAutocomplete(query) {
     try {
-      const matches = curatedGolfCourses.filter(c => 
-        c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)
-      ).map(c => ({
-        name: c.name,
-        admin1: c.region,
-        country_code: 'GB',
-        latitude: c.lat,
-        longitude: c.lon,
-        isCurated: true
-      }));
+      // If global courses are already loaded in memory, search them instantly
+      let matches = [];
+      if (globalCoursesCache) {
+        matches = globalCoursesCache.filter(c => 
+          c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)
+        ).map(c => ({
+          name: c.name,
+          admin1: c.region,
+          country_code: 'GB',
+          latitude: c.lat,
+          longitude: c.lon,
+          isGlobal: true
+        }));
+      }
 
       const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
       const data = await res.json();
@@ -1823,11 +1745,11 @@
         combined.slice(0, 6).forEach(place => {
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
-          const isGolf = place.isCurated || place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
+          const isGolf = place.isGlobal || place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
           const region = place.admin1 ? `, ${place.admin1}` : '';
           const fullName = `${place.name}${region}, ${place.country_code || 'GB'}`;
 
-          item.innerHTML = `<span>${isGolf} ${fullName}</span>${place.isCurated ? '<span class="distance-tag">UK Course</span>' : ''}`;
+          item.innerHTML = `<span>${isGolf} ${fullName}</span>${place.isGlobal ? '<span class="distance-tag">Global DB</span>' : ''}`;
           item.addEventListener('click', (e) => {
             e.stopPropagation();
             locationInput.value = fullName;
@@ -1932,12 +1854,7 @@
       document.getElementById('metaDescription').setAttribute('content', `Live golf forecast for ${currentCityName}. Check tee time weather, wind impact, fairway turf firmness, rain outlook, and daylight remaining.`);
 
       selectedDayIndex = Math.max(0, Math.min(15, targetDay));
-      
-      if (targetTee !== null) {
-        selectedTeeHour = Math.max(6, Math.min(20, targetTee));
-      } else {
-        selectedTeeHour = Math.max(6, Math.min(20, new Date().getHours()));
-      }
+      selectedTeeHour = targetTee !== null ? Math.max(6, Math.min(20, targetTee)) : Math.max(6, Math.min(20, new Date().getHours()));
       teeTimeSlider.value = selectedTeeHour;
 
       buildDateBar();
@@ -1969,11 +1886,7 @@
 
       const btn = document.createElement('button');
       btn.className = `date-pill ${idx === selectedDayIndex ? 'active' : ''}`;
-      btn.innerHTML = `
-        <span class="d-name">${dayName}</span>
-        <span class="d-icon">${dayWeatherInfo.icon}</span>
-        <span class="d-temps">${tMax}°/${tMin}°</span>
-      `;
+      btn.innerHTML = `<span class="d-name">${dayName}</span><span class="d-icon">${dayWeatherInfo.icon}</span><span class="d-temps">${tMax}°/${tMin}°</span>`;
       btn.addEventListener('click', () => {
         selectedDayIndex = idx;
         buildDateBar();
@@ -1984,11 +1897,7 @@
 
     const moreBtn = document.createElement('button');
     moreBtn.className = `date-pill ${selectedDayIndex >= 6 ? 'active' : ''}`;
-    moreBtn.innerHTML = `
-      <span class="d-name">More</span>
-      <span class="d-icon">📅</span>
-      <span class="d-temps">Select</span>
-    `;
+    moreBtn.innerHTML = `<span class="d-name">More</span><span class="d-icon">📅</span><span class="d-temps">Select</span>`;
 
     if (days.length > 0) {
       hiddenDatePicker.min = days[0];
@@ -2016,9 +1925,7 @@
   }
 
   function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
-    if (hasLightning) return { score: 0, scores: [0, 0, 0, 0, 0] };
-    if (isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
-
+    if (hasLightning || isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
     const windMph = windSpeedKmh / 1.609;
 
     let groundPts = 20;
@@ -2052,16 +1959,10 @@
     else if (tempC <= 15 || windMph >= 10) gearPts = 15;
 
     let totalScore = groundPts + windPts + rainPts + tempPts + gearPts;
-    if (windowRainMm > 1.5) {
-      totalScore = Math.min(totalScore, 42);
-    } else if (windowRainMm > 0.4) {
-      totalScore = Math.min(totalScore, 62);
-    }
+    if (windowRainMm > 1.5) totalScore = Math.min(totalScore, 42);
+    else if (windowRainMm > 0.4) totalScore = Math.min(totalScore, 62);
 
-    return {
-      score: totalScore,
-      scores: [groundPts, windPts, rainPts, tempPts, gearPts]
-    };
+    return { score: totalScore, scores: [groundPts, windPts, rainPts, tempPts, gearPts] };
   }
 
   function updateDialGauge(percentage) {
@@ -2107,17 +2008,14 @@
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
 
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', 28);
-      label.setAttribute('y', yPos + 3);
+      label.setAttribute('x', 28); label.setAttribute('y', yPos + 3);
       label.setAttribute('class', 'chart-y-text');
       label.textContent = `${tickVal}°`;
       ySvg.appendChild(label);
 
       const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      gridLine.setAttribute('x1', 0);
-      gridLine.setAttribute('x2', width);
-      gridLine.setAttribute('y1', yPos);
-      gridLine.setAttribute('y2', yPos);
+      gridLine.setAttribute('x1', 0); gridLine.setAttribute('x2', width);
+      gridLine.setAttribute('y1', yPos); gridLine.setAttribute('y2', yPos);
       gridLine.setAttribute('class', 'chart-grid-line');
       svg.appendChild(gridLine);
     }
@@ -2125,10 +2023,8 @@
     for (let hIdx = 0; hIdx <= 23; hIdx += 2) {
       const vx = paddingLeft + hIdx * stepX;
       const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      vLine.setAttribute('x1', vx);
-      vLine.setAttribute('x2', vx);
-      vLine.setAttribute('y1', paddingTop);
-      vLine.setAttribute('y2', height - paddingBottom);
+      vLine.setAttribute('x1', vx); vLine.setAttribute('x2', vx);
+      vLine.setAttribute('y1', paddingTop); vLine.setAttribute('y2', height - paddingBottom);
       vLine.setAttribute('class', 'chart-vgrid-line');
       svg.appendChild(vLine);
     }
@@ -2139,8 +2035,7 @@
         const barHeight = (rain / maxRain) * (height - paddingTop - paddingBottom);
         const y = height - paddingBottom - barHeight;
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', x);
-        rect.setAttribute('y', y);
+        rect.setAttribute('x', x); rect.setAttribute('y', y);
         rect.setAttribute('width', Math.max(stepX * 0.6, 4));
         rect.setAttribute('height', Math.max(barHeight, 2));
         rect.setAttribute('class', 'chart-bar');
@@ -2159,8 +2054,7 @@
 
       if (i % labelInterval === 0 || i === 23) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', height - 4);
+        text.setAttribute('x', x); text.setAttribute('y', height - 4);
         text.setAttribute('class', 'chart-text');
         text.textContent = isNarrow ? `${i}h` : `${i < 10 ? '0' + i : i}:00`;
         svg.appendChild(text);
@@ -2285,9 +2179,7 @@
 
       if (finalPct >= 85) {
         dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
-        dialSub.textContent = windowRainSum > 0
-          ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).`
-          : `Firm fairways & light breeze. No rain forecast during your round.`;
+        dialSub.textContent = windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`;
       } else if (finalPct >= 70) {
         dialVerdict.textContent = 'Good 👍';
         if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
@@ -2302,14 +2194,10 @@
         else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
       } else if (finalPct >= 30) {
         dialVerdict.textContent = 'Poor 🌧️';
-        dialSub.textContent = windowRainSum > 0
-          ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.`
-          : `Strong winds or wet ground expected. No rain forecast during your round.`;
+        dialSub.textContent = windowRainSum > 0 ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.` : `Strong winds or wet ground expected. No rain forecast during your round.`;
       } else {
         dialVerdict.textContent = 'Heavy Rain / Wet 🌧️';
-        dialSub.textContent = windowRainSum > 0
-          ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.`
-          : hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
+        dialSub.textContent = windowRainSum > 0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
       }
     }
 
@@ -2455,9 +2343,7 @@
     renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, activeEvalHour, isToday);
   }
 
-  window.addEventListener('resize', () => {
-    if (currentData) render();
-  });
+  window.addEventListener('resize', () => { if (currentData) render(); });
 
   unitToggle.addEventListener('click', () => {
     currentUnit = currentUnit === 'C' ? 'F' : 'C';
