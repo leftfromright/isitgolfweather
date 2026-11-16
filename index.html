@@ -1170,20 +1170,20 @@
 
 async function fetchNearbyCourses(lat, lon) {
     try {
-      // Query general populated areas/venues near user coordinates
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=golf&count=30&language=en&format=json`);
+      // Query specific local golf facilities or coordinates nearby
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=Golf Club&count=20&language=en&format=json`);
       const data = await res.json();
       const results = data.results || [];
 
-      // Calculate distance for each result and sort closest-first
-      return results.map(place => {
-        const pLat = place.latitude;
-        const pLon = place.longitude;
-        const distKm = calculateDistance(lat, lon, pLat, pLon);
+      // If no explicit 'Golf Club' matches come back, fall back to general area search
+      const places = results.length > 0 ? results : (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=Golf&count=20&language=en&format=json`).then(r => r.json())).results || [];
+
+      return places.map(place => {
+        const distKm = calculateDistance(lat, lon, place.latitude, place.longitude);
         return {
           ...place,
           distMiles: distKm * 0.621371
-        }
+        };
       }).sort((a, b) => a.distMiles - b.distMiles);
     } catch (err) {
       return [];
