@@ -73,14 +73,17 @@
     lonInput.value = lon;
   });
 
-  async function callApi(url) {
+  async function callApi(targetUrl) {
     statusBadge.textContent = 'Loading...';
     statusBadge.style.background = '#fef08a';
     statusBadge.style.color = '#854d0e';
-    outputLog.textContent = 'Fetching ' + url + ' ...';
+    outputLog.textContent = 'Fetching via CORS proxy...';
+
+    // Route through corsproxy.io to bypass browser CORS restrictions
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
 
     try {
-      const res = await fetch(url);
+      const res = await fetch(proxyUrl);
       const data = await res.json();
       statusBadge.textContent = `HTTP ${res.status} OK`;
       statusBadge.style.background = '#dcfce7';
@@ -90,7 +93,7 @@
       statusBadge.textContent = 'Error';
       statusBadge.style.background = '#fee2e2';
       statusBadge.style.color = '#991b1b';
-      outputLog.textContent = 'Fetch error: ' + err.message;
+      outputLog.textContent = 'Fetch error: ' + err.message + '\n\nTip: If testing locally via file://, some browsers restrict fetches. Try running a quick local server (e.g. npx http-server or Live Server).';
     }
   }
 
