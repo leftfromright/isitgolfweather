@@ -1168,11 +1168,23 @@
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-  async function fetchNearbyCourses(lat, lon) {
+async function fetchNearbyCourses(lat, lon) {
     try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=golf&count=10&latitude=${lat}&longitude=${lon}&radius=50&language=en&format=json`);
+      // Query general populated areas/venues near user coordinates
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=golf&count=30&language=en&format=json`);
       const data = await res.json();
-      return data.results || [];
+      const results = data.results || [];
+
+      // Calculate distance for each result and sort closest-first
+      return results.map(place => {
+        const pLat = place.latitude;
+        const pLon = place.longitude;
+        const distKm = calculateDistance(lat, lon, pLat, pLon);
+        return {
+          ...place,
+          distMiles: distKm * 0.621371
+        }
+      }).sort((a, b) => a.distMiles - b.distMiles);
     } catch (err) {
       return [];
     }
