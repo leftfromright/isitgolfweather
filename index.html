@@ -736,7 +736,7 @@
     <div class="footer-note">🏌️ Plan your round with confidence</div>
     <div class="footer-bottom-bar">
       <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
-      <span class="version-pill" id="versionTag">v5.5</span>
+      <span class="version-pill" id="versionTag">v5.6</span>
     </div>
   </main>
 
@@ -744,7 +744,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.5 (OpenGolfAPI Integration & Testing)<br>Made by KW in November 2026</p>
+      <p>Version 5.6 (OpenGC Integration & Testing)<br>Made by KW in November 2026</p>
 
       <div class="dev-modal-section">
         <div class="dev-modal-header">
@@ -753,8 +753,8 @@
         </div>
         <div class="dev-modal-grid">
           <div class="dev-field">
-            <label for="devApiKeyInput">OpenGolfAPI Key (Local Session)</label>
-            <input type="password" id="devApiKeyInput" placeholder="Enter key (stored locally)">
+            <label for="devApiKeyInput">OpenGC API Key (Optional)</label>
+            <input type="password" id="devApiKeyInput" placeholder="Enter x-api-key (optional)">
           </div>
           <div class="dev-field">
             <label for="devLocationPreset">Test Location Presets</label>
@@ -856,7 +856,7 @@
   let currentCityName = '';
   let selectedDayIndex = 0;
 
-  let currentApiKey = localStorage.getItem('og_api_key') || '';
+  let currentApiKey = localStorage.getItem('opengc_api_key') || '';
 
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
@@ -937,9 +937,9 @@
   devApiKeyInput.addEventListener('input', (e) => {
     currentApiKey = e.target.value.trim();
     if (currentApiKey) {
-      localStorage.setItem('og_api_key', currentApiKey);
+      localStorage.setItem('opengc_api_key', currentApiKey);
     } else {
-      localStorage.removeItem('og_api_key');
+      localStorage.removeItem('opengc_api_key');
     }
   });
 
@@ -1170,14 +1170,15 @@
 
   async function fetchNearbyCourses(lat, lon) {
     try {
-      const res = await fetch(`https://api.opengolfapi.org/v1/courses/search?lat=${lat}&lon=${lon}&radius=40`);
+      const headers = currentApiKey ? { 'x-api-key': currentApiKey } : {};
+      const res = await fetch(`https://api.opengc.net/api/public/courses?lat=${lat}&lng=${lon}&radiusKm=50&limit=15`, { headers });
       const data = await res.json();
-      const results = data.courses || data.results || [];
+      const results = data.data || data.courses || data.results || [];
 
       return results.map(course => {
         const pLat = course.latitude || course.lat;
-        const pLon = course.longitude || course.lon;
-        const distKm = calculateDistance(lat, lon, pLat, pLon);
+        const pLon = course.longitude || course.lng;
+        const distKm = course.distanceKm !== undefined ? course.distanceKm : (pLat && pLon ? calculateDistance(lat, lon, pLat, pLon) : 0);
         return {
           ...course,
           latitude: pLat,
@@ -1191,7 +1192,7 @@
   }
 
   nearbyBtn.addEventListener('click', async () => {
-    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
+    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses via OpenGC...</div>`;
     autocompleteList.style.display = 'block';
 
     const nearbyCourses = await fetchNearbyCourses(lastLat, lastLon);
@@ -1200,11 +1201,12 @@
     if (nearbyCourses.length > 0) {
       nearbyCourses.forEach(course => {
         const name = course.name || course.title;
-        const location = course.city || course.region || course.country || '';
-        const fullName = location ? `${name}, ${location}` : name;
+        const club = course.clubName ? `${course.clubName} — ` : '';
+        const location = course.city || course.country || '';
+        const fullName = location ? `${club}${name}, ${location}` : `${club}${name}`;
         const distLabel = course.distMiles !== undefined ? `${course.distMiles.toFixed(1)} mi` : '';
         const pLat = course.latitude || course.lat;
-        const pLon = course.longitude || course.lon;
+        const pLon = course.longitude || course.lng;
 
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
@@ -1237,9 +1239,10 @@
 
   async function searchAutocomplete(query) {
     try {
-      const res = await fetch(`https://api.opengolfapi.org/v1/courses/search?q=${encodeURIComponent(query)}`);
+      const headers = currentApiKey ? { 'x-api-key': currentApiKey } : {};
+      const res = await fetch(`https://api.opengc.net/api/public/courses?search=${encodeURIComponent(query)}&limit=8`, { headers });
       const data = await res.json();
-      const courses = data.courses || data.results || [];
+      const courses = data.data || data.courses || data.results || [];
 
       autocompleteList.innerHTML = '';
       if (courses.length > 0) {
@@ -1247,10 +1250,11 @@
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
           const name = course.name || course.title;
-          const location = course.city || course.region || course.country || '';
-          const fullName = location ? `${name}, ${location}` : name;
+          const club = course.clubName ? `${course.clubName} — ` : '';
+          const location = course.city || course.country || '';
+          const fullName = location ? `${club}${name}, ${location}` : `${club}${name}`;
           const pLat = course.latitude || course.lat;
-          const pLon = course.longitude || course.lon;
+          const pLon = course.longitude || course.lng;
 
           item.innerHTML = `<span>⛳ ${fullName}</span>`;
           item.addEventListener('click', (e) => {
@@ -1344,11 +1348,9 @@
       lastLat = lat;
       lastLon = lon;
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
-      
-      const fetchOpts = currentApiKey ? { headers: { 'Authorization': `Bearer ${currentApiKey}` } } : {};
 
       const [weatherData, locationName] = await Promise.all([
-        fetch(weatherUrl, fetchOpts).then(r => r.json()),
+        fetch(weatherUrl).then(r => r.json()),
         overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon)
       ]);
 
