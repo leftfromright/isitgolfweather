@@ -266,10 +266,14 @@
       color: #ffffff;
       font-size: 0.72rem;
       font-weight: 700;
-      padding: 0.15rem 0.5rem;
+      padding: 0.2rem 0.6rem;
       border-radius: 999px;
       cursor: pointer;
       border: 1px solid rgba(255,255,255,0.2);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .header-controls {
@@ -338,7 +342,7 @@
       gap: 0.85rem;
     }
 
-    /* Search Bar Pill (Restored ⛳ and 📍 icons) */
+    /* Search Bar Pill */
     .search-wrapper {
       position: relative;
       z-index: 150;
@@ -414,7 +418,6 @@
     .autocomplete-item:last-child { border-bottom: none; }
     .autocomplete-item:hover { background: rgba(46, 125, 50, 0.15); }
     
-    /* Standardized Distance Tags (Fixed width, no line wrapping) */
     .distance-tag { 
       font-size: 0.75rem; 
       color: var(--accent); 
@@ -866,7 +869,7 @@
 
     .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.8rem; }
 
-    /* Footer Tagline */
+    /* Footer Tagline & Bottom Bar */
     .footer-note {
       text-align: center;
       color: #ffffff;
@@ -874,7 +877,15 @@
       font-weight: 600;
       font-style: italic;
       text-shadow: 0 1px 4px rgba(0,0,0,0.75);
-      padding: 0.35rem 0 0.5rem 0;
+      padding: 0.35rem 0 0.2rem 0;
+    }
+
+    .footer-bottom-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.4rem 0 0.8rem 0;
     }
 
     /* Modals */
@@ -1035,7 +1046,6 @@
       <div class="brand">
         <span style="font-size: 1.2rem;">⛳</span>
         <h1>Is it golf weather?</h1>
-        <span class="version-pill" id="versionTag">v4.9</span>
       </div>
       <div class="header-controls">
         <div class="pill-toggle">
@@ -1051,7 +1061,7 @@
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
 
-    <!-- Search Bar (Restored ⛳ nearby and 📍 GPS icons) -->
+    <!-- Search Bar -->
     <div class="search-wrapper">
       <span style="font-size: 1.05rem;">📍</span>
       <input type="text" id="locationInput" placeholder="Search UK golf club or location..." autocomplete="off">
@@ -1111,7 +1121,7 @@
     <!-- 7-Day Date Selector Row -->
     <section class="date-row" id="dateBar"></section>
 
-    <!-- Tee Time Slider Card (Fixed Height + Golf Ball Thumb) -->
+    <!-- Tee Time Slider Card -->
     <section class="glass-card slider-bar">
       <div>
         <div class="slider-top">
@@ -1238,7 +1248,7 @@
       </div>
     </section>
 
-    <!-- Course Conditions & Carry (Stacked in 1 Column) -->
+    <!-- Course Conditions & Carry -->
     <section class="glass-card">
       <div class="card-header">🏌️ Course & Club Guidance</div>
       <div class="callouts-grid">
@@ -1250,14 +1260,19 @@
       </div>
     </section>
 
+    <!-- Footer Tagline & Relocated Bottom Bar with Install Button & v4.10 Pill -->
     <div class="footer-note">🏌️ Plan your round with confidence</div>
+    <div class="footer-bottom-bar">
+      <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
+      <span class="version-pill" id="versionTag">v4.10</span>
+    </div>
   </main>
 
   <!-- Version & Hidden Developer Sandbox Modal -->
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 4.9 (Restored Icons & Ground Status Raining Logic)<br>Made by KW in November 2026</p>
+      <p>Version 4.10 (Footer Install Button & Relocated Version Pill)<br>Made by KW in November 2026</p>
       
       <!-- Hidden Developer Sandbox Section Inside Info Popup -->
       <div class="dev-modal-section">
@@ -1351,7 +1366,35 @@
   let activeRainTier = 'none';
   const circumference = 2 * Math.PI * 70;
 
-  // Curated UK Golf Courses Database for Smart Prioritization & Nearby Search
+  // PWA Install Prompt Handler
+  let deferredInstallPrompt = null;
+  const installAppBtn = document.getElementById('installAppBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    installAppBtn.style.display = 'inline-flex';
+  });
+
+  installAppBtn.addEventListener('click', async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        deferredInstallPrompt = null;
+        installAppBtn.style.display = 'none';
+      }
+    } else {
+      alert('To install this app on your device, use your browser menu (e.g. "Add to Home Screen" or "Install app").');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installAppBtn.style.display = 'none';
+    deferredInstallPrompt = null;
+  });
+
+  // Curated UK Golf Courses Database
   const curatedGolfCourses = [
     { name: "Leamington & County Golf Club", region: "Warwickshire", lat: 52.2831, lon: -1.5322 },
     { name: "The Belfry Hotel & Resort", region: "West Midlands", lat: 52.5512, lon: -1.7214 },
@@ -1370,13 +1413,11 @@
     { name: "Stoneleigh Deer Park Golf Club", region: "Warwickshire", lat: 52.3489, lon: -1.5342 }
   ];
 
-  // Developer Override State
   let devSceneOverride = 'auto';
   let devRainIntensityOverride = 'auto';
   let devIconOverride = 'auto';
   let devHourOverride = 'auto';
 
-  // Parse URL Hash Deep-Link on Startup (#lat=X&lon=Y&day=D&tee=H)
   function parseUrlHash() {
     const hash = window.location.hash.substring(1);
     if (!hash) return null;
@@ -1396,7 +1437,6 @@
     return null;
   }
 
-  // DOM Elements
   const bgStage = document.getElementById('bgStage');
   const rainFrontRow = document.getElementById('rainFrontRow');
   const rainBackRow = document.getElementById('rainBackRow');
@@ -1440,7 +1480,6 @@
 
   teeTimeSlider.value = selectedTeeHour;
 
-  // Dynamic Rainfall Generator
   function makeItRain(tier) {
     rainFrontRow.innerHTML = '';
     rainBackRow.innerHTML = '';
@@ -1504,7 +1543,6 @@
     return 'light';
   }
 
-  // Self-Contained Animated Meteocons SVG Generator
   function getMeteoconSVG(type) {
     const sunCore = `
       <defs>
@@ -1552,7 +1590,6 @@
     return icons[type] || icons['partly-cloudy-day'];
   }
 
-  // Developer Controls Event Wiring (Inside Info Modal)
   devSceneSelect.addEventListener('change', (e) => { devSceneOverride = e.target.value; render(); });
   devRainIntensitySelect.addEventListener('change', (e) => {
     devRainIntensityOverride = e.target.value;
@@ -1588,7 +1625,6 @@
   }
   devResetBtn.addEventListener('click', resetDevOverrides);
 
-  // Top Header Share Forecast Link Button
   shareLinkBtn.addEventListener('click', () => {
     if (!currentData) return;
     const lat = currentData.latitude;
@@ -1601,7 +1637,6 @@
     });
   });
 
-  // Background Atmospheric Controller + Dynamic Rain Layer
   function updateBackgroundScene(sceneKey, rainTier) {
     const isRaining = rainTier !== 'none';
     bgStage.className = `bg-stage scene-${sceneKey}${isRaining ? ' is-raining' : ''}`;
@@ -1624,7 +1659,6 @@
     return 'sunny';
   }
 
-  // Modals
   versionTag.addEventListener('click', () => { creatorModal.style.display = 'flex'; });
   closeModalBtn.addEventListener('click', () => { creatorModal.style.display = 'none'; });
   creatorModal.addEventListener('click', (e) => {
@@ -1713,17 +1747,14 @@
     metricModal.style.display = 'flex';
   }
 
-  // Hero card interactive popups
   document.getElementById('windCardBtn').addEventListener('click', () => openMetricPopup('wind'));
   document.getElementById('rainCardBtn').addEventListener('click', () => openMetricPopup('rain'));
   document.getElementById('tempCardBtn').addEventListener('click', () => openMetricPopup('temp'));
 
-  // Forecast card interactive popups
   document.getElementById('forecastWindBtn').addEventListener('click', () => openMetricPopup('wind'));
   document.getElementById('forecastRecentBtn').addEventListener('click', () => openMetricPopup('recent'));
   document.getElementById('forecastRoundRainBtn').addEventListener('click', () => openMetricPopup('rain'));
 
-  // Haversine Distance Formula (km)
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1735,7 +1766,6 @@
     return R * c;
   }
 
-  // Courses Nearby Button Handler
   nearbyBtn.addEventListener('click', () => {
     const sortedCourses = curatedGolfCourses.map(course => {
       const distKm = calculateDistance(lastLat, lastLon, course.lat, course.lon);
@@ -1759,7 +1789,6 @@
     autocompleteList.style.display = 'block';
   });
 
-  // Smart Curated + Geocoding Autocomplete Search
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const query = locationInput.value.trim().toLowerCase();
@@ -1840,7 +1869,6 @@
     teeTimeDisplay.textContent = formatHourLabel(selectedTeeHour);
   }
 
-  // Meteocons Inline SVG Key + Emoji Mapping
   function getWeatherInfo(code, isNight = false) {
     const codes = {
       0: { text: 'Clear sky', icon: '☀️', mcKey: isNight ? 'clear-night' : 'clear-day' },
