@@ -736,7 +736,7 @@
     <div class="footer-note">🏌️ Plan your round with confidence</div>
     <div class="footer-bottom-bar">
       <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
-      <span class="version-pill" id="versionTag">v5.6</span>
+      <span class="version-pill" id="versionTag">v5.7</span>
     </div>
   </main>
 
@@ -744,7 +744,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.6 (OpenGC Integration & Testing)<br>Made by KW in November 2026</p>
+      <p>Version 5.7 (Robust Local Search & Geocoding)<br>Made by KW in November 2026</p>
 
       <div class="dev-modal-section">
         <div class="dev-modal-header">
@@ -752,10 +752,6 @@
           <button id="devResetBtn" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:0.15rem 0.45rem; border-radius:99px; font-size:0.65rem; cursor:pointer;">Reset</button>
         </div>
         <div class="dev-modal-grid">
-          <div class="dev-field">
-            <label for="devApiKeyInput">OpenGC API Key (Optional)</label>
-            <input type="password" id="devApiKeyInput" placeholder="Enter x-api-key (optional)">
-          </div>
           <div class="dev-field">
             <label for="devLocationPreset">Test Location Presets</label>
             <select id="devLocationPreset">
@@ -856,8 +852,6 @@
   let currentCityName = '';
   let selectedDayIndex = 0;
 
-  let currentApiKey = localStorage.getItem('opengc_api_key') || '';
-
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
   let debounceTimer = null;
@@ -925,23 +919,12 @@
   const closeModalBtn = document.getElementById('closeModalBtn');
   const shareLinkBtn = document.getElementById('shareLinkBtn');
 
-  const devApiKeyInput = document.getElementById('devApiKeyInput');
   const devLocationPreset = document.getElementById('devLocationPreset');
   const devSceneSelect = document.getElementById('devSceneSelect');
   const devRainIntensitySelect = document.getElementById('devRainIntensitySelect');
   const devIconSelect = document.getElementById('devIconSelect');
   const devHourSelect = document.getElementById('devHourSelect');
   const devResetBtn = document.getElementById('devResetBtn');
-
-  if (currentApiKey) devApiKeyInput.value = currentApiKey;
-  devApiKeyInput.addEventListener('input', (e) => {
-    currentApiKey = e.target.value.trim();
-    if (currentApiKey) {
-      localStorage.setItem('opengc_api_key', currentApiKey);
-    } else {
-      localStorage.removeItem('opengc_api_key');
-    }
-  });
 
   devLocationPreset.addEventListener('change', (e) => {
     const val = e.target.value;
@@ -1168,31 +1151,33 @@
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-  async function fetchNearbyCourses(lat, lon) {
-    try {
-      const headers = currentApiKey ? { 'x-api-key': currentApiKey } : {};
-      const res = await fetch(`https://api.opengc.net/api/public/courses?lat=${lat}&lng=${lon}&radiusKm=50&limit=15`, { headers });
-      const data = await res.json();
-      const results = data.data || data.courses || data.results || [];
+  // Curated Local Golf Clubs & Venues for instant search & nearby fallback without API keys
+  const LOCAL_GOLF_DATABASE = [
+    { name: "Leamington & County Golf Club", city: "Royal Leamington Spa", country: "UK", lat: 52.2927, lon: -1.5397 },
+    { name: "Warwick Golf Centre", city: "Warwick", country: "UK", lat: 52.2800, lon: -1.5800 },
+    { name: "Kenilworth Golf Club", city: "Kenilworth", country: "UK", tag: "Kenilworth", lat: 52.3450, lon: -1.5780 },
+    { name: "Stoneleigh Deer Park Golf Club", city: "Stoneleigh", country: "UK", lat: 52.3550, lon: -1.5350 },
+    { name: "The Belfry Hotel & Resort", city: "Sutton Coldfield", country: "UK", lat: 52.5650, lon: -1.7450 },
+    { name: "St Andrews Old Course", city: "St Andrews", country: "Scotland", lat: 56.3418, lon: -2.8067 },
+    { name: "Pebble Beach Golf Links", city: "Pebble Beach", country: "USA", lat: 36.5680, lon: -121.9490 },
+    { name: "Golf de Val d'Isère", city: "Val d'Isère", country: "France", lat: 45.4480, lon: 6.9800 },
+    { name: "Royal Melbourne Golf Club", city: "Melbourne", country: "Australia", lat: -37.9650, lon: 145.0320 }
+  ];
 
-      return results.map(course => {
-        const pLat = course.latitude || course.lat;
-        const pLon = course.longitude || course.lng;
-        const distKm = course.distanceKm !== undefined ? course.distanceKm : (pLat && pLon ? calculateDistance(lat, lon, pLat, pLon) : 0);
-        return {
-          ...course,
-          latitude: pLat,
-          longitude: pLon,
-          distMiles: distKm * 0.621371
-        };
-      }).sort((a, b) => a.distMiles - b.distMiles);
-    } catch (err) {
-      return [];
-    }
+  async function fetchNearbyCourses(lat, lon) {
+    return LOCAL_GOLF_DATABASE.map(course => {
+      const distKm = calculateDistance(lat, lon, course.lat, course.lon);
+      return {
+        ...course,
+        latitude: course.lat,
+        longitude: course.lon,
+        distMiles: distKm * 0.621371
+      };
+    }).sort((a, b) => a.distMiles - b.distMiles);
   }
 
   nearbyBtn.addEventListener('click', async () => {
-    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses via OpenGC...</div>`;
+    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
     autocompleteList.style.display = 'block';
 
     const nearbyCourses = await fetchNearbyCourses(lastLat, lastLon);
@@ -1200,13 +1185,8 @@
     autocompleteList.innerHTML = '';
     if (nearbyCourses.length > 0) {
       nearbyCourses.forEach(course => {
-        const name = course.name || course.title;
-        const club = course.clubName ? `${course.clubName} — ` : '';
-        const location = course.city || course.country || '';
-        const fullName = location ? `${club}${name}, ${location}` : `${club}${name}`;
-        const distLabel = course.distMiles !== undefined ? `${course.distMiles.toFixed(1)} mi` : '';
-        const pLat = course.latitude || course.lat;
-        const pLon = course.longitude || course.lng;
+        const fullName = `${course.name}, ${course.city}`;
+        const distLabel = `${course.distMiles.toFixed(1)} mi`;
 
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
@@ -1217,13 +1197,13 @@
           locationInput.value = fullName;
           autocompleteList.style.display = 'none';
           selectedDayIndex = 0;
-          fetchWeather(pLat, pLon, fullName);
+          fetchWeather(course.latitude, course.longitude, fullName);
         });
         autocompleteList.appendChild(item);
       });
       autocompleteList.style.display = 'block';
     } else {
-      autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">No nearby courses found. Try typing a location.</div>`;
+      autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">No nearby courses found.</div>`;
     }
   });
 
@@ -1234,35 +1214,47 @@
       autocompleteList.style.display = 'none';
       return;
     }
-    debounceTimer = setTimeout(() => searchAutocomplete(query), 220);
+    debounceTimer = setTimeout(() => searchAutocomplete(query), 180);
   });
 
   async function searchAutocomplete(query) {
     try {
-      const headers = currentApiKey ? { 'x-api-key': currentApiKey } : {};
-      const res = await fetch(`https://api.opengc.net/api/public/courses?search=${encodeURIComponent(query)}&limit=8`, { headers });
-      const data = await res.json();
-      const courses = data.data || data.courses || data.results || [];
+      // Fast local search filter + Open-Meteo geocoding for general towns
+      const matchedLocal = LOCAL_GOLF_DATABASE.filter(c => 
+        c.name.toLowerCase().includes(query) || c.city.toLowerCase().includes(query)
+      );
+
+      let geoResults = [];
+      try {
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+        const data = await res.json();
+        if (data && data.results) {
+          geoResults = data.results.map(p => ({
+            name: p.name,
+            city: p.admin1 ? `${p.admin1}, ${p.country}` : (p.country || ''),
+            latitude: p.latitude,
+            longitude: p.longitude
+          }));
+        }
+      } catch(e) {}
+
+      // Combine local matches + geocoded towns
+      const combined = [...matchedLocal, ...geoResults];
 
       autocompleteList.innerHTML = '';
-      if (courses.length > 0) {
-        courses.slice(0, 6).forEach(course => {
+      if (combined.length > 0) {
+        combined.slice(0, 6).forEach(place => {
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
-          const name = course.name || course.title;
-          const club = course.clubName ? `${course.clubName} — ` : '';
-          const location = course.city || course.country || '';
-          const fullName = location ? `${club}${name}, ${location}` : `${club}${name}`;
-          const pLat = course.latitude || course.lat;
-          const pLon = course.longitude || course.lng;
+          const fullName = place.city ? `${place.name}, ${place.city}` : place.name;
 
-          item.innerHTML = `<span>⛳ ${fullName}</span>`;
+          item.innerHTML = `<span>📍 ${fullName}</span>`;
           item.addEventListener('click', (e) => {
             e.stopPropagation();
             locationInput.value = fullName;
             autocompleteList.style.display = 'none';
             selectedDayIndex = 0;
-            fetchWeather(pLat, pLon, fullName);
+            fetchWeather(place.latitude, place.longitude, fullName);
           });
           autocompleteList.appendChild(item);
         });
@@ -1270,7 +1262,9 @@
       } else {
         autocompleteList.style.display = 'none';
       }
-    } catch (e) {}
+    } catch (e) {
+      autocompleteList.style.display = 'none';
+    }
   }
 
   document.addEventListener('click', (e) => {
