@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title id="pageTitle">Is it golf weather? — Plan Your Round with Confidence</title>
 <meta id="metaDescription" name="description" content="Check golf course weather, wind impact, turf firmness, rain outlook, and daylight remaining before your tee time.">
+<meta id="themeColorMeta" name="theme-color" content="#1a2e22">
 <link rel="canonical" href="https://isitgolfweather.com/">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,8 +25,8 @@
   --accent-dark: #1b5e20;
   --shadow: 0 8px 32px rgba(15, 35, 22, 0.14);
 
---gauge-great: #2e7d32; --gauge-good: #689f38; --gauge-med: #f9a825; --gauge-poor: #ef6c00; --gauge-bad: #c62828;
---status-good: #2e7d32; --status-warn: #ef6c00; --status-danger: #c62828;
+/* 5-Tier Dial Gauge Palette */ --gauge-great: #2e7d32; --gauge-good: #689f38; --gauge-med: #f9a825; --gauge-poor: #ef6c00; --gauge-bad: #c62828;
+/* Guidance Left-Border Status Colours */ --status-good: #2e7d32; --status-warn: #ef6c00; --status-danger: #c62828;
 --chart-line: #2e7d32; --chart-bar: #1e88e5; --chart-grid: rgba(69, 94, 80, 0.18); --sun-line: #f57c00; --now-line: #d32f2f; --tee-line: #1565c0; }
 [data-theme="dark"] { --glass-bg: rgba(18, 32, 24, 0.82); --glass-card-inner: rgba(26, 44, 34, 0.68); --glass-border: rgba(255, 255, 255, 0.12); --header-bg: rgba(10, 20, 14, 0.92); --text: #eef6f1; --text-muted: #9eb8a8; --accent: #66bb6a; --accent-dark: #2e7d32; --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 --gauge-great: #4caf50; --gauge-good: #9ccc65; --gauge-med: #fdd835; --gauge-poor: #fb8c00; --gauge-bad: #ef5350;
@@ -39,19 +40,18 @@ html, body { width: 100%; min-height: 100%; font-family: -apple-system, BlinkMac
 /* Rain Overlay */ .rain-overlay-wrap { position: absolute; inset: 0; pointer-events: none; display: none; overflow: hidden; z-index: 3; } .bg-stage.is-raining .rain-overlay-wrap { display: block; } .rain-row { position: absolute; left: 0; width: 100%; height: 100%; z-index: 2; } .rain-row.back-row { z-index: 1; bottom: 60px; opacity: 0.5; } .rain-overlay-wrap .drop { position: absolute; bottom: 100%; width: 15px; height: 120px; pointer-events: none; animation: cpDrop 0.5s linear infinite; } @keyframes cpDrop { 0% { transform: translateY(0vh); } 75% { transform: translateY(90vh); } 100% { transform: translateY(90vh); } } .rain-overlay-wrap .stem { width: 1.5px; height: 60%; margin-left: 7px; background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.48)); } .rain-overlay-wrap .splat { width: 15px; height: 10px; border-top: 2px dotted rgba(255, 255, 255, 0.65); border-radius: 50%; }
 .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); } .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); } .bg-stage.scene-windy .bg-base { filter: brightness(0.94) contrast(1.04) saturate(0.85); } .bg-stage.scene-rain .bg-base { filter: brightness(0.54) contrast(1.26) saturate(0.85) grayscale(0.2); } .bg-stage.scene-ice .bg-base { filter: brightness(1.04) contrast(1.12) saturate(0.38) hue-rotate(175deg); } .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); } .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); } .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
 @keyframes mcSpin { 100% { transform: rotate(360deg); } } @keyframes mcDrift { 0%, 100% { transform: translateX(-2.5px); } 50% { transform: translateX(2.5px); } } .mc-spin { transform-origin: 32px 32px; animation: mcSpin 16s linear infinite; } .mc-drift { animation: mcDrift 4s ease-in-out infinite; }
-/* Top Bar */ .top-bar { position: relative; z-index: 20; background: var(--header-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.55rem 1rem; } .top-bar-inner { max-width: 760px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; } .brand { display: flex; align-items: center; gap: 0.5rem; color: #ffffff; } .brand h1 { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.2px; }
+/* Top Bar - Flush to top on mobile & desktop */ .top-bar { position: sticky; top: 0; left: 0; right: 0; z-index: 1000; background: var(--header-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.55rem 1rem; } .top-bar-inner { max-width: 760px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; } .brand { display: flex; align-items: center; gap: 0.5rem; color: #ffffff; } .brand h1 { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.2px; }
 .version-pill { background: #2e7d32; color: #ffffff; font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; } .header-controls { display: flex; align-items: center; gap: 0.35rem; } .pill-toggle { display: flex; background: rgba(255, 255, 255, 0.14); border-radius: 999px; padding: 2px; } .pill-toggle button { border: none; background: transparent; color: #d8e6de; font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.55rem; border-radius: 999px; cursor: pointer; transition: all 0.2s ease; } .pill-toggle button.active { background: #2e7d32; color: #ffffff; } .header-icon-btn { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; font-size: 0.88rem; cursor: pointer; padding: 0.25rem 0.45rem; border-radius: 999px; } .theme-btn { background: transparent; border: none; color: #ffffff; font-size: 1rem; cursor: pointer; padding: 0.2rem 0.3rem; }
 /* App Container */ .app-container { position: relative; z-index: 5; max-width: 760px; margin: 0 auto; padding: 0.9rem 0.85rem 2rem 0.85rem; display: flex; flex-direction: column; gap: 0.85rem; }
 /* Search Bar */ .search-wrapper { position: relative; z-index: 150; display: flex; align-items: center; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 999px; padding: 0.3rem 0.55rem 0.3rem 0.95rem; box-shadow: var(--shadow); border: 1px solid var(--glass-border); } [data-theme="dark"] .search-wrapper { background: rgba(20, 36, 27, 0.92); } .search-wrapper input { flex: 1; border: none; background: transparent; color: var(--text); font-size: 0.95rem; font-weight: 500; padding: 0.45rem 0.5rem; outline: none; } .search-icon-btn { background: transparent; border: none; font-size: 1.15rem; cursor: pointer; padding: 0.35rem 0.45rem; border-radius: 50%; }
 .autocomplete-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 14px; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25); z-index: 1200; max-height: 260px; overflow-y: auto; display: none; } [data-theme="dark"] .autocomplete-list { background: rgba(20, 36, 27, 0.97); border-color: rgba(255, 255, 255, 0.16); } .autocomplete-item { padding: 0.7rem 1rem; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; gap: 0.55rem; } .autocomplete-item:hover { background: rgba(46, 125, 50, 0.15); }
 .distance-tag { font-size: 0.75rem; color: var(--accent); font-weight: 700; background: rgba(46,125,50,0.12); padding: 2px 8px; border-radius: 99px; min-width: 58px; text-align: center; white-space: nowrap; flex-shrink: 0; } .distance-tag.closed-tag { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
 /* Glass Cards */ .glass-card { position: relative; z-index: 10; background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow); transition: background 0.6s ease, border-color 0.6s ease, color 0.6s ease; }
-/* Hero Card Layout: Dial Left, Summary Right, 3 Even Boxes Below */ .hero-card { display: flex; flex-direction: column; gap: 1.1rem; padding: 1.4rem 1.5rem; }
-.hero-top-row { display: grid; grid-template-columns: 180px 1fr; gap: 1.5rem; align-items: center; }
-.dial-box { position: relative; width: 175px; height: 175px; margin: 0 auto; } .dial-svg { width: 100%; height: 100%; transform: rotate(-90deg); } .dial-track { fill: none; stroke: rgba(120, 140, 128, 0.25); stroke-width: 15; } .dial-arc { fill: none; stroke: var(--gauge-great); stroke-width: 15; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.5s ease-out, stroke 0.35s ease; } .dial-center { position: absolute; inset: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; } .dial-pct { font-size: 2.5rem; font-weight: 800; line-height: 1; letter-spacing: -1.5px; } .dial-temp { font-size: 0.95rem; font-weight: 700; color: var(--text-muted); margin: 0.25rem 0 0.1rem 0; } .dial-status { font-size: 0.98rem; font-weight: 800; line-height: 1.15; }
-.hero-right { display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; } .verdict-headline { font-size: 1.18rem; font-weight: 600; line-height: 1.35; color: var(--text); }
-/* 3 Evenly Spaced Mini-Stat Boxes Below */ .hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem; width: 100%; }
-.mini-stat { background: var(--glass-card-inner); border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.6rem 0.65rem; cursor: pointer; transition: transform 0.18s ease; min-width: 0; /* Prevents flex/grid text blowout */ } .mini-stat:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.15); } .mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.2rem; } .mini-stat-icon { font-size: 1.35rem; line-height: 1.1; } .mini-info-hint { font-size: 0.68rem; font-weight: 700; color: var(--accent); opacity: 0.75; } .mini-stat-label { font-size: 0.76rem; color: var(--text-muted); font-weight: 600; } .mini-stat-val { font-size: 1.05rem; font-weight: 800; margin: 0.1rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .mini-stat-sub { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Hero Card Layout: Desktop stays side-by-side (Dial left, 3 boxes right), Mobile stacks vertically */ .hero-card { display: grid; grid-template-columns: 225px 1fr; gap: 1.5rem; align-items: center; padding: 1.65rem 1.75rem; }
+.dial-box { position: relative; width: 215px; height: 215px; margin: 0 auto; } .dial-svg { width: 100%; height: 100%; transform: rotate(-90deg); } .dial-track { fill: none; stroke: rgba(120, 140, 128, 0.25); stroke-width: 15; } .dial-arc { fill: none; stroke: var(--gauge-great); stroke-width: 15; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.5s ease-out, stroke 0.35s ease; } .dial-center { position: absolute; inset: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; } .dial-pct { font-size: 2.85rem; font-weight: 800; line-height: 1; letter-spacing: -1.5px; } .dial-temp { font-size: 1.05rem; font-weight: 700; color: var(--text-muted); margin: 0.3rem 0 0.15rem 0; } .dial-status { font-size: 1.08rem; font-weight: 800; line-height: 1.15; }
+.hero-right { display: flex; flex-direction: column; gap: 1.1rem; border-left: 1px solid rgba(120, 140, 128, 0.25); padding-left: 1.5rem; } .verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+.hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; } .mini-stat { background: var(--glass-card-inner); border: 1px solid var(--glass-border); border-left: 4px solid var(--glass-border); border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease; min-width: 0; } .mini-stat.status-good { border-left-color: var(--status-good); } .mini-stat.status-warn { border-left-color: var(--status-warn); } .mini-stat.status-danger { border-left-color: var(--status-danger); }
+.mini-stat:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.15); } .mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem; } .mini-stat-icon { font-size: 1.55rem; line-height: 1.1; } .mini-info-hint { font-size: 0.68rem; font-weight: 700; color: var(--accent); opacity: 0.75; } .mini-stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; } .mini-stat-val { font-size: 1.2rem; font-weight: 800; margin: 0.1rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .mini-stat-sub { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Date Row */ .date-row { position: relative; z-index: 10; display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.45rem; } .date-pill { background: var(--glass-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--glass-border); border-radius: 13px; padding: 0.6rem 0.25rem; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.06); color: var(--text); } .date-pill.active { background: #1f422b; color: #ffffff; border-color: #2e7d32; transform: translateY(-2px); } .date-pill .d-name { font-size: 0.8rem; font-weight: 700; } .date-pill .d-icon { font-size: 1.25rem; margin: 0.2rem 0; } .date-pill .d-temps { font-size: 0.74rem; font-weight: 600; opacity: 0.92; } #hiddenDatePicker { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
 /* Tee Time Slider Card */ .slider-bar { padding: 0.8rem 1.2rem; min-height: 122px; display: flex; flex-direction: column; justify-content: space-between; } .slider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; } .slider-title { font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; } .slider-time-readout { font-size: 0.9rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.3rem; }
 input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background: rgba(120, 140, 128, 0.3); outline: none; -webkit-appearance: none; appearance: none; cursor: pointer; margin: 0.2rem 0; } input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 60%, #cbd5e1 100%); border: 1px solid #94a3b8; box-shadow: 0 3px 8px rgba(0,0,0,0.25); cursor: pointer; } input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 60%, #cbd5e1 100%); border: 1px solid #94a3b8; box-shadow: 0 3px 8px rgba(0,0,0,0.25); cursor: pointer; }
@@ -64,13 +64,16 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
 /* Summary & Callouts */ .summary-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; } .summary-pill { background: var(--glass-card-inner); border: 1px solid var(--glass-border); border-radius: 12px; padding: 0.65rem 0.8rem; display: flex; align-items: center; gap: 0.65rem; } .summary-pill .sp-icon { font-size: 1.45rem; line-height: 1; } .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; } .summary-pill .sp-val { font-size: 0.96rem; font-weight: 800; }
 .callouts-grid { display: grid; grid-template-columns: 1fr; gap: 0.55rem; } .callout-item { background: var(--glass-card-inner); border: 1px solid var(--glass-border); border-left: 5px solid var(--status-good); border-radius: 10px; padding: 0.6rem 0.75rem; font-size: 0.8rem; } .callout-item.status-good { border-left-color: var(--status-good); } .callout-item.status-warn { border-left-color: var(--status-warn); } .callout-item.status-danger { border-left-color: var(--status-danger); } .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.8rem; }
 .footer-note { text-align: center; color: #ffffff; font-size: 0.82rem; font-weight: 600; font-style: italic; text-shadow: 0 1px 4px rgba(0,0,0,0.75); padding: 0.35rem 0 0.2rem 0; } .footer-bottom-bar { display: flex; justify-content: center; align-items: center; gap: 0.75rem; padding: 0.4rem 0 0.8rem 0; }
-/* Modals */ .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.52); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; } .modal-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.35rem 1.4rem; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3); color: var(--text); max-height: 90vh; overflow-y: auto; } [data-theme="dark"] .modal-card { background: rgba(20, 36, 27, 0.96); } .modal-card h3 { font-size: 1.1rem; margin-bottom: 0.45rem; } .modal-card p { font-size: 0.86rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.4; }
+/* Modals */ .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.52); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; } .modal-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.35rem 1.4rem; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3); color: var(--text); max-height: 90vh; overflow-y: auto; } [data-theme="dark"] .modal-card { background: rgba(20, 36, 27, 0.96); } .modal-card h3 { font-size: 1.1rem; margin-bottom: 0.45rem; } .modal-card p { font-size: 0.86rem; color: var(--text-muted); margin-bottom: 1.1rem; line-height: 1.4; }
 .modal-detail-list { text-align: left; background: rgba(120, 140, 128, 0.12); border-radius: 12px; padding: 0.75rem 0.9rem; margin-bottom: 1.1rem; font-size: 0.84rem; display: flex; flex-direction: column; gap: 0.45rem; } .modal-detail-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(120, 140, 128, 0.18); padding-bottom: 0.3rem; } .modal-detail-row:last-child { border-bottom: none; padding-bottom: 0; }
 .dev-modal-section { text-align: left; background: rgba(18, 34, 24, 0.85); border: 1px solid rgba(102, 187, 106, 0.35); border-radius: 12px; padding: 0.75rem; margin-bottom: 1rem; color: #eef6f1; } .dev-modal-header { font-size: 0.76rem; font-weight: 700; color: #81c784; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; } .dev-modal-grid { display: grid; grid-template-columns: 1fr; gap: 0.45rem; } .dev-field { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.7rem; font-weight: 600; color: #b7cebf; } .dev-field select { background: rgba(255,255,255,0.12); color: #ffffff; border: 1px solid rgba(255,255,255,0.22); border-radius: 8px; padding: 0.3rem 0.4rem; font-size: 0.75rem; font-weight: 600; outline: none; } .dev-field select option { background: #14261c; color: #ffffff; }
 .modal-close-btn { background: #2e7d32; color: #ffffff; border: none; padding: 0.55rem 1.6rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
-/* Mobile Responsive Adjustments (≤ 600px) */ @media (max-width: 600px) { .brand h1 { font-size: 0.94rem; } .hero-top-row { grid-template-columns: 132px 1fr; gap: 0.8rem; } .dial-box { width: 130px; height: 130px; } .dial-pct { font-size: 1.85rem; } .dial-temp { font-size: 0.84rem; margin: 0.18rem 0 0.08rem 0; } .dial-status { font-size: 0.88rem; } .verdict-headline { font-size: 0.92rem; } .hero-mini-grid { gap: 0.35rem; } .mini-stat { padding: 0.5rem 0.4rem; } .mini-stat-val { font-size: 0.92rem; } .date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; } .date-row::-webkit-scrollbar { display: none; } .forecast-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; } .forecast-main { grid-column: span 3; justify-content: center; text-align: center; flex-direction: column; padding: 0.25rem 0 0.5rem 0; gap: 0.3rem; } .meteocon-main { width: 74px; height: 74px; } .summary-3col { grid-template-columns: repeat(2, 1fr); } } </style>
+/* Mobile Responsive Adjustments (≤ 600px) / @media (max-width: 600px) { .brand h1 { font-size: 0.94rem; } / On mobile ONLY: Stack dial on top, 3 mini-stat boxes below */ .hero-card { display: flex; flex-direction: column; gap: 1.1rem; padding: 1.1rem 1.15rem; } .hero-right { border-left: none; padding-left: 0; gap: 0.5rem; } .dial-box { width: 150px; height: 150px; } .dial-pct { font-size: 2.2rem; } .dial-temp { font-size: 0.88rem; margin: 0.15rem 0 0.05rem 0; } .dial-status { font-size: 0.92rem; } .verdict-headline { font-size: 1.05rem; } .hero-mini-grid { gap: 0.45rem; } .mini-stat { padding: 0.5rem 0.5rem; } .mini-stat-val { font-size: 1rem; }
+.date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; } .date-row::-webkit-scrollbar { display: none; } .forecast-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; } .forecast-main { grid-column: span 3; justify-content: center; text-align: center; flex-direction: column; padding: 0.25rem 0 0.5rem 0; gap: 0.3rem; } .meteocon-main { width: 74px; height: 74px; } .summary-3col { grid-template-columns: repeat(2, 1fr); } } </style>
 </head>
 <body>
+
+<!-- Background Stage & Rain Overlay -->
 
 <div id="bgStage" class="bg-stage scene-sunny">
   <div class="bg-base"></div>
@@ -80,6 +83,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
     <div id="rainBackRow" class="rain-row back-row"></div>
   </div>
 </div>
+
+<!-- Top Header -->
 
 <header class="top-bar">
   <div class="top-bar-inner">
@@ -101,6 +106,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
 <main class="app-container">
   <input type="date" id="hiddenDatePicker">
 
+  <!-- Search Bar -->
+
   <div class="search-wrapper">
     <span style="font-size: 1.05rem;">📍</span>
     <input type="text" id="locationInput" placeholder="Search golf club or location..." autocomplete="off">
@@ -112,57 +119,57 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
   <!-- Hero Score & Verdict Card -->
 
   <section class="glass-card hero-card">
-    <div class="hero-top-row">
-      <div class="dial-box">
-        <svg class="dial-svg" viewBox="0 0 160 160">
-          <circle class="dial-track" cx="80" cy="80" r="70"></circle>
-          <circle id="dialArc" class="dial-arc" cx="80" cy="80" r="70"></circle>
-        </svg>
-        <div class="dial-center">
-          <div id="dialScore" class="dial-pct">--%</div>
-          <div id="dialTemp" class="dial-temp">--°C</div>
-          <div id="dialVerdict" class="dial-status">--</div>
-        </div>
+    <div class="dial-box">
+      <svg class="dial-svg" viewBox="0 0 160 160">
+        <circle class="dial-track" cx="80" cy="80" r="70"></circle>
+        <circle id="dialArc" class="dial-arc" cx="80" cy="80" r="70"></circle>
+      </svg>
+      <div class="dial-center">
+        <div id="dialScore" class="dial-pct">--%</div>
+        <div id="dialTemp" class="dial-temp">--°C</div>
+        <div id="dialVerdict" class="dial-status">--</div>
       </div>
+    </div>
 
-  <div class="hero-right">
-    <div id="dialSub" class="verdict-headline">Locating golf forecast...</div>
-  </div>
-</div>
-
-<!-- 3 Mini-Stat Boxes Below -->
-<div class="hero-mini-grid">
-  <div class="mini-stat" id="windCardBtn" title="Click for hourly wind details">
-    <div class="mini-stat-header">
-      <div class="mini-stat-icon">💨</div>
-      <span class="mini-info-hint">ⓘ</span>
+<div class="hero-right">
+  <div id="dialSub" class="verdict-headline">Locating golf forecast...</div>
+  <div class="hero-mini-grid">
+    <div class="mini-stat" id="windCardBtn" title="Click for hourly wind details">
+      <div class="mini-stat-header">
+        <div class="mini-stat-icon">💨</div>
+        <span class="mini-info-hint">ⓘ</span>
+      </div>
+      <div class="mini-stat-label">Wind</div>
+      <div id="heroWindVal" class="mini-stat-val">--</div>
+      <div id="heroWindSub" class="mini-stat-sub">--</div>
     </div>
-    <div class="mini-stat-label">Wind</div>
-    <div id="heroWindVal" class="mini-stat-val">--</div>
-    <div id="heroWindSub" class="mini-stat-sub">--</div>
-  </div>
-  <div class="mini-stat" id="rainCardBtn" title="Click for hourly rain details">
-    <div class="mini-stat-header">
-      <div class="mini-stat-icon">💧</div>
-      <span class="mini-info-hint">ⓘ</span>
+    <div class="mini-stat" id="rainCardBtn" title="Click for hourly rain details">
+      <div class="mini-stat-header">
+        <div class="mini-stat-icon">💧</div>
+        <span class="mini-info-hint">ⓘ</span>
+      </div>
+      <div class="mini-stat-label">Rain</div>
+      <div id="heroRainVal" class="mini-stat-val">--</div>
+      <div id="heroRainSub" class="mini-stat-sub">--</div>
     </div>
-    <div class="mini-stat-label">Rain</div>
-    <div id="heroRainVal" class="mini-stat-val">--</div>
-    <div id="heroRainSub" class="mini-stat-sub">--</div>
-  </div>
-  <div class="mini-stat" id="tempCardBtn" title="Click for hourly temp & carry details">
-    <div class="mini-stat-header">
-      <div class="mini-stat-icon">🌡️</div>
-      <span class="mini-info-hint">ⓘ</span>
+    <div class="mini-stat" id="tempCardBtn" title="Click for hourly temp & carry details">
+      <div class="mini-stat-header">
+        <div class="mini-stat-icon">🌡️</div>
+        <span class="mini-info-hint">ⓘ</span>
+      </div>
+      <div class="mini-stat-label">Temp</div>
+      <div id="heroTempVal" class="mini-stat-val">--</div>
+      <div id="heroTempSub" class="mini-stat-sub">--</div>
     </div>
-    <div class="mini-stat-label">Temp</div>
-    <div id="heroTempVal" class="mini-stat-val">--</div>
-    <div id="heroTempSub" class="mini-stat-sub">--</div>
   </div>
 </div>
   </section>
 
+  <!-- 7-Day Date Selector Row -->
+
   <section class="date-row" id="dateBar"></section>
+
+  <!-- Tee Time Slider Card -->
 
   <section class="glass-card slider-bar">
     <div>
@@ -174,6 +181,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
     </div>
     <div id="daylightWarning" class="daylight-banner"></div>
   </section>
+
+  <!-- Forecast Breakdown Card -->
 
   <section class="glass-card">
     <div class="card-header">
@@ -220,6 +229,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
 </div>
   </section>
 
+  <!-- 24-Hour Forecast Chart -->
+
   <section class="glass-card">
     <div class="card-header">📊 24-Hour Forecast</div>
     <div class="chart-box">
@@ -238,6 +249,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
       <span>🌙 Sunset</span>
     </div>
   </section>
+
+  <!-- Day Summary -->
 
   <section class="glass-card">
     <div class="card-header">📅 Day Summary</div>
@@ -287,6 +300,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
     </div>
   </section>
 
+  <!-- Course Conditions & Carry -->
+
   <section class="glass-card">
     <div class="card-header">🏌️‍♂️ Course & Club Guidance</div>
     <div class="callouts-grid">
@@ -298,17 +313,21 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
     </div>
   </section>
 
+  <!-- Footer Tagline & Bottom Bar -->
+
   <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
   <div class="footer-bottom-bar">
     <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-    <span class="version-pill" id="versionTag">v5.16</span>
+    <span class="version-pill" id="versionTag">v5.17</span>
   </div>
 </main>
+
+<!-- Creator & Developer Sandbox Modal -->
 
 <div class="modal-overlay" id="creatorModal">
   <div class="modal-card">
     <h3>Is it golf weather?</h3>
-    <p>Version 5.16 (Redesigned Hero Grid & Responsive Metric Pods)<br>Made by KW in November 2026</p>
+    <p>Version 5.17 (Mobile Header Anchor & Dynamic Theme Color)<br>Made by KW in November 2026</p>
 
 <div class="dev-modal-section">
   <div class="dev-modal-header">
@@ -369,15 +388,18 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
     </div>
   </div>
 </div>
+
 <button class="modal-close-btn" id="closeModalBtn">Close</button>
   </div>
 </div>
 
+<!-- Install Fallback Modal -->
+
 <div class="modal-overlay" id="installModal">
   <div class="modal-card">
     <h3>📱 Install App</h3>
-    <p>To install this app on your device for quick home-screen access:</p>
-    <div class="modal-detail-list" style="text-align: left; font-size: 0.82rem; line-height: 1.4;">
+    <p id="installModalText">To install this app on your device for quick home-screen access:</p>
+    <div id="installInstructions" class="modal-detail-list" style="text-align: left; font-size: 0.82rem; line-height: 1.4;">
       <strong>Desktop (Chrome / Edge):</strong> Click the ⊕ or install icon on your browser address bar.<br><br>
       <strong>iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> button and select <strong>"Add to Home Screen"</strong>.<br><br>
       <strong>Android (Chrome):</strong> Tap menu (three dots) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
@@ -385,6 +407,8 @@ input[type="range"] { width: 100%; height: 6px; border-radius: 999px; background
     <button class="modal-close-btn" id="closeInstallModalBtn">Got it</button>
   </div>
 </div>
+
+<!-- Metric Detail Modal -->
 
 <div class="modal-overlay" id="metricModal">
   <div class="modal-card">
@@ -423,7 +447,12 @@ const closeInstallModalBtn = document.getElementById('closeInstallModalBtn');
 
 
 installAppBtn.style.display = 'inline-flex';
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstallPrompt = e; });
+
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
 
 
 installAppBtn.addEventListener('click', async () => {
@@ -474,6 +503,7 @@ const versionTag = document.getElementById('versionTag');
 const creatorModal = document.getElementById('creatorModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const shareLinkBtn = document.getElementById('shareLinkBtn');
+const themeColorMeta = document.getElementById('themeColorMeta');
 
 
 const devSceneSelect = document.getElementById('devSceneSelect');
@@ -581,11 +611,11 @@ function getMeteoconSVG(type) {
     'partly-cloudy-night': `<svg viewBox="0 0 64 64"><path d="M25 13a10 10 0 1 0 8 16 8 8 0 1 1-8-16z" fill="#ffd43b"/>${lightCloud}</svg>`,
     'overcast': `<svg viewBox="0 0 64 64"><path d="M26 35h22a7 7 0 0 0 .5-13.9A10 10 0 0 0 28.5 18 8.5 8.5 0 0 0 26 35z" fill="#ced4da"/>${lightCloud}</svg>`,
     'fog': `<svg viewBox="0 0 64 64"><path class="mc-drift" d="M18 36h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 15.5 10.5 10.5 0 0 0 18 36 z" fill="#dee2e6"/><line x1="16" y1="43" x2="48" y2="43" stroke="#adb5bd" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="50" x2="44" y2="50" stroke="#adb5bd" stroke-width="3" stroke-linecap="round"/></svg>`,
-    'drizzle': `<svg viewBox="0 0 64 64">${darkCloud}<circle cx="24" cy="49" r="2.2" fill="#339af0"/><circle cx="33" cy="52" r="2.2" fill="#339af0"/><circle cx="42" cy="49" r="2.2" fill="#339af0"/></svg>`,
-    'rain': `<svg viewBox="0 0 64 64">${darkCloud}<line x1="24" y1="46" x2="21" y2="55" stroke="#228be6" stroke-width="3" stroke-linecap="round"/><line x1="33" y1="46" x2="30" y2="55" stroke="#228be6" stroke-width="3" stroke-linecap="round"/><line x1="42" y1="46" x2="39" y2="55" stroke="#228be6" stroke-width="3" stroke-linecap="round"/></svg>`,
-    'extreme-rain': `<svg viewBox="0 0 64 64">${stormCloud}<line x1="22" y1="44" x2="18" y2="56" stroke="#1c7ed6" stroke-width="3.2" stroke-linecap="round"/><line x1="31" y1="44" x2="27" y2="56" stroke="#1c7ed6" stroke-width="3.2" stroke-linecap="round"/><line x1="40" y1="44" x2="36" y2="56" stroke="#1c7ed6" stroke-width="3.2" stroke-linecap="round"/></svg>`,
-    'snow': `<svg viewBox="0 0 64 64">${darkCloud}<g fill="#74c0fc"><circle cx="23" cy="49" r="2.8"/><circle cx="32" cy="53" r="2.8"/><circle cx="41" cy="49" r="2.8"/></g></svg>`,
-    'thunderstorm': `<svg viewBox="0 0 64 64">${stormCloud}<polygon points="34,36 25,48 32,48 28,60 41,45 34,45" fill="#fcc419"/></svg>`
+    'drizzle': `<svg viewBox="0 0 64 64">${darkCloud}<circle class="mc-drop-1" cx="24" cy="49" r="2.2" fill="#339af0"/><circle class="mc-drop-2" cx="33" cy="52" r="2.2" fill="#339af0"/><circle class="mc-drop-3" cx="42" cy="49" r="2.2" fill="#339af0"/></svg>`,
+    'rain': `<svg viewBox="0 0 64 64">${darkCloud}<line class="mc-drop-1" x1="24" y1="46" x2="21" y2="55" stroke="#228be6" stroke-width="3" stroke-linecap="round"/><line class="mc-drop-2" x1="33" y1="46" x2="30" y2="55" stroke="#228be6" stroke-width="3" stroke-linecap="round"/><line class="mc-drop-3" x1="42" y1="46" x2="39" y2="55" stroke="#228be6" stroke-width="3" stroke-linecap="round"/></svg>`,
+    'extreme-rain': `<svg viewBox="0 0 64 64">${stormCloud}<line class="mc-drop-1" x1="22" y1="44" x2="18" y2="56" stroke="#1c7ed6" stroke-width="3.2" stroke-linecap="round"/><line class="mc-drop-2" x1="31" y1="44" x2="27" y2="56" stroke="#1c7ed6" stroke-width="3.2" stroke-linecap="round"/><line class="mc-drop-3" x1="40" y1="44" x2="36" y2="56" stroke="#1c7ed6" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+    'snow': `<svg viewBox="0 0 64 64">${darkCloud}<g fill="#74c0fc"><circle class="mc-drop-1" cx="23" cy="49" r="2.8"/><circle class="mc-drop-2" cx="32" cy="53" r="2.8"/><circle class="mc-drop-3" cx="41" cy="49" r="2.8"/></g></svg>`,
+    'thunderstorm': `<svg viewBox="0 0 64 64">${stormCloud}<polygon class="mc-flash" points="34,36 25,48 32,48 28,60 41,45 34,45" fill="#fcc419"/></svg>`
   };
   return icons[type] || icons['partly-cloudy-day'];
 }
@@ -807,9 +837,7 @@ async function searchAutocomplete(query) {
     let matches = [];
     for (const file in courseCaches) {
       const cached = courseCaches[file];
-      const matched = cached.filter(c => c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)).map(c => ({
-        name: c.name, admin1: c.region, country_code: 'GB', latitude: c.lat, longitude: c.lon, isGlobal: true
-      }));
+      const matched = cached.filter(c => c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)).map(c => ({ name: c.name, admin1: c.region, country_code: 'GB', latitude: c.lat, longitude: c.lon, isGlobal: true }));
       matches = [...matches, ...matched];
     }
 
@@ -932,8 +960,6 @@ async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTe
     lastLat = lat;
     lastLon = lon;
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
-
-
     const [weatherData, locationName] = await Promise.all([
       fetch(weatherUrl).then(r => r.json()),
       overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon)
@@ -1282,7 +1308,6 @@ function render() {
   let sunriseHourDec = 6;
   let sunsetHourDec = 18;
   const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
-  const sunriseStrRaw = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
 
 
   if (d.sunrise[currentDayIdx]) {
@@ -1296,11 +1321,10 @@ function render() {
 
 
   const daylightRemaining = sunsetHourDec - activeEvalHour;
-  const isPastSunset = activeEvalHour >= sunsetHourDec;
-  const isBeforeSunrise = activeEvalHour < sunriseHourDec;
+  const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
 
 
-  const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset || isBeforeSunrise, daylightRemaining);
+  const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
   const rainTier = determineRainTier(windowRainSum, activeHourCode);
   updateBackgroundScene(bgScene, rainTier);
 
@@ -1323,18 +1347,14 @@ function render() {
     updateDialGauge(0);
     dialVerdict.textContent = 'Lightning ⚡';
     dialSub.textContent = 'Thunderstorms forecast! Clear the course immediately.';
-  } else if (isBeforeSunrise) {
-    finalPct = 0;
-    dialScore.textContent = '0%';
-    updateDialGauge(0);
-    dialVerdict.textContent = 'Too Dark 🌙';
-    dialSub.textContent = `Sunrise is at ${sunriseStrRaw}. Choose a later tee time.`;
+    themeColorMeta.setAttribute('content', '#c62828');
   } else if (isPastSunset) {
     finalPct = 0;
     dialScore.textContent = '0%';
     updateDialGauge(0);
     dialVerdict.textContent = 'Too Dark 🌙';
     dialSub.textContent = `Sunset is at ${sunsetStrRaw}. Choose an earlier tee time.`;
+    themeColorMeta.setAttribute('content', '#14261c');
   } else {
     dialScore.textContent = `${finalPct}%`;
     updateDialGauge(finalPct);
@@ -1343,6 +1363,7 @@ function render() {
     if (finalPct >= 85) {
       dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
       dialSub.textContent = windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`;
+      themeColorMeta.setAttribute('content', '#2e7d32');
     } else if (finalPct >= 70) {
       dialVerdict.textContent = 'Good 👍';
       if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
@@ -1350,17 +1371,21 @@ function render() {
       else if (subScores[1] < 20) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
       else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
       else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
+      themeColorMeta.setAttribute('content', '#689f38');
     } else if (finalPct >= 50) {
       dialVerdict.textContent = 'Not Bad ⛅';
       if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
       else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
       else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
+      themeColorMeta.setAttribute('content', '#f9a825');
     } else if (finalPct >= 30) {
       dialVerdict.textContent = 'Poor 🌧️';
       dialSub.textContent = windowRainSum > 0 ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.` : `Strong winds or wet ground expected. No rain forecast during your round.`;
+      themeColorMeta.setAttribute('content', '#ef6c00');
     } else {
       dialVerdict.textContent = 'Heavy Rain / Wet 🌧️';
       dialSub.textContent = windowRainSum > 0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
+      themeColorMeta.setAttribute('content', '#c62828');
     }
   }
 
@@ -1378,17 +1403,31 @@ function render() {
   }
 
 
+  const windCard = document.getElementById('windCardBtn');
+  const rainCard = document.getElementById('rainCardBtn');
+  const tempCard = document.getElementById('tempCardBtn');
+
+
   const windLabel = getWindLabel(windowMaxWind);
   document.getElementById('heroWindVal').textContent = toSpeed(windowMaxWind);
   document.getElementById('heroWindSub').textContent = windLabel;
+  if (subScores[1] >= 15) setCardStatus(windCard, 'good');
+  else if (subScores[1] >= 10) setCardStatus(windCard, 'warn');
+  else setCardStatus(windCard, 'danger');
 
 
   document.getElementById('heroRainVal').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
   document.getElementById('heroRainSub').textContent = windowRainSum > 0 ? '4h Window' : 'No rain';
+  if (windowRainSum === 0) setCardStatus(rainCard, 'good');
+  else if (windowRainSum <= 1.5) setCardStatus(rainCard, 'warn');
+  else setCardStatus(rainCard, 'danger');
 
 
   document.getElementById('heroTempVal').textContent = toTemp(windowAvgTemp);
   document.getElementById('heroTempSub').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
+  if (windowAvgTemp >= 12) setCardStatus(tempCard, 'good');
+  else if (windowAvgTemp >= 5) setCardStatus(tempCard, 'warn');
+  else setCardStatus(tempCard, 'danger');
 
 
   const isNightHour = activeEvalHour >= sunsetHourDec || activeEvalHour < sunriseHourDec;
@@ -1413,7 +1452,8 @@ function render() {
   document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
 
 
-  document.getElementById('sunriseTime').textContent = sunriseStrRaw;
+  const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
+  document.getElementById('sunriseTime').textContent = sunriseStr;
   document.getElementById('sunsetTime').textContent = sunsetStrRaw;
   document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
   document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
@@ -1559,7 +1599,7 @@ function getUserLocation() {
   } else if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-      () => fetchWeather(52.2838, -1.5393, 'Royal Leamington Spa, GB')
+      (err) => fetchWeather(52.2838, -1.5393, 'Royal Leamington Spa, GB')
     );
   } else {
     fetchWeather(52.2838, -1.5393, 'Royal Leamington Spa, GB');
