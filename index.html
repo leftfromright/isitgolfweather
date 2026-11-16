@@ -736,7 +736,7 @@
     <div class="footer-note">🏌️ Plan your round with confidence</div>
     <div class="footer-bottom-bar">
       <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
-      <span class="version-pill" id="versionTag">v5.4</span>
+      <span class="version-pill" id="versionTag">v5.5</span>
     </div>
   </main>
 
@@ -744,7 +744,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.4 (Secure API Key Config & Testing)<br>Made by KW in November 2026</p>
+      <p>Version 5.5 (OpenGolfAPI Integration & Testing)<br>Made by KW in November 2026</p>
 
       <div class="dev-modal-section">
         <div class="dev-modal-header">
@@ -861,8 +861,8 @@
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
   let debounceTimer = null;
-  let lastLat = 51.5074;
-  let lastLon = -0.1278;
+  let lastLat = 52.2927;
+  let lastLon = -1.5397;
 
   let activeRoundMetrics = null;
   let activeRainTier = 'none';
@@ -1168,16 +1168,20 @@
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-async function fetchNearbyCourses(lat, lon) {
+  async function fetchNearbyCourses(lat, lon) {
     try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=golf&count=15&latitude=${lat}&longitude=${lon}&radius=30&language=en&format=json`);
+      const res = await fetch(`https://api.opengolfapi.org/v1/courses/search?lat=${lat}&lon=${lon}&radius=40`);
       const data = await res.json();
-      const results = data.results || [];
+      const results = data.courses || data.results || [];
 
-      return results.map(place => {
-        const distKm = calculateDistance(lat, lon, place.latitude, place.longitude);
+      return results.map(course => {
+        const pLat = course.latitude || course.lat;
+        const pLon = course.longitude || course.lon;
+        const distKm = calculateDistance(lat, lon, pLat, pLon);
         return {
-          ...place,
+          ...course,
+          latitude: pLat,
+          longitude: pLon,
           distMiles: distKm * 0.621371
         };
       }).sort((a, b) => a.distMiles - b.distMiles);
@@ -1195,9 +1199,12 @@ async function fetchNearbyCourses(lat, lon) {
     autocompleteList.innerHTML = '';
     if (nearbyCourses.length > 0) {
       nearbyCourses.forEach(course => {
-        const region = course.admin1 ? `, ${course.admin1}` : '';
-        const fullName = `${course.name}${region}, ${course.country_code || 'GB'}`;
-        const distLabel = `${course.distMiles.toFixed(1)} mi`;
+        const name = course.name || course.title;
+        const location = course.city || course.region || course.country || '';
+        const fullName = location ? `${name}, ${location}` : name;
+        const distLabel = course.distMiles !== undefined ? `${course.distMiles.toFixed(1)} mi` : '';
+        const pLat = course.latitude || course.lat;
+        const pLon = course.longitude || course.lon;
 
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
@@ -1208,40 +1215,7 @@ async function fetchNearbyCourses(lat, lon) {
           locationInput.value = fullName;
           autocompleteList.style.display = 'none';
           selectedDayIndex = 0;
-          fetchWeather(course.latitude, course.longitude, fullName);
-        });
-        autocompleteList.appendChild(item);
-      });
-      autocompleteList.style.display = 'block';
-    } else {
-      autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">No nearby courses found. Try typing a location.</div>`;
-    }
-  });
-
-  nearbyBtn.addEventListener('click', async () => {
-    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
-    autocompleteList.style.display = 'block';
-
-    const nearbyCourses = await fetchNearbyCourses(lastLat, lastLon);
-
-    autocompleteList.innerHTML = '';
-    if (nearbyCourses.length > 0) {
-      nearbyCourses.forEach(course => {
-        const distKm = calculateDistance(lastLat, lastLon, course.latitude, course.longitude);
-        const distMiles = (distKm * 0.621371).toFixed(1);
-        const region = course.admin1 ? `, ${course.admin1}` : '';
-        const fullName = `${course.name}${region}, ${course.country_code || 'GB'}`;
-
-        const item = document.createElement('div');
-        item.className = 'autocomplete-item';
-        item.innerHTML = `<span>⛳ ${fullName}</span> <span class="distance-tag">${distMiles} mi</span>`;
-        
-        item.addEventListener('click', (e) => {
-          e.stopPropagation();
-          locationInput.value = fullName;
-          autocompleteList.style.display = 'none';
-          selectedDayIndex = 0;
-          fetchWeather(course.latitude, course.longitude, fullName);
+          fetchWeather(pLat, pLon, fullName);
         });
         autocompleteList.appendChild(item);
       });
@@ -1263,26 +1237,28 @@ async function fetchNearbyCourses(lat, lon) {
 
   async function searchAutocomplete(query) {
     try {
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`);
+      const res = await fetch(`https://api.opengolfapi.org/v1/courses/search?q=${encodeURIComponent(query)}`);
       const data = await res.json();
-      const apiResults = data && data.results ? data.results : [];
+      const courses = data.courses || data.results || [];
 
       autocompleteList.innerHTML = '';
-      if (apiResults.length > 0) {
-        apiResults.forEach(place => {
+      if (courses.length > 0) {
+        courses.slice(0, 6).forEach(course => {
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
-          const isGolf = place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
-          const region = place.admin1 ? `, ${place.admin1}` : '';
-          const fullName = `${place.name}${region}, ${place.country_code || 'GB'}`;
+          const name = course.name || course.title;
+          const location = course.city || course.region || course.country || '';
+          const fullName = location ? `${name}, ${location}` : name;
+          const pLat = course.latitude || course.lat;
+          const pLon = course.longitude || course.lon;
 
-          item.innerHTML = `<span>${isGolf} ${fullName}</span>`;
+          item.innerHTML = `<span>⛳ ${fullName}</span>`;
           item.addEventListener('click', (e) => {
             e.stopPropagation();
             locationInput.value = fullName;
             autocompleteList.style.display = 'none';
             selectedDayIndex = 0;
-            fetchWeather(place.latitude, place.longitude, fullName);
+            fetchWeather(pLat, pLon, fullName);
           });
           autocompleteList.appendChild(item);
         });
@@ -1903,10 +1879,10 @@ async function fetchNearbyCourses(lat, lon) {
     } else if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => fetchWeather(51.5074, -0.1278, 'London, GB')
+        () => fetchWeather(52.2927, -1.5397, 'Leamington & County Golf Club, UK')
       );
     } else {
-      fetchWeather(51.5074, -0.1278, 'London, GB');
+      fetchWeather(52.2927, -1.5397, 'Leamington & County Golf Club, UK');
     }
   }
 
