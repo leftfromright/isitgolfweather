@@ -90,11 +90,11 @@
       color: var(--text);
       background-color: #1a2e22;
       overflow-x: hidden;
-      transition: background-color 0.8s ease, color 0.8s ease;
+      transition: background-color 0.6s ease, color 0.6s ease;
     }
 
 
-    /* Single-Image CSS Atmospheric Stage with Silky Cross-Fading Layers */
+    /* Single-Image CSS Atmospheric Stage with Smooth Cross-Fading */
     .bg-stage {
       position: fixed;
       inset: 0;
@@ -105,34 +105,23 @@
     }
 
 
-    .bg-layer {
+    .bg-base {
       position: absolute;
       inset: -24px;
       background-image: url('background.avif');
       background-size: cover;
       background-position: center bottom;
-      transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), filter 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s ease-in-out;
-      will-change: opacity, filter, transform;
+      filter: brightness(1.04) contrast(1.02) saturate(1.12);
+      transition: filter 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: filter, transform;
     }
-
-
-    /* Distinct cross-fading scene filters */
-    .bg-layer.sunny { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
-    .bg-layer.cloudy { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); }
-    .bg-layer.windy { filter: brightness(0.94) contrast(1.04) saturate(0.85); animation: windBreeze 7s ease-in-out infinite alternate; }
-    @keyframes windBreeze { 0% { transform: scale(1.01) translateX(-5px); } 100% { transform: scale(1.025) translateX(6px); } }
-    .bg-layer.rain { filter: brightness(0.54) contrast(1.26) saturate(0.85) grayscale(0.2); }
-    .bg-layer.ice { filter: brightness(1.04) contrast(1.12) saturate(0.38) hue-rotate(175deg); }
-    .bg-layer.snow { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); }
-    .bg-layer.dusk { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); }
-    .bg-layer.night { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
 
 
     .bg-atmosphere {
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 82% 14%, rgba(255, 244, 200, 0.28) 0%, rgba(255, 255, 255, 0) 55%);
-      transition: background 1.2s ease-in-out;
+      transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
 
@@ -141,14 +130,13 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
+      display: none;
       overflow: hidden;
       z-index: 3;
     }
 
 
-    .bg-stage.is-raining .rain-overlay-wrap { opacity: 1; }
+    .bg-stage.is-raining .rain-overlay-wrap { display: block; }
     .rain-row { position: absolute; left: 0; width: 100%; height: 100%; z-index: 2; }
     .rain-row.back-row { z-index: 1; bottom: 60px; opacity: 0.5; }
 
@@ -206,6 +194,18 @@
     }
 
 
+    /* Weather Scene States */
+    .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
+    .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); }
+    .bg-stage.scene-windy .bg-base { filter: brightness(0.94) contrast(1.04) saturate(0.85); animation: windBreeze 7s ease-in-out infinite alternate; }
+    @keyframes windBreeze { 0% { transform: scale(1.01) translateX(-5px); } 100% { transform: scale(1.025) translateX(6px); } }
+    .bg-stage.scene-rain .bg-base { filter: brightness(0.54) contrast(1.26) saturate(0.85) grayscale(0.2); }
+    .bg-stage.scene-ice .bg-base { filter: brightness(1.04) contrast(1.12) saturate(0.38) hue-rotate(175deg); }
+    .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); }
+    .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); }
+    .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
+
+
     /* Inline Meteocons SVG Keyframes */
     @keyframes mcSpin { 100% { transform: rotate(360deg); } }
     @keyframes mcDrift { 0%, 100% { transform: translateX(-2.5px); } 50% { transform: translateX(2.5px); } }
@@ -228,7 +228,7 @@
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255,255,255,0.1);
       padding: 0.55rem 1rem;
-      transition: background 0.8s ease;
+      transition: background 0.6s ease;
     }
 
 
@@ -293,7 +293,7 @@
       background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px); border-radius: 999px; padding: 0.3rem 0.55rem 0.3rem 0.95rem;
       box-shadow: var(--shadow); border: 1px solid var(--glass-border);
-      transition: background 0.8s ease, border-color 0.8s ease;
+      transition: background 0.6s ease, border-color 0.6s ease;
     }
     [data-theme="dark"] .search-wrapper { background: rgba(20, 36, 27, 0.92); }
 
@@ -332,12 +332,12 @@
     }
 
 
-    /* Glass Cards with Smooth Transitions */
+    /* Glass Cards */
     .glass-card {
       position: relative; z-index: 10; background: var(--glass-bg);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
-      transition: background 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease, color 0.8s ease;
+      transition: background 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease, color 0.6s ease;
     }
 
 
@@ -357,7 +357,7 @@
     .dial-status { font-size: 1.08rem; font-weight: 800; line-height: 1.15; }
 
 
-    .hero-right { display: flex; flex-direction: column; gap: 1.1rem; border-left: 1px solid rgba(120, 140, 128, 0.25); padding-left: 1.5rem; transition: border-color 0.8s ease; }
+    .hero-right { display: flex; flex-direction: column; gap: 1.1rem; border-left: 1px solid rgba(120, 140, 128, 0.25); padding-left: 1.5rem; transition: border-color 0.6s ease; }
     .verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
 
 
@@ -365,7 +365,7 @@
     .mini-stat {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
       border-left: 4px solid var(--glass-border);
-      border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease, background 0.8s ease, border-color 0.8s ease;
+      border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease, background 0.6s ease, border-color 0.6s ease;
     }
     .mini-stat.status-good { border-left-color: var(--status-good); }
     .mini-stat.status-warn { border-left-color: var(--status-warn); }
@@ -387,7 +387,7 @@
       background: var(--glass-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--glass-border); border-radius: 13px; padding: 0.6rem 0.25rem;
       display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
-      transition: all 0.2s ease, background 0.8s ease, border-color 0.8s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.06); color: var(--text);
+      transition: all 0.2s ease, background 0.6s ease, border-color 0.6s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.06); color: var(--text);
     }
     .date-pill.active { background: #1f422b; color: #ffffff; border-color: #2e7d32; transform: translateY(-2px); }
     .date-pill .d-name { font-size: 0.8rem; font-weight: 700; }
@@ -446,7 +446,7 @@
 
     .detail-box {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
-      border-radius: 12px; padding: 0.6rem 0.7rem; cursor: pointer; transition: transform 0.18s ease, background 0.8s ease, border-color 0.8s ease;
+      border-radius: 12px; padding: 0.6rem 0.7rem; cursor: pointer; transition: transform 0.18s ease, background 0.6s ease, border-color 0.6s ease;
     }
     .detail-box:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.14); }
     .detail-box .db-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem; }
@@ -459,7 +459,7 @@
     .chart-box {
       display: flex; width: 100%; height: 150px; background: var(--glass-card-inner);
       border-radius: 12px; border: 1px solid var(--glass-border); overflow: hidden; padding: 0.35rem;
-      transition: background 0.8s ease, border-color 0.8s ease;
+      transition: background 0.6s ease, border-color 0.6s ease;
     }
     .chart-y { width: 34px; height: 100%; flex-shrink: 0; }
     .chart-main { flex: 1; height: 100%; min-width: 0; }
@@ -488,7 +488,7 @@
     .summary-pill {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
       border-radius: 12px; padding: 0.65rem 0.8rem; display: flex; align-items: center; gap: 0.65rem;
-      transition: background 0.8s ease, border-color 0.8s ease;
+      transition: background 0.6s ease, border-color 0.6s ease;
     }
     .summary-pill .sp-icon { font-size: 1.45rem; line-height: 1; }
     .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
@@ -499,7 +499,7 @@
     .callout-item {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
       border-left: 5px solid var(--status-good); border-radius: 10px; padding: 0.6rem 0.75rem; font-size: 0.8rem;
-      transition: background 0.8s ease, border-color 0.8s ease;
+      transition: background 0.6s ease, border-color 0.6s ease;
     }
     .callout-item.status-good { border-left-color: var(--status-good); }
     .callout-item.status-warn { border-left-color: var(--status-warn); }
@@ -517,7 +517,7 @@
       background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
       border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.35rem 1.4rem; width: 100%;
       max-width: 380px; text-align: center; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3); color: var(--text); max-height: 90vh; overflow-y: auto;
-      transition: background 0.8s ease, color 0.8s ease, border-color 0.8s ease;
+      transition: background 0.6s ease, color 0.6s ease, border-color 0.6s ease;
     }
     [data-theme="dark"] .modal-card { background: rgba(20, 36, 27, 0.96); }
     .modal-card h3 { font-size: 1.1rem; margin-bottom: 0.45rem; }
@@ -558,8 +558,12 @@
       .dial-status { font-size: 0.88rem; }
       .hero-right { border-left: none; padding-left: 0; gap: 0.65rem; }
       .verdict-headline { font-size: 0.92rem; }
-      .hero-mini-grid { gap: 0.35rem; }
-      .mini-stat { padding: 0.42rem 0.38rem; }
+      
+      /* Vertically stack the 3 mini cards on mobile only */
+      .hero-mini-grid { grid-template-columns: 1fr; gap: 0.45rem; }
+      .mini-stat { padding: 0.5rem 0.65rem; }
+
+
       .date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; }
       .date-row::-webkit-scrollbar { display: none; }
       .forecast-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
@@ -572,11 +576,10 @@
 </head>
 <body>
 
-  <!-- Background Stage with Multi-Layer Cross-Fade and Rain Overlay -->
+  <!-- Background Stage & Rain Overlay -->
 
-  <div id="bgStage" class="bg-stage">
-    <div id="bgLayer1" class="bg-layer sunny" style="opacity: 1;"></div>
-    <div id="bgLayer2" class="bg-layer night" style="opacity: 0;"></div>
+  <div id="bgStage" class="bg-stage scene-sunny">
+    <div class="bg-base"></div>
     <div class="bg-atmosphere"></div>
     <div id="rainOverlayWrap" class="rain-overlay-wrap">
       <div id="rainFrontRow" class="rain-row front-row"></div>
@@ -809,7 +812,7 @@
 <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
 <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.10</span>
+  <span class="version-pill" id="versionTag">v5.11</span>
 </div>
   </main>
 
@@ -818,7 +821,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.10 (Silky Cross-Fading Atmospheric Transitions)<br>Made by KW in November 2026</p>
+      <p>Version 5.11 (Smooth Scene Cross-Fading & Stacked Mobile Cards)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
     <div class="dev-modal-header">
@@ -998,11 +1001,6 @@
 
 
   const bgStage = document.getElementById('bgStage');
-  const bgLayer1 = document.getElementById('bgLayer1');
-  const bgLayer2 = document.getElementById('bgLayer2');
-  let activeBgLayer = 1;
-
-
   const rainFrontRow = document.getElementById('rainFrontRow');
   const rainBackRow = document.getElementById('rainBackRow');
   const versionTag = document.getElementById('versionTag');
@@ -1187,24 +1185,14 @@
 
 
   function updateBackgroundScene(sceneKey, rainTier) {
-    const isRaining = rainTier !== 'none';
-    bgStage.className = `bg-stage${isRaining ? ' is-raining' : ''}`;
-
-
-    // Silky Cross-Fade Between Background Layers
-    if (activeBgLayer === 1) {
-      bgLayer2.className = `bg-layer ${sceneKey}`;
-      bgLayer2.style.opacity = '1';
-      bgLayer1.style.opacity = '0';
-      activeBgLayer = 2;
-    } else {
-      bgLayer1.className = `bg-layer ${sceneKey}`;
-      bgLayer1.style.opacity = '1';
-      bgLayer2.style.opacity = '0';
-      activeBgLayer = 1;
+    const targetClass = `bg-stage scene-${sceneKey}${rainTier !== 'none' ? ' is-raining' : ''}`;
+    if (bgStage.className !== targetClass) {
+      bgStage.style.opacity = '0.75';
+      setTimeout(() => {
+        bgStage.className = targetClass;
+        bgStage.style.opacity = '1';
+      }, 180);
     }
-
-
     if (rainTier !== activeRainTier) {
       activeRainTier = rainTier;
       makeItRain(rainTier);
@@ -1212,9 +1200,9 @@
   }
 
 
-  function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, hasSnowCover, isPastSunset, isBeforeSunrise, daylightRemaining) {
+  function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, hasSnowCover, isPastSunset, daylightRemaining) {
     if (devSceneOverride !== 'auto') return devSceneOverride;
-    if (isPastSunset || isBeforeSunrise) return 'night';
+    if (isPastSunset) return 'night';
     if (snowMm > 0 || hasSnowCover || [71, 73, 75, 77, 85, 86].includes(weatherCode)) return 'snow';
     if (tempC <= 0.5) return 'ice';
     if (rainMm > 0.2 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(weatherCode)) return 'rain';
@@ -1860,7 +1848,7 @@
     const isBeforeSunrise = activeEvalHour < sunriseHourDec;
 
 
-    const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, isBeforeSunrise, daylightRemaining);
+    const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset || isBeforeSunrise, daylightRemaining);
     const rainTier = determineRainTier(windowRainSum, activeHourCode);
     updateBackgroundScene(bgScene, rainTier);
 
