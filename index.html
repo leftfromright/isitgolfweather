@@ -293,7 +293,6 @@
       background: rgba(46,125,50,0.12); padding: 2px 8px; border-radius: 99px;
       min-width: 58px; text-align: center; white-space: nowrap; flex-shrink: 0;
     }
-    .distance-tag.closed-tag { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
 
     /* Glass Cards */
     .glass-card {
@@ -737,7 +736,7 @@
     <div class="footer-note">🏌️ Plan your round with confidence</div>
     <div class="footer-bottom-bar">
       <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
-      <span class="version-pill" id="versionTag">v5.3</span>
+      <span class="version-pill" id="versionTag">v5.4</span>
     </div>
   </main>
 
@@ -745,7 +744,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.3 (Secure API Key Config & Testing)<br>Made by KW in November 2026</p>
+      <p>Version 5.4 (Secure API Key Config & Testing)<br>Made by KW in November 2026</p>
 
       <div class="dev-modal-section">
         <div class="dev-modal-header">
@@ -857,7 +856,6 @@
   let currentCityName = '';
   let selectedDayIndex = 0;
 
-  // Mask and store securely in client browser session only
   let currentApiKey = localStorage.getItem('og_api_key') || '';
 
   const currentHourNow = new Date().getHours();
@@ -869,8 +867,6 @@
   let activeRoundMetrics = null;
   let activeRainTier = 'none';
   const circumference = 2 * Math.PI * 70;
-
-  const courseCaches = {};
 
   let deferredInstallPrompt = null;
   const installAppBtn = document.getElementById('installAppBtn');
@@ -1172,63 +1168,47 @@
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-  function getRegionalFilename(lat, lon) {
-    if (lat >= 14 && lat <= 72 && lon >= -170 && lon <= -50) return 'courses-usa.json';
-    if ((lat > 48 && lon < -50) || (lat >= -60 && lat <= 32 && lon >= -120 && lon <= -34)) return 'courses-americas.json';
-    if (lat >= 49 && lat <= 61 && lon >= -11 && lon <= 2) return 'courses-uk-ireland.json';
-    if (lat >= 35 && lat <= 71 && lon > -11 && lon <= 45) return 'courses-europe.json';
-    return 'courses-apac-row.json';
-  }
-
-  async function loadCoursesForRegion(filename) {
-    if (courseCaches[filename]) return courseCaches[filename];
+  async function fetchNearbyCourses(lat, lon) {
     try {
-      const res = await fetch(`data/${filename}`);
-      if (!res.ok) throw new Error('Not found');
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=golf&count=10&latitude=${lat}&longitude=${lon}&radius=50&language=en&format=json`);
       const data = await res.json();
-      courseCaches[filename] = data;
-      return data;
+      return data.results || [];
     } catch (err) {
       return [];
     }
   }
 
   nearbyBtn.addEventListener('click', async () => {
-    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Loading regional golf database...</div>`;
+    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
     autocompleteList.style.display = 'block';
 
-    const primaryFile = getRegionalFilename(lastLat, lastLon);
-    let courses = await loadCoursesForRegion(primaryFile);
-
-    if (courses.length < 5 && primaryFile !== 'courses-uk-ireland.json') {
-      const fallbackCourses = await loadCoursesForRegion('courses-uk-ireland.json');
-      courses = [...courses, ...fallbackCourses];
-    }
-
-    const sortedCourses = courses.map(course => {
-      const distKm = calculateDistance(lastLat, lastLon, course.lat, course.lon);
-      const isLikelyClosed = currentData && currentData.current && (currentData.current.temperature_2m <= -2.5 || (currentData.current.snowfall && currentData.current.snowfall > 2));
-      return { ...course, distMiles: (distKm * 0.621371).toFixed(1), isClosed: isLikelyClosed && distKm < 15 };
-    }).sort((a, b) => parseFloat(a.distMiles) - parseFloat(b.distMiles));
+    const nearbyCourses = await fetchNearbyCourses(lastLat, lastLon);
 
     autocompleteList.innerHTML = '';
-    sortedCourses.slice(0, 8).forEach(course => {
-      const item = document.createElement('div');
-      item.className = 'autocomplete-item';
-      const tagClass = course.isClosed ? 'distance-tag closed-tag' : 'distance-tag';
-      const tagText = course.isClosed ? 'CLOSED ⚠️' : `${course.distMiles} mi`;
+    if (nearbyCourses.length > 0) {
+      nearbyCourses.forEach(course => {
+        const distKm = calculateDistance(lastLat, lastLon, course.latitude, course.longitude);
+        const distMiles = (distKm * 0.621371).toFixed(1);
+        const region = course.admin1 ? `, ${course.admin1}` : '';
+        const fullName = `${course.name}${region}, ${course.country_code || 'GB'}`;
 
-      item.innerHTML = `<span>⛳ ${course.name} (${course.region})</span> <span class="${tagClass}">${tagText}</span>`;
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        locationInput.value = `${course.name}, ${course.region}`;
-        autocompleteList.style.display = 'none';
-        selectedDayIndex = 0;
-        fetchWeather(course.lat, course.lon, `${course.name}, ${course.region}`);
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.innerHTML = `<span>⛳ ${fullName}</span> <span class="distance-tag">${distMiles} mi</span>`;
+        
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          locationInput.value = fullName;
+          autocompleteList.style.display = 'none';
+          selectedDayIndex = 0;
+          fetchWeather(course.latitude, course.longitude, fullName);
+        });
+        autocompleteList.appendChild(item);
       });
-      autocompleteList.appendChild(item);
-    });
-    autocompleteList.style.display = 'block';
+      autocompleteList.style.display = 'block';
+    } else {
+      autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">No nearby courses found. Try typing a location.</div>`;
+    }
   });
 
   locationInput.addEventListener('input', () => {
@@ -1243,38 +1223,20 @@
 
   async function searchAutocomplete(query) {
     try {
-      let matches = [];
-      for (const file in courseCaches) {
-        const cached = courseCaches[file];
-        const matched = cached.filter(c => 
-          c.name.toLowerCase().includes(query) || c.region.toLowerCase().includes(query)
-        ).map(c => ({
-          name: c.name,
-          admin1: c.region,
-          country_code: 'GB',
-          latitude: c.lat,
-          longitude: c.lon,
-          isGlobal: true
-        }));
-        matches = [...matches, ...matched];
-      }
-
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`);
       const data = await res.json();
       const apiResults = data && data.results ? data.results : [];
 
-      const combined = [...matches, ...apiResults];
       autocompleteList.innerHTML = '';
-
-      if (combined.length > 0) {
-        combined.slice(0, 6).forEach(place => {
+      if (apiResults.length > 0) {
+        apiResults.forEach(place => {
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
-          const isGolf = place.isGlobal || place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
+          const isGolf = place.name.toLowerCase().includes('golf') ? '⛳' : '📍';
           const region = place.admin1 ? `, ${place.admin1}` : '';
           const fullName = `${place.name}${region}, ${place.country_code || 'GB'}`;
 
-          item.innerHTML = `<span>${isGolf} ${fullName}</span>${place.isGlobal ? '<span class="distance-tag">Global DB</span>' : ''}`;
+          item.innerHTML = `<span>${isGolf} ${fullName}</span>`;
           item.addEventListener('click', (e) => {
             e.stopPropagation();
             locationInput.value = fullName;
@@ -1367,7 +1329,6 @@
       lastLon = lon;
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
       
-      // If an API key is provided locally in session, include headers
       const fetchOpts = currentApiKey ? { headers: { 'Authorization': `Bearer ${currentApiKey}` } } : {};
 
       const [weatherData, locationName] = await Promise.all([
@@ -1385,8 +1346,6 @@
       selectedDayIndex = Math.max(0, Math.min(15, targetDay));
       selectedTeeHour = targetTee !== null ? Math.max(6, Math.min(20, targetTee)) : Math.max(6, Math.min(20, new Date().getHours()));
       teeTimeSlider.value = selectedTeeHour;
-
-      loadCoursesForRegion(getRegionalFilename(lat, lon));
 
       buildDateBar();
       updateTeeTimeDisplay();
