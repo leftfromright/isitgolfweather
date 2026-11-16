@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenGC API Test - dev.html</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 680px; margin: 2rem auto; padding: 0 1rem; background: #f8fafc; color: #1e293b; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    p { color: #64748b; margin-bottom: 1.5rem; }
+    .card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    input, button, select { font-size: 0.95rem; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; }
+    input { flex: 1; min-width: 200px; }
+    button { background: #2563eb; color: #ffffff; border: none; font-weight: 600; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    pre { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; max-height: 400px; }
+    .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; background: #e0f2fe; color: #0369a1; }
+  </style>
+</head>
+<body>
+
+  <h1>⛳ OpenGC API Tester (dev.html)</h1>
+  <p>Minimal test harness to inspect OpenGC course searches and geolocation radius endpoints.</p>
+
+  <div class="card">
+    <h3>1. Quick Coordinates / Presets</h3>
+    <div class="row">
+      <select id="presetSelect" style="flex:1;">
+        <option value="52.2927,-1.5397">Leamington & County Golf Club (UK) [52.2927, -1.5397]</option>
+        <option value="56.3418,-2.8067">St Andrews Old Course (Scotland) [56.3418, -2.8067]</option>
+        <option value="51.5074,-0.1278">London, UK [51.5074, -0.1278]</option>
+        <option value="36.568,-121.949">Pebble Beach, USA [36.568, -121.949]</option>
+      </select>
+      <button id="loadPresetBtn">Load Preset</button>
+    </div>
+    <div class="row">
+      <input type="text" id="latInput" placeholder="Latitude" value="52.2927">
+      <input type="text" id="lonInput" placeholder="Longitude" value="-1.5397">
+      <input type="text" id="radiusInput" placeholder="Radius (km)" value="50" style="max-width: 110px;">
+      <button id="testRadiusBtn">Test Nearby (Lat/Lon)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2. Text Search</h3>
+    <div class="row">
+      <input type="text" id="searchInput" placeholder="Search query (e.g. Leamington, St Andrews)..." value="Leamington">
+      <button id="testSearchBtn">Test Search</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>API Response <span id="statusBadge" class="badge">Idle</span></h3>
+    <pre id="outputLog">Click one of the test buttons above to inspect JSON response...</pre>
+  </div>
+
+<script>
+  const latInput = document.getElementById('latInput');
+  const lonInput = document.getElementById('lonInput');
+  const radiusInput = document.getElementById('radiusInput');
+  const searchInput = document.getElementById('searchInput');
+  const presetSelect = document.getElementById('presetSelect');
+  const loadPresetBtn = document.getElementById('loadPresetBtn');
+  const testRadiusBtn = document.getElementById('testRadiusBtn');
+  const testSearchBtn = document.getElementById('testSearchBtn');
+  const outputLog = document.getElementById('outputLog');
+  const statusBadge = document.getElementById('statusBadge');
+
+  loadPresetBtn.addEventListener('click', () => {
+    const [lat, lon] = presetSelect.value.split(',');
+    latInput.value = lat;
+    lonInput.value = lon;
+  });
+
+  async function callApi(url) {
+    statusBadge.textContent = 'Loading...';
+    statusBadge.style.background = '#fef08a';
+    statusBadge.style.color = '#854d0e';
+    outputLog.textContent = 'Fetching ' + url + ' ...';
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      statusBadge.textContent = `HTTP ${res.status} OK`;
+      statusBadge.style.background = '#dcfce7';
+      statusBadge.style.color = '#166534';
+      outputLog.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      statusBadge.textContent = 'Error';
+      statusBadge.style.background = '#fee2e2';
+      statusBadge.style.color = '#991b1b';
+      outputLog.textContent = 'Fetch error: ' + err.message;
+    }
+  }
+
+  testRadiusBtn.addEventListener('click', () => {
+    const lat = latInput.value.trim();
+    const lon = lonInput.value.trim();
+    const radius = radiusInput.value.trim() || '50';
+    const url = `https://api.opengc.net/api/public/courses?lat=${lat}&lng=${lon}&radiusKm=${radius}&limit=20`;
+    callApi(url);
+  });
+
+  testSearchBtn.addEventListener('click', () => {
+    const q = encodeURIComponent(searchInput.value.trim());
+    const url = `https://api.opengc.net/api/public/courses?search=${q}&limit=20`;
+    callApi(url);
+  });
+</script>
+
+</body>
+</html>
