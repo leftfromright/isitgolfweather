@@ -1170,15 +1170,11 @@
 
 async function fetchNearbyCourses(lat, lon) {
     try {
-      // Query specific local golf facilities or coordinates nearby
-      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=Golf Club&count=20&language=en&format=json`);
+      const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=golf&count=15&latitude=${lat}&longitude=${lon}&radius=30&language=en&format=json`);
       const data = await res.json();
       const results = data.results || [];
 
-      // If no explicit 'Golf Club' matches come back, fall back to general area search
-      const places = results.length > 0 ? results : (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=Golf&count=20&language=en&format=json`).then(r => r.json())).results || [];
-
-      return places.map(place => {
+      return results.map(place => {
         const distKm = calculateDistance(lat, lon, place.latitude, place.longitude);
         return {
           ...place,
@@ -1189,6 +1185,38 @@ async function fetchNearbyCourses(lat, lon) {
       return [];
     }
   }
+
+  nearbyBtn.addEventListener('click', async () => {
+    autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
+    autocompleteList.style.display = 'block';
+
+    const nearbyCourses = await fetchNearbyCourses(lastLat, lastLon);
+
+    autocompleteList.innerHTML = '';
+    if (nearbyCourses.length > 0) {
+      nearbyCourses.forEach(course => {
+        const region = course.admin1 ? `, ${course.admin1}` : '';
+        const fullName = `${course.name}${region}, ${course.country_code || 'GB'}`;
+        const distLabel = `${course.distMiles.toFixed(1)} mi`;
+
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.innerHTML = `<span>⛳ ${fullName}</span> <span class="distance-tag">${distLabel}</span>`;
+        
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          locationInput.value = fullName;
+          autocompleteList.style.display = 'none';
+          selectedDayIndex = 0;
+          fetchWeather(course.latitude, course.longitude, fullName);
+        });
+        autocompleteList.appendChild(item);
+      });
+      autocompleteList.style.display = 'block';
+    } else {
+      autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">No nearby courses found. Try typing a location.</div>`;
+    }
+  });
 
   nearbyBtn.addEventListener('click', async () => {
     autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
