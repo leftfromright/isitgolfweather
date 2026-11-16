@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -26,6 +27,7 @@
       --accent-dark: #1b5e20;
       --shadow: 0 8px 32px rgba(15, 35, 22, 0.14);
 
+
       /* 5-Tier Dial Gauge Palette */
       --gauge-great: #2e7d32;
       --gauge-good: #689f38;
@@ -33,10 +35,12 @@
       --gauge-poor: #ef6c00;
       --gauge-bad: #c62828;
 
+
       /* Guidance Left-Border Status Colours */
       --status-good: #2e7d32;
       --status-warn: #ef6c00;
       --status-danger: #c62828;
+
 
       --chart-line: #2e7d32;
       --chart-bar: #1e88e5;
@@ -45,6 +49,7 @@
       --now-line: #d32f2f;
       --tee-line: #1565c0;
     }
+
 
     [data-theme="dark"] {
       --glass-bg: rgba(18, 32, 24, 0.82);
@@ -57,20 +62,24 @@
       --accent-dark: #2e7d32;
       --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 
+
       --gauge-great: #4caf50;
       --gauge-good: #9ccc65;
       --gauge-med: #fdd835;
       --gauge-poor: #fb8c00;
       --gauge-bad: #ef5350;
 
+
       --status-good: #4caf50;
       --status-warn: #fb8c00;
       --status-danger: #ef5350;
+
 
       --chart-line: #66bb6a;
       --chart-bar: #64b5f6;
       --chart-grid: rgba(158, 184, 168, 0.18);
     }
+
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -83,6 +92,7 @@
       overflow-x: hidden;
     }
 
+
     /* Single-Image CSS Atmospheric Stage */
     .bg-stage {
       position: fixed;
@@ -92,6 +102,7 @@
       pointer-events: none;
       background: #14261c;
     }
+
 
     .bg-base {
       position: absolute;
@@ -104,12 +115,14 @@
       will-change: filter, transform;
     }
 
+
     .bg-atmosphere {
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 82% 14%, rgba(255, 244, 200, 0.28) 0%, rgba(255, 255, 255, 0) 55%);
       transition: background 1.1s ease-in-out;
     }
+
 
     /* Dynamic Drops + Splats Rain Overlay */
     .rain-overlay-wrap {
@@ -121,9 +134,11 @@
       z-index: 3;
     }
 
+
     .bg-stage.is-raining .rain-overlay-wrap { display: block; }
     .rain-row { position: absolute; left: 0; width: 100%; height: 100%; z-index: 2; }
     .rain-row.back-row { z-index: 1; bottom: 60px; opacity: 0.5; }
+
 
     .rain-overlay-wrap .drop {
       position: absolute;
@@ -134,11 +149,13 @@
       animation: cpDrop 0.5s linear infinite;
     }
 
+
     @keyframes cpDrop {
       0% { transform: translateY(0vh); }
       75% { transform: translateY(90vh); }
       100% { transform: translateY(90vh); }
     }
+
 
     .rain-overlay-wrap .stem {
       width: 1.5px;
@@ -148,12 +165,14 @@
       animation: cpStem 0.5s linear infinite;
     }
 
+
     @keyframes cpStem {
       0% { opacity: 1; }
       65% { opacity: 1; }
       75% { opacity: 0; }
       100% { opacity: 0; }
     }
+
 
     .rain-overlay-wrap .splat {
       width: 15px;
@@ -165,12 +184,14 @@
       display: block;
     }
 
+
     @keyframes cpSplat {
       0% { opacity: 1; transform: scale(0); }
       80% { opacity: 1; transform: scale(0); }
       90% { opacity: 0.65; transform: scale(1); }
       100% { opacity: 0; transform: scale(1.5); }
     }
+
 
     /* Weather Scene States */
     .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
@@ -182,6 +203,7 @@
     .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); }
     .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); }
     .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
+
 
     /* Inline Meteocons SVG Keyframes */
     @keyframes mcSpin { 100% { transform: rotate(360deg); } }
@@ -195,6 +217,7 @@
     .mc-drop-3 { animation: mcDrop 1.3s ease-in 0.8s infinite; }
     .mc-flash { animation: mcFlash 2.8s infinite; }
 
+
     /* Top Dark Header Bar */
     .top-bar {
       position: relative;
@@ -206,6 +229,7 @@
       padding: 0.55rem 1rem;
     }
 
+
     .top-bar-inner {
       max-width: 760px;
       margin: 0 auto;
@@ -215,8 +239,10 @@
       gap: 0.5rem;
     }
 
+
     .brand { display: flex; align-items: center; gap: 0.5rem; color: #ffffff; }
     .brand h1 { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.2px; }
+
 
     .version-pill {
       background: #2e7d32;
@@ -233,6 +259,7 @@
       justify-content: center;
     }
 
+
     .header-controls { display: flex; align-items: center; gap: 0.35rem; }
     .pill-toggle { display: flex; background: rgba(255, 255, 255, 0.14); border-radius: 999px; padding: 2px; }
     .pill-toggle button {
@@ -240,6 +267,7 @@
       padding: 0.25rem 0.55rem; border-radius: 999px; cursor: pointer; transition: all 0.2s ease;
     }
     .pill-toggle button.active { background: #2e7d32; color: #ffffff; }
+
 
     .header-icon-btn {
       background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2);
@@ -249,11 +277,13 @@
     .header-icon-btn:hover { background: rgba(255, 255, 255, 0.22); }
     .theme-btn { background: transparent; border: none; color: #ffffff; font-size: 1rem; cursor: pointer; padding: 0.2rem 0.3rem; }
 
+
     /* Main Container */
     .app-container {
       position: relative; z-index: 5; max-width: 760px; margin: 0 auto;
       padding: 0.9rem 0.85rem 2rem 0.85rem; display: flex; flex-direction: column; gap: 0.85rem;
     }
+
 
     /* Search Bar */
     .search-wrapper {
@@ -264,13 +294,16 @@
     }
     [data-theme="dark"] .search-wrapper { background: rgba(20, 36, 27, 0.92); }
 
+
     .search-wrapper input {
       flex: 1; border: none; background: transparent; color: var(--text);
       font-size: 0.95rem; font-weight: 500; padding: 0.45rem 0.5rem; outline: none;
     }
 
+
     .search-icon-btn { background: transparent; border: none; font-size: 1.15rem; cursor: pointer; padding: 0.35rem 0.45rem; border-radius: 50%; }
     .search-icon-btn:active { transform: scale(0.92); }
+
 
     .autocomplete-list {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0;
@@ -280,6 +313,7 @@
       z-index: 1200; max-height: 260px; overflow-y: auto; display: none;
     }
     [data-theme="dark"] .autocomplete-list { background: rgba(20, 36, 27, 0.97); border-color: rgba(255, 255, 255, 0.16); }
+
 
     .autocomplete-item {
       padding: 0.7rem 1rem; cursor: pointer; font-size: 0.9rem;
@@ -294,6 +328,7 @@
       min-width: 58px; text-align: center; white-space: nowrap; flex-shrink: 0;
     }
 
+
     /* Glass Cards */
     .glass-card {
       position: relative; z-index: 10; background: var(--glass-bg);
@@ -301,7 +336,9 @@
       border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
     }
 
+
     .hero-card { display: grid; grid-template-columns: 225px 1fr; gap: 1.5rem; align-items: center; padding: 1.65rem 1.75rem; }
+
 
     .dial-box { position: relative; width: 215px; height: 215px; margin: 0 auto; }
     .dial-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
@@ -315,14 +352,22 @@
     .dial-temp { font-size: 1.05rem; font-weight: 700; color: var(--text-muted); margin: 0.3rem 0 0.15rem 0; }
     .dial-status { font-size: 1.08rem; font-weight: 800; line-height: 1.15; }
 
+
     .hero-right { display: flex; flex-direction: column; gap: 1.1rem; border-left: 1px solid rgba(120, 140, 128, 0.25); padding-left: 1.5rem; }
     .verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+
 
     .hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
     .mini-stat {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
+      border-left: 4px solid var(--glass-border);
       border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease;
     }
+    .mini-stat.status-good { border-left-color: var(--status-good); }
+    .mini-stat.status-warn { border-left-color: var(--status-warn); }
+    .mini-stat.status-danger { border-left-color: var(--status-danger); }
+
+
     .mini-stat:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.15); }
     .mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem; }
     .mini-stat-icon { font-size: 1.55rem; line-height: 1.1; }
@@ -330,6 +375,7 @@
     .mini-stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
     .mini-stat-val { font-size: 1.2rem; font-weight: 800; margin: 0.1rem 0; }
     .mini-stat-sub { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
+
 
     /* Date Row */
     .date-row { position: relative; z-index: 10; display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.45rem; }
@@ -345,11 +391,13 @@
     .date-pill .d-temps { font-size: 0.74rem; font-weight: 600; opacity: 0.92; }
     #hiddenDatePicker { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
 
+
     /* Tee Time Slider Card */
     .slider-bar { padding: 0.8rem 1.2rem; min-height: 122px; display: flex; flex-direction: column; justify-content: space-between; }
     .slider-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
     .slider-title { font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 0.35rem; }
     .slider-time-readout { font-size: 0.9rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.3rem; }
+
 
     input[type="range"] {
       width: 100%; height: 6px; border-radius: 999px; background: rgba(120, 140, 128, 0.3);
@@ -366,6 +414,7 @@
       border: 1px solid #94a3b8; box-shadow: 0 3px 8px rgba(0,0,0,0.25); cursor: pointer;
     }
 
+
     .daylight-banner {
       display: none; margin-top: 0.35rem; padding: 0.45rem 0.8rem; border-radius: 10px;
       font-size: 0.76rem; font-weight: 600; text-align: center; background: rgba(16, 28, 44, 0.88);
@@ -375,9 +424,11 @@
     .daylight-banner.warn { border-left: 4px solid #f59e0b; border-right: 4px solid #f59e0b; }
     .daylight-banner.danger { border-left: 4px solid #ef4444; border-right: 4px solid #ef4444; border-color: rgba(239, 68, 68, 0.35); }
 
+
     .card-header { font-size: 0.94rem; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.45rem; }
     .meteocon-header { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .meteocon-header svg { width: 100%; height: 100%; }
+
 
     /* Forecast Details */
     .forecast-grid { display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; gap: 0.6rem; align-items: center; }
@@ -388,6 +439,7 @@
     .forecast-temp-stack .f-feels { font-size: 0.72rem; color: var(--text-muted); }
     .forecast-temp-stack .f-cond { font-size: 0.82rem; font-weight: 700; margin-top: 0.1rem; }
 
+
     .detail-box {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
       border-radius: 12px; padding: 0.6rem 0.7rem; cursor: pointer; transition: transform 0.18s ease;
@@ -397,6 +449,7 @@
     .detail-box .db-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
     .detail-box .db-val { font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; gap: 0.25rem; }
     .detail-box .db-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem; }
+
 
     /* Chart */
     .chart-box {
@@ -417,11 +470,13 @@
     .tee-line { stroke: var(--tee-line); stroke-width: 2; stroke-dasharray: 3,3; }
     .chart-icon-marker { font-size: 12px; text-anchor: middle; }
 
+
     .chart-legend {
       display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem;
       margin-top: 0.55rem; font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
     }
     .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+
 
     /* Summary & Callouts */
     .summary-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
@@ -433,6 +488,7 @@
     .summary-pill .sp-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
     .summary-pill .sp-val { font-size: 0.96rem; font-weight: 800; }
 
+
     .callouts-grid { display: grid; grid-template-columns: 1fr; gap: 0.55rem; }
     .callout-item {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
@@ -443,8 +499,10 @@
     .callout-item.status-danger { border-left-color: var(--status-danger); }
     .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.8rem; }
 
+
     .footer-note { text-align: center; color: #ffffff; font-size: 0.82rem; font-weight: 600; font-style: italic; text-shadow: 0 1px 4px rgba(0,0,0,0.75); padding: 0.35rem 0 0.2rem 0; }
     .footer-bottom-bar { display: flex; justify-content: center; align-items: center; gap: 0.75rem; padding: 0.4rem 0 0.8rem 0; }
+
 
     /* Modals */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.52); z-index: 2000; align-items: center; justify-content: center; padding: 1rem; }
@@ -464,6 +522,7 @@
     .modal-detail-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(120, 140, 128, 0.18); padding-bottom: 0.3rem; }
     .modal-detail-row:last-child { border-bottom: none; padding-bottom: 0; }
 
+
     .dev-modal-section {
       text-align: left; background: rgba(18, 34, 24, 0.85); border: 1px solid rgba(102, 187, 106, 0.35);
       border-radius: 12px; padding: 0.75rem; margin-bottom: 1rem; color: #eef6f1;
@@ -477,7 +536,9 @@
     }
     .dev-field select option { background: #14261c; color: #ffffff; }
 
+
     .modal-close-btn { background: #2e7d32; color: #ffffff; border: none; padding: 0.55rem 1.6rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+
 
     /* Mobile Responsive Adjustments (≤ 600px) */
     @media (max-width: 600px) {
@@ -499,10 +560,12 @@
       .summary-3col { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
+
 </head>
 <body>
 
   <!-- Background Stage & Rain Overlay -->
+
   <div id="bgStage" class="bg-stage scene-sunny">
     <div class="bg-base"></div>
     <div class="bg-atmosphere"></div>
@@ -513,6 +576,7 @@
   </div>
 
   <!-- Top Header -->
+
   <header class="top-bar">
     <div class="top-bar-inner">
       <div class="brand">
@@ -533,295 +597,297 @@
   <main class="app-container">
     <input type="date" id="hiddenDatePicker">
 
-    <!-- Search Bar -->
-    <div class="search-wrapper">
-      <span style="font-size: 1.05rem;">📍</span>
-      <input type="text" id="locationInput" placeholder="Search golf club or location..." autocomplete="off">
-      <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">⛳</button>
-      <button id="geoBtn" class="search-icon-btn" title="Use current location">📍</button>
-      <div id="autocompleteList" class="autocomplete-list"></div>
-    </div>
+<!-- Search Bar -->
+<div class="search-wrapper">
+  <span style="font-size: 1.05rem;">📍</span>
+  <input type="text" id="locationInput" placeholder="Search golf club or location..." autocomplete="off">
+  <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby">⛳</button>
+  <button id="geoBtn" class="search-icon-btn" title="Use current location">📍</button>
+  <div id="autocompleteList" class="autocomplete-list"></div>
+</div>
 
-    <!-- Hero Score & Verdict Card -->
-    <section class="glass-card hero-card">
-      <div class="dial-box">
-        <svg class="dial-svg" viewBox="0 0 160 160">
-          <circle class="dial-track" cx="80" cy="80" r="70"></circle>
-          <circle id="dialArc" class="dial-arc" cx="80" cy="80" r="70"></circle>
-        </svg>
-        <div class="dial-center">
-          <div id="dialScore" class="dial-pct">--%</div>
-          <div id="dialTemp" class="dial-temp">--°C</div>
-          <div id="dialVerdict" class="dial-status">--</div>
-        </div>
-      </div>
-
-      <div class="hero-right">
-        <div id="dialSub" class="verdict-headline">Locating golf forecast...</div>
-        <div class="hero-mini-grid">
-          <div class="mini-stat" id="windCardBtn" title="Click for hourly wind details">
-            <div class="mini-stat-header">
-              <div class="mini-stat-icon">💨</div>
-              <span class="mini-info-hint">ⓘ</span>
-            </div>
-            <div class="mini-stat-label">Wind</div>
-            <div id="heroWindVal" class="mini-stat-val">--</div>
-            <div id="heroWindSub" class="mini-stat-sub">--</div>
-          </div>
-          <div class="mini-stat" id="rainCardBtn" title="Click for hourly rain details">
-            <div class="mini-stat-header">
-              <div class="mini-stat-icon">💧</div>
-              <span class="mini-info-hint">ⓘ</span>
-            </div>
-            <div class="mini-stat-label">Rain</div>
-            <div id="heroRainVal" class="mini-stat-val">--</div>
-            <div id="heroRainSub" class="mini-stat-sub">--</div>
-          </div>
-          <div class="mini-stat" id="tempCardBtn" title="Click for hourly temp & carry details">
-            <div class="mini-stat-header">
-              <div class="mini-stat-icon">🌡️</div>
-              <span class="mini-info-hint">ⓘ</span>
-            </div>
-            <div class="mini-stat-label">Temp</div>
-            <div id="heroTempVal" class="mini-stat-val">--</div>
-            <div id="heroTempSub" class="mini-stat-sub">--</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 7-Day Date Selector Row -->
-    <section class="date-row" id="dateBar"></section>
-
-    <!-- Tee Time Slider Card -->
-    <section class="glass-card slider-bar">
-      <div>
-        <div class="slider-top">
-          <div class="slider-title">🚩 Tee Time</div>
-          <div class="slider-time-readout">🕒 <span id="teeTimeDisplay">08:00 AM</span></div>
-        </div>
-        <input type="range" id="teeTimeSlider" min="6" max="20" value="8" step="1">
-      </div>
-      <div id="daylightWarning" class="daylight-banner"></div>
-    </section>
-
-    <!-- Forecast Breakdown Card -->
-    <section class="glass-card">
-      <div class="card-header">
-        <span id="forecastHeaderIcon" class="meteocon-header"></span>
-        <span><span id="dayLabel">Forecast</span> — <span id="locationName">---</span></span>
-      </div>
-
-      <div class="forecast-grid">
-        <div class="forecast-main">
-          <div id="weatherIcon" class="meteocon-main"></div>
-          <div class="forecast-temp-stack">
-            <div id="currentTemp" class="f-temp">--°C</div>
-            <div id="feelsLikeTemp" class="f-feels">Feels like --°C</div>
-            <div id="currentCondition" class="f-cond">--</div>
-          </div>
-        </div>
-
-        <div class="detail-box" id="forecastWindBtn" title="Click for hourly wind & gusts">
-          <div class="db-label-row">
-            <span class="db-label">Wind Speed</span>
-            <span class="mini-info-hint">ⓘ</span>
-          </div>
-          <div class="db-val">💨 <span id="currentWind">--</span></div>
-          <div id="windSub" class="db-sub">--</div>
-        </div>
-
-        <div class="detail-box" id="forecastRecentBtn" title="Click for turf & prior rainfall details">
-          <div class="db-label-row">
-            <span class="db-label">Recent (24h)</span>
-            <span class="mini-info-hint">ⓘ</span>
-          </div>
-          <div class="db-val">🌧️ <span id="recentRain">--</span></div>
-          <div id="recentRainSub" class="db-sub">--</div>
-        </div>
-
-        <div class="detail-box" id="forecastRoundRainBtn" title="Click for 4-hour round rain breakdown">
-          <div class="db-label-row">
-            <span class="db-label">Round Rain (4h)</span>
-            <span class="mini-info-hint">ⓘ</span>
-          </div>
-          <div class="db-val">☔ <span id="forecastRain">--</span></div>
-          <div id="forecastRainSub" class="db-sub">--</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 24-Hour Forecast Chart -->
-    <section class="glass-card">
-      <div class="card-header">📊 24-Hour Forecast</div>
-      <div class="chart-box">
-        <div class="chart-y">
-          <svg id="yAxisSvg"></svg>
-        </div>
-        <div class="chart-main" id="chartMainContainer">
-          <svg id="hourlyChart"></svg>
-        </div>
-      </div>
-      <div class="chart-legend">
-        <span><span class="legend-dot" style="background: var(--chart-line);"></span>Temp</span>
-        <span><span class="legend-dot" style="background: var(--chart-bar);"></span>Rain</span>
-        <span>🚩 Tee Time</span>
-        <span>☀️ Sunrise</span>
-        <span>🌙 Sunset</span>
-      </div>
-    </section>
-
-    <!-- Day Summary -->
-    <section class="glass-card">
-      <div class="card-header">📅 Day Summary</div>
-      <div class="summary-3col">
-        <div class="summary-pill">
-          <div class="sp-icon">☀️</div>
-          <div>
-            <div class="sp-label">Sunrise</div>
-            <div id="sunriseTime" class="sp-val">--:--</div>
-          </div>
-        </div>
-        <div class="summary-pill">
-          <div class="sp-icon">🌙</div>
-          <div>
-            <div class="sp-label">Sunset</div>
-            <div id="sunsetTime" class="sp-val">--:--</div>
-          </div>
-        </div>
-        <div class="summary-pill">
-          <div class="sp-icon">📊</div>
-          <div>
-            <div class="sp-label">High / Low</div>
-            <div id="tempRange" class="sp-val">-- / --</div>
-          </div>
-        </div>
-        <div class="summary-pill">
-          <div class="sp-icon">⏳</div>
-          <div>
-            <div class="sp-label">Daylight Left</div>
-            <div id="daylightLeft" class="sp-val">-- hrs</div>
-          </div>
-        </div>
-        <div class="summary-pill">
-          <div class="sp-icon">🌧️</div>
-          <div>
-            <div class="sp-label">Daily Rain</div>
-            <div id="todayRain" class="sp-val">--</div>
-          </div>
-        </div>
-        <div class="summary-pill">
-          <div class="sp-icon">💨</div>
-          <div>
-            <div class="sp-label">Max Wind</div>
-            <div id="maxWind" class="sp-val">--</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Course Conditions & Carry -->
-    <section class="glass-card">
-      <div class="card-header">🏌️ Course & Club Guidance</div>
-      <div class="callouts-grid">
-        <div id="groundCallout" class="callout-item"></div>
-        <div id="windCallout" class="callout-item"></div>
-        <div id="rainOutlookCallout" class="callout-item"></div>
-        <div id="distancePenaltyCallout" class="callout-item"></div>
-        <div id="gearCallout" class="callout-item"></div>
-      </div>
-    </section>
-
-    <!-- Footer Tagline & Bottom Bar -->
-    <div class="footer-note">🏌️ Plan your round with confidence</div>
-    <div class="footer-bottom-bar">
-      <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
-      <span class="version-pill" id="versionTag">v5.7</span>
-    </div>
-  </main>
-
-  <!-- Creator & Developer Sandbox Modal -->
-  <div class="modal-overlay" id="creatorModal">
-    <div class="modal-card">
-      <h3>Is it golf weather?</h3>
-      <p>Version 5.7 (Robust Local Search & Geocoding)<br>Made by KW in November 2026</p>
-
-      <div class="dev-modal-section">
-        <div class="dev-modal-header">
-          <span>🛠️ Developer Sandbox & API Config</span>
-          <button id="devResetBtn" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:0.15rem 0.45rem; border-radius:99px; font-size:0.65rem; cursor:pointer;">Reset</button>
-        </div>
-        <div class="dev-modal-grid">
-          <div class="dev-field">
-            <label for="devLocationPreset">Test Location Presets</label>
-            <select id="devLocationPreset">
-              <option value="">-- Select Test Location --</option>
-              <option value="52.2927,-1.5397">Leamington & County Golf Club (UK)</option>
-              <option value="56.3418,-2.8067">St Andrews Old Course (Scotland)</option>
-              <option value="36.568,-121.949">Pebble Beach Golf Links (USA)</option>
-              <option value="45.448,6.980">Golf de Val d'Isère (France)</option>
-              <option value="-37.965,145.032">Royal Melbourne Golf Club (Australia)</option>
-            </select>
-          </div>
-          <div class="dev-field">
-            <label for="devSceneSelect">Background Scene</label>
-            <select id="devSceneSelect">
-              <option value="auto">Auto (Live Forecast)</option>
-              <option value="sunny">☀️ Sunny</option>
-              <option value="cloudy">☁️ Cloudy / Overcast</option>
-              <option value="windy">💨 Windy Breeze</option>
-              <option value="rain">🌧️ Rain / Storm</option>
-              <option value="ice">🧊 Frost / Ice</option>
-              <option value="snow">❄️ Snow Cover</option>
-              <option value="dusk">🌅 Golden Dusk</option>
-              <option value="night">🌙 Night / Dark</option>
-            </select>
-          </div>
-          <div class="dev-field">
-            <label for="devRainIntensitySelect">Rain Overlay & Velocity</label>
-            <select id="devRainIntensitySelect">
-              <option value="auto">Auto (Forecast Rainfall)</option>
-              <option value="none">Off (Dry)</option>
-              <option value="light">🌦️ Light Drizzle (Slow)</option>
-              <option value="moderate">🌧️ Moderate Rain (Medium)</option>
-              <option value="heavy">⛈️ Heavy Downpour (Fast)</option>
-            </select>
-          </div>
-          <div class="dev-field">
-            <label for="devIconSelect">Forecast Meteocon Icon</label>
-            <select id="devIconSelect">
-              <option value="auto">Auto (Live Code)</option>
-              <option value="0">Clear Sky (0)</option>
-              <option value="2">Partly Cloudy (2)</option>
-              <option value="3">Overcast (3)</option>
-              <option value="45">Foggy (45)</option>
-              <option value="51">Drizzle (51)</option>
-              <option value="63">Moderate Rain (63)</option>
-              <option value="65">Heavy Rain (65)</option>
-              <option value="73">Snowfall (73)</option>
-              <option value="95">Thunderstorm (95)</option>
-            </select>
-          </div>
-          <div class="dev-field">
-            <label for="devHourSelect">Test Time of Day</label>
-            <select id="devHourSelect">
-              <option value="auto">Sync w/ Tee Slider</option>
-              <option value="6">06:00 AM (Dawn)</option>
-              <option value="9">09:00 AM (Morning)</option>
-              <option value="13">01:00 PM (Midday)</option>
-              <option value="16">04:00 PM (Late Afternoon)</option>
-              <option value="19">07:00 PM (Evening)</option>
-              <option value="22">10:00 PM (Night)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <button class="modal-close-btn" id="closeModalBtn">Close</button>
+<!-- Hero Score & Verdict Card -->
+<section class="glass-card hero-card">
+  <div class="dial-box">
+    <svg class="dial-svg" viewBox="0 0 160 160">
+      <circle class="dial-track" cx="80" cy="80" r="70"></circle>
+      <circle id="dialArc" class="dial-arc" cx="80" cy="80" r="70"></circle>
+    </svg>
+    <div class="dial-center">
+      <div id="dialScore" class="dial-pct">--%</div>
+      <div id="dialTemp" class="dial-temp">--°C</div>
+      <div id="dialVerdict" class="dial-status">--</div>
     </div>
   </div>
 
+  <div class="hero-right">
+    <div id="dialSub" class="verdict-headline">Locating golf forecast...</div>
+    <div class="hero-mini-grid">
+      <div class="mini-stat" id="windCardBtn" title="Click for hourly wind details">
+        <div class="mini-stat-header">
+          <div class="mini-stat-icon">💨</div>
+          <span class="mini-info-hint">ⓘ</span>
+        </div>
+        <div class="mini-stat-label">Wind</div>
+        <div id="heroWindVal" class="mini-stat-val">--</div>
+        <div id="heroWindSub" class="mini-stat-sub">--</div>
+      </div>
+      <div class="mini-stat" id="rainCardBtn" title="Click for hourly rain details">
+        <div class="mini-stat-header">
+          <div class="mini-stat-icon">💧</div>
+          <span class="mini-info-hint">ⓘ</span>
+        </div>
+        <div class="mini-stat-label">Rain</div>
+        <div id="heroRainVal" class="mini-stat-val">--</div>
+        <div id="heroRainSub" class="mini-stat-sub">--</div>
+      </div>
+      <div class="mini-stat" id="tempCardBtn" title="Click for hourly temp & carry details">
+        <div class="mini-stat-header">
+          <div class="mini-stat-icon">🌡️</div>
+          <span class="mini-info-hint">ⓘ</span>
+        </div>
+        <div class="mini-stat-label">Temp</div>
+        <div id="heroTempVal" class="mini-stat-val">--</div>
+        <div id="heroTempSub" class="mini-stat-sub">--</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7-Day Date Selector Row -->
+<section class="date-row" id="dateBar"></section>
+
+<!-- Tee Time Slider Card -->
+<section class="glass-card slider-bar">
+  <div>
+    <div class="slider-top">
+      <div class="slider-title">🚩 Tee Time</div>
+      <div class="slider-time-readout">🕒 <span id="teeTimeDisplay">08:00 AM</span></div>
+    </div>
+    <input type="range" id="teeTimeSlider" min="6" max="20" value="8" step="1">
+  </div>
+  <div id="daylightWarning" class="daylight-banner"></div>
+</section>
+
+<!-- Forecast Breakdown Card -->
+<section class="glass-card">
+  <div class="card-header">
+    <span id="forecastHeaderIcon" class="meteocon-header"></span>
+    <span><span id="dayLabel">Forecast</span> — <span id="locationName">---</span></span>
+  </div>
+
+  <div class="forecast-grid">
+    <div class="forecast-main">
+      <div id="weatherIcon" class="meteocon-main"></div>
+      <div class="forecast-temp-stack">
+        <div id="currentTemp" class="f-temp">--°C</div>
+        <div id="feelsLikeTemp" class="f-feels">Feels like --°C</div>
+        <div id="currentCondition" class="f-cond">--</div>
+      </div>
+    </div>
+
+    <div class="detail-box" id="forecastWindBtn" title="Click for hourly wind & gusts">
+      <div class="db-label-row">
+        <span class="db-label">Wind Speed</span>
+        <span class="mini-info-hint">ⓘ</span>
+      </div>
+      <div class="db-val">💨 <span id="currentWind">--</span></div>
+      <div id="windSub" class="db-sub">--</div>
+    </div>
+
+    <div class="detail-box" id="forecastRecentBtn" title="Click for turf & prior rainfall details">
+      <div class="db-label-row">
+        <span class="db-label">Recent (24h)</span>
+        <span class="mini-info-hint">ⓘ</span>
+      </div>
+      <div class="db-val">🌧️ <span id="recentRain">--</span></div>
+      <div id="recentRainSub" class="db-sub">--</div>
+    </div>
+
+    <div class="detail-box" id="forecastRoundRainBtn" title="Click for 4-hour round rain breakdown">
+      <div class="db-label-row">
+        <span class="db-label">Round Rain (4h)</span>
+        <span class="mini-info-hint">ⓘ</span>
+      </div>
+      <div class="db-val">☔ <span id="forecastRain">--</span></div>
+      <div id="forecastRainSub" class="db-sub">--</div>
+    </div>
+  </div>
+</section>
+
+<!-- 24-Hour Forecast Chart -->
+<section class="glass-card">
+  <div class="card-header">📊 24-Hour Forecast</div>
+  <div class="chart-box">
+    <div class="chart-y">
+      <svg id="yAxisSvg"></svg>
+    </div>
+    <div class="chart-main" id="chartMainContainer">
+      <svg id="hourlyChart"></svg>
+    </div>
+  </div>
+  <div class="chart-legend">
+    <span><span class="legend-dot" style="background: var(--chart-line);"></span>Temp</span>
+    <span><span class="legend-dot" style="background: var(--chart-bar);"></span>Rain</span>
+    <span>🚩 Tee Time</span>
+    <span>☀️ Sunrise</span>
+    <span>🌙 Sunset</span>
+  </div>
+</section>
+
+<!-- Day Summary -->
+<section class="glass-card">
+  <div class="card-header">📅 Day Summary</div>
+  <div class="summary-3col">
+    <div class="summary-pill">
+      <div class="sp-icon">☀️</div>
+      <div>
+        <div class="sp-label">Sunrise</div>
+        <div id="sunriseTime" class="sp-val">--:--</div>
+      </div>
+    </div>
+    <div class="summary-pill">
+      <div class="sp-icon">🌙</div>
+      <div>
+        <div class="sp-label">Sunset</div>
+        <div id="sunsetTime" class="sp-val">--:--</div>
+      </div>
+    </div>
+    <div class="summary-pill">
+      <div class="sp-icon">📊</div>
+      <div>
+        <div class="sp-label">High / Low</div>
+        <div id="tempRange" class="sp-val">-- / --</div>
+      </div>
+    </div>
+    <div class="summary-pill">
+      <div class="sp-icon">⏳</div>
+      <div>
+        <div class="sp-label">Daylight Left</div>
+        <div id="daylightLeft" class="sp-val">-- hrs</div>
+      </div>
+    </div>
+    <div class="summary-pill">
+      <div class="sp-icon">🌧️</div>
+      <div>
+        <div class="sp-label">Daily Rain</div>
+        <div id="todayRain" class="sp-val">--</div>
+      </div>
+    </div>
+    <div class="summary-pill">
+      <div class="sp-icon">💨</div>
+      <div>
+        <div class="sp-label">Max Wind</div>
+        <div id="maxWind" class="sp-val">--</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Course Conditions & Carry -->
+<section class="glass-card">
+  <div class="card-header">🏌️ Course & Club Guidance</div>
+  <div class="callouts-grid">
+    <div id="groundCallout" class="callout-item"></div>
+    <div id="windCallout" class="callout-item"></div>
+    <div id="rainOutlookCallout" class="callout-item"></div>
+    <div id="distancePenaltyCallout" class="callout-item"></div>
+    <div id="gearCallout" class="callout-item"></div>
+  </div>
+</section>
+
+<!-- Footer Tagline & Bottom Bar -->
+<div class="footer-note">🏌️ Plan your round with confidence</div>
+<div class="footer-bottom-bar">
+  <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📲 Install App</button>
+  <span class="version-pill" id="versionTag">v5.8</span>
+</div>
+  </main>
+
+  <!-- Creator & Developer Sandbox Modal -->
+
+  <div class="modal-overlay" id="creatorModal">
+    <div class="modal-card">
+      <h3>Is it golf weather?</h3>
+      <p>Version 5.8 (Cold Verdicts & Colored Mini-Cards)<br>Made by KW in November 2026</p>
+
+  <div class="dev-modal-section">
+    <div class="dev-modal-header">
+      <span>🛠️ Developer Sandbox & API Config</span>
+      <button id="devResetBtn" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:0.15rem 0.45rem; border-radius:99px; font-size:0.65rem; cursor:pointer;">Reset</button>
+    </div>
+    <div class="dev-modal-grid">
+      <div class="dev-field">
+        <label for="devLocationPreset">Test Location Presets</label>
+        <select id="devLocationPreset">
+          <option value="">-- Select Test Location --</option>
+          <option value="52.2927,-1.5397">Leamington & County Golf Club (UK)</option>
+          <option value="56.3418,-2.8067">St Andrews Old Course (Scotland)</option>
+          <option value="36.568,-121.949">Pebble Beach Golf Links (USA)</option>
+          <option value="45.448,6.980">Golf de Val d'Isère (France)</option>
+          <option value="-37.965,145.032">Royal Melbourne Golf Club (Australia)</option>
+        </select>
+      </div>
+      <div class="dev-field">
+        <label for="devSceneSelect">Background Scene</label>
+        <select id="devSceneSelect">
+          <option value="auto">Auto (Live Forecast)</option>
+          <option value="sunny">☀️ Sunny</option>
+          <option value="cloudy">☁️ Cloudy / Overcast</option>
+          <option value="windy">💨 Windy Breeze</option>
+          <option value="rain">🌧️ Rain / Storm</option>
+          <option value="ice">🧊 Frost / Ice</option>
+          <option value="snow">❄️ Snow Cover</option>
+          <option value="dusk">🌅 Golden Dusk</option>
+          <option value="night">🌙 Night / Dark</option>
+        </select>
+      </div>
+      <div class="dev-field">
+        <label for="devRainIntensitySelect">Rain Overlay & Velocity</label>
+        <select id="devRainIntensitySelect">
+          <option value="auto">Auto (Forecast Rainfall)</option>
+          <option value="none">Off (Dry)</option>
+          <option value="light">🌦️ Light Drizzle (Slow)</option>
+          <option value="moderate">🌧️ Moderate Rain (Medium)</option>
+          <option value="heavy">⛈️ Heavy Downpour (Fast)</option>
+        </select>
+      </div>
+      <div class="dev-field">
+        <label for="devIconSelect">Forecast Meteocon Icon</label>
+        <select id="devIconSelect">
+          <option value="auto">Auto (Live Code)</option>
+          <option value="0">Clear Sky (0)</option>
+          <option value="2">Partly Cloudy (2)</option>
+          <option value="3">Overcast (3)</option>
+          <option value="45">Foggy (45)</option>
+          <option value="51">Drizzle (51)</option>
+          <option value="63">Moderate Rain (63)</option>
+          <option value="65">Heavy Rain (65)</option>
+          <option value="73">Snowfall (73)</option>
+          <option value="95">Thunderstorm (95)</option>
+        </select>
+      </div>
+      <div class="dev-field">
+        <label for="devHourSelect">Test Time of Day</label>
+        <select id="devHourSelect">
+          <option value="auto">Sync w/ Tee Slider</option>
+          <option value="6">06:00 AM (Dawn)</option>
+          <option value="9">09:00 AM (Morning)</option>
+          <option value="13">01:00 PM (Midday)</option>
+          <option value="16">04:00 PM (Late Afternoon)</option>
+          <option value="19">07:00 PM (Evening)</option>
+          <option value="22">10:00 PM (Night)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="modal-close-btn" id="closeModalBtn">Close</button>
+</div>
+  </div>
+
   <!-- Install Fallback Modal -->
+
   <div class="modal-overlay" id="installModal">
     <div class="modal-card">
       <h3>📲 Install App</h3>
@@ -836,6 +902,7 @@
   </div>
 
   <!-- Metric Detail Modal -->
+
   <div class="modal-overlay" id="metricModal">
     <div class="modal-card">
       <h3 id="metricModalTitle">Round Breakdown</h3>
@@ -852,27 +919,33 @@
   let currentCityName = '';
   let selectedDayIndex = 0;
 
+
   const currentHourNow = new Date().getHours();
   let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
   let debounceTimer = null;
   let lastLat = 52.2927;
   let lastLon = -1.5397;
 
+
   let activeRoundMetrics = null;
   let activeRainTier = 'none';
   const circumference = 2 * Math.PI * 70;
+
 
   let deferredInstallPrompt = null;
   const installAppBtn = document.getElementById('installAppBtn');
   const installModal = document.getElementById('installModal');
   const closeInstallModalBtn = document.getElementById('closeInstallModalBtn');
 
+
   installAppBtn.style.display = 'inline-flex';
+
 
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
   });
+
 
   installAppBtn.addEventListener('click', async () => {
     if (deferredInstallPrompt) {
@@ -884,13 +957,16 @@
     }
   });
 
+
   closeInstallModalBtn.addEventListener('click', () => { installModal.style.display = 'none'; });
   installModal.addEventListener('click', (e) => { if (e.target === installModal) installModal.style.display = 'none'; });
+
 
   let devSceneOverride = 'auto';
   let devRainIntensityOverride = 'auto';
   let devIconOverride = 'auto';
   let devHourOverride = 'auto';
+
 
   function parseUrlHash() {
     const hash = window.location.hash.substring(1);
@@ -911,6 +987,7 @@
     return null;
   }
 
+
   const bgStage = document.getElementById('bgStage');
   const rainFrontRow = document.getElementById('rainFrontRow');
   const rainBackRow = document.getElementById('rainBackRow');
@@ -919,12 +996,14 @@
   const closeModalBtn = document.getElementById('closeModalBtn');
   const shareLinkBtn = document.getElementById('shareLinkBtn');
 
+
   const devLocationPreset = document.getElementById('devLocationPreset');
   const devSceneSelect = document.getElementById('devSceneSelect');
   const devRainIntensitySelect = document.getElementById('devRainIntensitySelect');
   const devIconSelect = document.getElementById('devIconSelect');
   const devHourSelect = document.getElementById('devHourSelect');
   const devResetBtn = document.getElementById('devResetBtn');
+
 
   devLocationPreset.addEventListener('change', (e) => {
     const val = e.target.value;
@@ -935,11 +1014,13 @@
     fetchWeather(lat, lon, label);
   });
 
+
   const metricModal = document.getElementById('metricModal');
   const metricModalTitle = document.getElementById('metricModalTitle');
   const metricModalSubtitle = document.getElementById('metricModalSubtitle');
   const metricModalBody = document.getElementById('metricModalBody');
   const closeMetricModalBtn = document.getElementById('closeMetricModalBtn');
+
 
   const unitToggle = document.getElementById('unitToggle');
   const speedToggle = document.getElementById('speedToggle');
@@ -947,14 +1028,17 @@
   const geoBtn = document.getElementById('geoBtn');
   const nearbyBtn = document.getElementById('nearbyBtn');
 
+
   const locationInput = document.getElementById('locationInput');
   const autocompleteList = document.getElementById('autocompleteList');
   const dateBar = document.getElementById('dateBar');
   const hiddenDatePicker = document.getElementById('hiddenDatePicker');
 
+
   const teeTimeSlider = document.getElementById('teeTimeSlider');
   const teeTimeDisplay = document.getElementById('teeTimeDisplay');
   const daylightWarning = document.getElementById('daylightWarning');
+
 
   const dialArc = document.getElementById('dialArc');
   const dialScore = document.getElementById('dialScore');
@@ -962,24 +1046,30 @@
   const dialVerdict = document.getElementById('dialVerdict');
   const dialSub = document.getElementById('dialSub');
 
+
   teeTimeSlider.value = selectedTeeHour;
+
 
   function makeItRain(tier) {
     rainFrontRow.innerHTML = '';
     rainBackRow.innerHTML = '';
     if (tier === 'none') return;
 
+
     let baseDuration = 0.62;
     let stepMin = 3;
     let stepSpan = 4;
+
 
     if (tier === 'light') { baseDuration = 0.88; stepMin = 6; stepSpan = 5; }
     else if (tier === 'moderate') { baseDuration = 0.60; stepMin = 3; stepSpan = 4; }
     else if (tier === 'heavy') { baseDuration = 0.40; stepMin = 2; stepSpan = 3; }
 
+
     let increment = 0;
     let drops = '';
     let backDrops = '';
+
 
     while (increment < 100) {
       const randoHundo = Math.floor(Math.random() * 98) + 1;
@@ -989,12 +1079,14 @@
       const delay = `0.${randoHundo < 10 ? '0' + randoHundo : randoHundo}s`;
       const duration = `${(baseDuration + (randoHundo / 1000)).toFixed(3)}s`;
 
+
       drops += `<div class="drop" style="left: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};"><div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div><div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div></div>`;
       backDrops += `<div class="drop" style="right: ${increment}%; bottom: ${bottomOffset}%; animation-delay: ${delay}; animation-duration: ${duration};"><div class="stem" style="animation-delay: ${delay}; animation-duration: ${duration};"></div><div class="splat" style="animation-delay: ${delay}; animation-duration: ${duration};"></div></div>`;
     }
     rainFrontRow.innerHTML = drops;
     rainBackRow.innerHTML = backDrops;
   }
+
 
   function determineRainTier(windowRainMm, weatherCode) {
     if (devRainIntensityOverride !== 'auto') return devRainIntensityOverride;
@@ -1005,12 +1097,14 @@
     return 'light';
   }
 
+
   function getMeteoconSVG(type) {
     const sunCore = `<defs><radialGradient id="mcSunGrad" cx="40%" cy="40%" r="60%"><stop offset="0%" stop-color="#fff3bf"/><stop offset="55%" stop-color="#fcc419"/><stop offset="100%" stop-color="#f59f00"/></radialGradient></defs><g class="mc-spin" stroke="#f59f00" stroke-width="3.2" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/><line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/><line x1="13.6" y1="13.6" x2="17.8" y2="17.8"/><line x1="46.2" y1="46.2" x2="50.4" y2="50.4"/><line x1="13.6" y1="50.4" x2="17.8" y2="46.2"/><line x1="46.2" y1="17.8" x2="50.4" y2="13.6"/></g><circle cx="32" cy="32" r="13" fill="url(#mcSunGrad)"/>`;
     const moonCore = `<path d="M40 16a15 15 0 1 0 12 24 12 12 0 1 1-12-24z" fill="#ffd43b" stroke="#fab005" stroke-width="1.5" stroke-linejoin="round"/><circle cx="47" cy="18" r="1.5" fill="#fff3bf"/><circle cx="52" cy="25" r="1.1" fill="#fff3bf"/>`;
     const lightCloud = `<path class="mc-drift" d="M20 48h26a9 9 0 0 0 .7-17.9A13 13 0 0 0 21.5 26 11 11 0 0 0 20 48z" fill="#f1f3f5" stroke="#ced4da" stroke-width="1.8" stroke-linejoin="round"/>`;
     const darkCloud = `<path class="mc-drift" d="M18 42h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 21.5 10.5 10.5 0 0 0 18 42z" fill="#adb5bd" stroke="#868e96" stroke-width="1.8" stroke-linejoin="round"/>`;
     const stormCloud = `<path class="mc-drift" d="M18 40h28a8.5 8.5 0 0 0 .6-16.9A12.5 12.5 0 0 0 21 19.5 10.5 10.5 0 0 0 18 40z" fill="#495057" stroke="#343a40" stroke-width="1.8" stroke-linejoin="round"/>`;
+
 
     const icons = {
       'clear-day': `<svg viewBox="0 0 64 64">${sunCore}</svg>`,
@@ -1027,6 +1121,7 @@
     };
     return icons[type] || icons['partly-cloudy-day'];
   }
+
 
   devSceneSelect.addEventListener('change', (e) => { devSceneOverride = e.target.value; render(); });
   devRainIntensitySelect.addEventListener('change', (e) => {
@@ -1049,6 +1144,7 @@
     render();
   });
 
+
   function resetDevOverrides() {
     devSceneOverride = 'auto';
     devRainIntensityOverride = 'auto';
@@ -1064,6 +1160,7 @@
   }
   devResetBtn.addEventListener('click', resetDevOverrides);
 
+
   shareLinkBtn.addEventListener('click', () => {
     if (!currentData) return;
     const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${currentData.latitude}&lon=${currentData.longitude}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
@@ -1074,6 +1171,7 @@
     });
   });
 
+
   function updateBackgroundScene(sceneKey, rainTier) {
     const isRaining = rainTier !== 'none';
     bgStage.className = `bg-stage scene-${sceneKey}${isRaining ? ' is-raining' : ''}`;
@@ -1082,6 +1180,7 @@
       makeItRain(rainTier);
     }
   }
+
 
   function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, hasSnowCover, isPastSunset, daylightRemaining) {
     if (devSceneOverride !== 'auto') return devSceneOverride;
@@ -1095,17 +1194,21 @@
     return 'sunny';
   }
 
+
   versionTag.addEventListener('click', () => { creatorModal.style.display = 'flex'; });
   closeModalBtn.addEventListener('click', () => { creatorModal.style.display = 'none'; });
   creatorModal.addEventListener('click', (e) => { if (e.target === creatorModal) creatorModal.style.display = 'none'; });
 
+
   closeMetricModalBtn.addEventListener('click', () => { metricModal.style.display = 'none'; });
   metricModal.addEventListener('click', (e) => { if (e.target === metricModal) metricModal.style.display = 'none'; });
+
 
   function openMetricPopup(type) {
     if (!activeRoundMetrics) return;
     const m = activeRoundMetrics;
     metricModalBody.innerHTML = '';
+
 
     if (type === 'wind') {
       metricModalTitle.textContent = '💨 Round Wind Breakdown';
@@ -1136,12 +1239,14 @@
     metricModal.style.display = 'flex';
   }
 
+
   document.getElementById('windCardBtn').addEventListener('click', () => openMetricPopup('wind'));
   document.getElementById('rainCardBtn').addEventListener('click', () => openMetricPopup('rain'));
   document.getElementById('tempCardBtn').addEventListener('click', () => openMetricPopup('temp'));
   document.getElementById('forecastWindBtn').addEventListener('click', () => openMetricPopup('wind'));
   document.getElementById('forecastRecentBtn').addEventListener('click', () => openMetricPopup('recent'));
   document.getElementById('forecastRoundRainBtn').addEventListener('click', () => openMetricPopup('rain'));
+
 
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
@@ -1151,11 +1256,11 @@
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-  // Curated Local Golf Clubs & Venues for instant search & nearby fallback without API keys
+
   const LOCAL_GOLF_DATABASE = [
     { name: "Leamington & County Golf Club", city: "Royal Leamington Spa", country: "UK", lat: 52.2927, lon: -1.5397 },
     { name: "Warwick Golf Centre", city: "Warwick", country: "UK", lat: 52.2800, lon: -1.5800 },
-    { name: "Kenilworth Golf Club", city: "Kenilworth", country: "UK", tag: "Kenilworth", lat: 52.3450, lon: -1.5780 },
+    { name: "Kenilworth Golf Club", city: "Kenilworth", country: "UK", lat: 52.3450, lon: -1.5780 },
     { name: "Stoneleigh Deer Park Golf Club", city: "Stoneleigh", country: "UK", lat: 52.3550, lon: -1.5350 },
     { name: "The Belfry Hotel & Resort", city: "Sutton Coldfield", country: "UK", lat: 52.5650, lon: -1.7450 },
     { name: "St Andrews Old Course", city: "St Andrews", country: "Scotland", lat: 56.3418, lon: -2.8067 },
@@ -1163,6 +1268,7 @@
     { name: "Golf de Val d'Isère", city: "Val d'Isère", country: "France", lat: 45.4480, lon: 6.9800 },
     { name: "Royal Melbourne Golf Club", city: "Melbourne", country: "Australia", lat: -37.9650, lon: 145.0320 }
   ];
+
 
   async function fetchNearbyCourses(lat, lon) {
     return LOCAL_GOLF_DATABASE.map(course => {
@@ -1176,17 +1282,21 @@
     }).sort((a, b) => a.distMiles - b.distMiles);
   }
 
+
   nearbyBtn.addEventListener('click', async () => {
     autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Finding nearby golf courses...</div>`;
     autocompleteList.style.display = 'block';
 
+
     const nearbyCourses = await fetchNearbyCourses(lastLat, lastLon);
+
 
     autocompleteList.innerHTML = '';
     if (nearbyCourses.length > 0) {
       nearbyCourses.forEach(course => {
         const fullName = `${course.name}, ${course.city}`;
         const distLabel = `${course.distMiles.toFixed(1)} mi`;
+
 
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
@@ -1207,6 +1317,7 @@
     }
   });
 
+
   locationInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     const query = locationInput.value.trim().toLowerCase();
@@ -1217,12 +1328,13 @@
     debounceTimer = setTimeout(() => searchAutocomplete(query), 180);
   });
 
+
   async function searchAutocomplete(query) {
     try {
-      // Fast local search filter + Open-Meteo geocoding for general towns
       const matchedLocal = LOCAL_GOLF_DATABASE.filter(c => 
         c.name.toLowerCase().includes(query) || c.city.toLowerCase().includes(query)
       );
+
 
       let geoResults = [];
       try {
@@ -1238,8 +1350,9 @@
         }
       } catch(e) {}
 
-      // Combine local matches + geocoded towns
+
       const combined = [...matchedLocal, ...geoResults];
+
 
       autocompleteList.innerHTML = '';
       if (combined.length > 0) {
@@ -1247,6 +1360,7 @@
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
           const fullName = place.city ? `${place.name}, ${place.city}` : place.name;
+
 
           item.innerHTML = `<span>📍 ${fullName}</span>`;
           item.addEventListener('click', (e) => {
@@ -1267,9 +1381,11 @@
     }
   }
 
+
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-wrapper')) autocompleteList.style.display = 'none';
   });
+
 
   teeTimeSlider.addEventListener('input', (e) => {
     selectedTeeHour = parseInt(e.target.value);
@@ -1281,6 +1397,7 @@
     render();
   });
 
+
   function formatHourLabel(hr24) {
     const wrapped = hr24 % 24;
     const ampm = wrapped >= 12 ? 'PM' : 'AM';
@@ -1288,9 +1405,11 @@
     return `${hr < 10 ? '0' + hr : hr}:00 ${ampm}`;
   }
 
+
   function updateTeeTimeDisplay() {
     teeTimeDisplay.textContent = formatHourLabel(selectedTeeHour);
   }
+
 
   function getWeatherInfo(code, isNight = false) {
     const codes = {
@@ -1319,6 +1438,7 @@
     return codes[code] || { text: 'Cloudy', icon: '⛅', mcKey: 'overcast' };
   }
 
+
   function getWindLabel(speedKmh) {
     const mph = speedKmh / 1.609;
     if (mph < 8) return 'Gentle Breeze';
@@ -1326,6 +1446,7 @@
     if (mph <= 25) return 'Fresh Wind';
     return 'Strong Wind';
   }
+
 
   async function fetchFriendlyLocationName(lat, lon) {
     try {
@@ -1337,27 +1458,33 @@
     return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
   }
 
+
   async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTee = null) {
     try {
       lastLat = lat;
       lastLon = lon;
       const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
 
+
       const [weatherData, locationName] = await Promise.all([
         fetch(weatherUrl).then(r => r.json()),
         overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon)
       ]);
 
+
       currentData = weatherData;
       currentCityName = locationName;
       locationInput.value = currentCityName;
 
+
       document.getElementById('pageTitle').textContent = `Is it golf weather at ${currentCityName}? — Forecast & Conditions`;
       document.getElementById('metaDescription').setAttribute('content', `Live golf forecast for ${currentCityName}. Check tee time weather, wind impact, fairway turf firmness, rain outlook, and daylight remaining.`);
+
 
       selectedDayIndex = Math.max(0, Math.min(15, targetDay));
       selectedTeeHour = targetTee !== null ? Math.max(6, Math.min(20, targetTee)) : Math.max(6, Math.min(20, new Date().getHours()));
       teeTimeSlider.value = selectedTeeHour;
+
 
       buildDateBar();
       updateTeeTimeDisplay();
@@ -1367,9 +1494,11 @@
     }
   }
 
+
   function buildDateBar() {
     if (!currentData || !currentData.daily) return;
     dateBar.innerHTML = '';
+
 
     const pastOffset = 7;
     const days = currentData.daily.time.slice(pastOffset);
@@ -1379,12 +1508,14 @@
     const isF = currentUnit === 'F';
     const fmtT = (cVal) => isF ? Math.round((cVal * 9/5) + 32) : Math.round(cVal);
 
+
     for (let idx = 0; idx < Math.min(6, days.length); idx++) {
       const d = new Date(days[idx]);
       const dayName = idx === 0 ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short' });
       const dayWeatherInfo = getWeatherInfo(weatherCodes[idx], false);
       const tMax = fmtT(maxTemps[idx]);
       const tMin = fmtT(minTemps[idx]);
+
 
       const btn = document.createElement('button');
       btn.className = `date-pill ${idx === selectedDayIndex ? 'active' : ''}`;
@@ -1397,14 +1528,17 @@
       dateBar.appendChild(btn);
     }
 
+
     const moreBtn = document.createElement('button');
     moreBtn.className = `date-pill ${selectedDayIndex >= 6 ? 'active' : ''}`;
     moreBtn.innerHTML = `<span class="d-name">More</span><span class="d-icon">📅</span><span class="d-temps">Select</span>`;
+
 
     if (days.length > 0) {
       hiddenDatePicker.min = days[0];
       hiddenDatePicker.max = days[days.length - 1];
     }
+
 
     moreBtn.addEventListener('click', () => {
       const rect = moreBtn.getBoundingClientRect();
@@ -1413,6 +1547,7 @@
       hiddenDatePicker.style.top = `${rect.top - parentRect.top}px`;
       hiddenDatePicker.showPicker ? hiddenDatePicker.showPicker() : hiddenDatePicker.click();
     });
+
 
     hiddenDatePicker.addEventListener('change', (e) => {
       const targetIdx = days.indexOf(e.target.value);
@@ -1423,18 +1558,22 @@
       }
     });
 
+
     dateBar.appendChild(moreBtn);
   }
 
+
   function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
-    if (hasLightning || isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
+    if (hasLightning || isSnowing || tempC <= -3) return { score: 0, scores: [0, 0, 0, 0, 0] };
     const windMph = windSpeedKmh / 1.609;
 
+
     let groundPts = 20;
-    if (past7DaysRainMm > 35 || tempC <= 0) groundPts = 0;
-    else if (past7DaysRainMm > 20 || past24RainMm > 12) groundPts = 5;
-    else if (past7DaysRainMm > 10 || past24RainMm > 4) groundPts = 10;
-    else if (past7DaysRainMm >= 5) groundPts = 15;
+    if (past7DaysRainMm > 35 || tempC <= 0) groundPts = 5;
+    else if (past7DaysRainMm > 20 || past24RainMm > 12) groundPts = 8;
+    else if (past7DaysRainMm > 10 || past24RainMm > 4) groundPts = 12;
+    else if (past7DaysRainMm >= 5) groundPts = 16;
+
 
     let windPts = 20;
     if (windMph > 28) windPts = 0;
@@ -1442,35 +1581,43 @@
     else if (windMph >= 15) windPts = 10;
     else if (windMph >= 8) windPts = 15;
 
+
     let rainPts = 20;
     if (windowRainMm > 4.0) rainPts = 0;
     else if (windowRainMm > 1.5) rainPts = 4;
     else if (windowRainMm > 0.4) rainPts = 10;
     else if (windowRainMm > 0.0) rainPts = 14;
 
+
     let tempPts = 20;
-    if (tempC < 3) tempPts = 0;
-    else if (tempC <= 7) tempPts = 5;
-    else if (tempC <= 12) tempPts = 10;
-    else if (tempC <= 17) tempPts = 15;
+    if (tempC < 2) tempPts = 2;
+    else if (tempC <= 6) tempPts = 7;
+    else if (tempC <= 11) tempPts = 12;
+    else if (tempC <= 16) tempPts = 16;
+
 
     let gearPts = 20;
-    if (tempC < 3 || windowRainMm > 4.0) gearPts = 0;
-    else if (tempC <= 5 || windowRainMm > 1.5) gearPts = 5;
-    else if (tempC <= 10 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
-    else if (tempC <= 15 || windMph >= 10) gearPts = 15;
+    if (tempC < 3 || windowRainMm > 4.0) gearPts = 2;
+    else if (tempC <= 6 || windowRainMm > 1.5) gearPts = 7;
+    else if (tempC <= 11 || windowRainMm > 0.1 || windMph > 15) gearPts = 12;
+    else if (tempC <= 16 || windMph >= 10) gearPts = 16;
+
 
     let totalScore = groundPts + windPts + rainPts + tempPts + gearPts;
     if (windowRainMm > 1.5) totalScore = Math.min(totalScore, 42);
     else if (windowRainMm > 0.4) totalScore = Math.min(totalScore, 62);
+    else if (tempC < 3) totalScore = Math.min(totalScore, 54);
+
 
     return { score: totalScore, scores: [groundPts, windPts, rainPts, tempPts, gearPts] };
   }
+
 
   function updateDialGauge(percentage) {
     const fraction = Math.max(0, Math.min(100, percentage)) / 100;
     const offset = circumference - (fraction * circumference);
     dialArc.style.strokeDashoffset = offset;
+
 
     if (percentage >= 85) dialArc.style.stroke = 'var(--gauge-great)';
     else if (percentage >= 70) dialArc.style.stroke = 'var(--gauge-good)';
@@ -1479,10 +1626,12 @@
     else dialArc.style.stroke = 'var(--gauge-bad)';
   }
 
+
   function setCardStatus(el, statusLevel) {
     el.classList.remove('status-good', 'status-warn', 'status-danger');
     el.classList.add(`status-${statusLevel}`);
   }
+
 
   function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, currentHourDec, teeHourDec, isToday) {
     const ySvg = document.getElementById('yAxisSvg');
@@ -1491,6 +1640,7 @@
     ySvg.innerHTML = '';
     svg.innerHTML = '';
 
+
     const width = Math.max(300, Math.round(container.clientWidth || 640));
     const height = 138;
     const paddingLeft = 14;
@@ -1498,16 +1648,20 @@
     const paddingBottom = 20;
     const paddingTop = 18;
 
+
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
 
     const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
     const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
     const maxRain = Math.max(...hourlyPrecip, 2);
     const stepX = (width - paddingLeft - paddingRight) / 23;
 
+
     for (let i = 0; i < 4; i++) {
       const tickVal = Math.round(minTemp + (i * (maxTemp - minTemp) / 3));
       const yPos = height - paddingBottom - ((tickVal - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
+
 
       const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       label.setAttribute('x', 28); label.setAttribute('y', yPos + 3);
@@ -1515,12 +1669,14 @@
       label.textContent = `${tickVal}°`;
       ySvg.appendChild(label);
 
+
       const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       gridLine.setAttribute('x1', 0); gridLine.setAttribute('x2', width);
       gridLine.setAttribute('y1', yPos); gridLine.setAttribute('y2', yPos);
       gridLine.setAttribute('class', 'chart-grid-line');
       svg.appendChild(gridLine);
     }
+
 
     for (let hIdx = 0; hIdx <= 23; hIdx += 2) {
       const vx = paddingLeft + hIdx * stepX;
@@ -1530,6 +1686,7 @@
       vLine.setAttribute('class', 'chart-vgrid-line');
       svg.appendChild(vLine);
     }
+
 
     hourlyPrecip.forEach((rain, i) => {
       if (rain > 0) {
@@ -1545,14 +1702,17 @@
       }
     });
 
+
     const isNarrow = width < 420;
     const labelInterval = isNarrow ? 6 : 4;
+
 
     let points = '';
     hourlyTemps.forEach((temp, i) => {
       const x = paddingLeft + i * stepX;
       const y = height - paddingBottom - ((temp - minTemp) / (maxTemp - minTemp)) * (height - paddingTop - paddingBottom);
       points += `${x},${y} `;
+
 
       if (i % labelInterval === 0 || i === 23) {
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -1563,10 +1723,12 @@
       }
     });
 
+
     const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
     polyline.setAttribute('points', points.trim());
     polyline.setAttribute('class', 'chart-line');
     svg.appendChild(polyline);
+
 
     const drawMarker = (hourDec, className, emoji) => {
       if (hourDec >= 0 && hourDec <= 23.5) {
@@ -1577,6 +1739,7 @@
         line.setAttribute('class', className);
         svg.appendChild(line);
 
+
         const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         icon.setAttribute('x', mx); icon.setAttribute('y', paddingTop - 4);
         icon.setAttribute('class', 'chart-icon-marker');
@@ -1585,14 +1748,17 @@
       }
     };
 
+
     drawMarker(sunriseHourDec, 'sun-line', '☀️');
     drawMarker(sunsetHourDec, 'sun-line', '🌙');
     if (isToday) drawMarker(currentHourDec, 'now-line', '📍');
     drawMarker(teeHourDec, 'tee-line', '🚩');
   }
 
+
   function render() {
     if (!currentData) return;
+
 
     const isF = currentUnit === 'F';
     const pastOffset = 7;
@@ -1600,18 +1766,23 @@
     const h = currentData.hourly;
     const d = currentData.daily;
 
+
     const toTemp = (valC) => isF ? Math.round((valC * 9/5) + 32) + '°F' : Math.round(valC) + '°C';
     const toSpeed = (valKmh) => speedUnit === 'mph' ? Math.round(valKmh / 1.609) + ' mph' : Math.round(valKmh) + ' km/h';
     const toPrecip = (valMm) => isF ? (valMm / 25.4).toFixed(2) + ' in' : valMm.toFixed(1) + ' mm';
 
+
     document.getElementById('locationName').textContent = currentCityName;
+
 
     const isToday = selectedDayIndex === 0;
     document.getElementById('dayLabel').textContent = isToday ? 'Forecast Today' : `Forecast for ${d.time[currentDayIdx]}`;
 
+
     const activeEvalHour = devHourOverride !== 'auto' ? parseInt(devHourOverride) : selectedTeeHour;
     const startIndex = currentDayIdx * 24;
     const teeStartHourIndex = startIndex + activeEvalHour;
+
 
     const windowPrecip = h.precipitation.slice(teeStartHourIndex, teeStartHourIndex + 4);
     const windowRainSum = windowPrecip.reduce((a, b) => a + b, 0);
@@ -1623,20 +1794,25 @@
     const windowGusts = h.wind_gusts_10m ? h.wind_gusts_10m.slice(teeStartHourIndex, teeStartHourIndex + 4) : windowWinds;
     const windowMaxWind = Math.max(...windowWinds, 0);
 
+
     const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
     const past7DaysRain = h.precipitation.slice(0, startIndex).reduce((a, b) => a + b, 0);
 
+
     const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
     const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
+
 
     const windowCodes = h.weather_code ? h.weather_code.slice(teeStartHourIndex, teeStartHourIndex + 4) : [];
     const liveHourCode = windowCodes[0] !== undefined ? windowCodes[0] : d.weather_code[currentDayIdx];
     const activeHourCode = devIconOverride !== 'auto' ? parseInt(devIconOverride) : liveHourCode;
     const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code)) || activeHourCode === 95;
 
+
     let sunriseHourDec = 6;
     let sunsetHourDec = 18;
     const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
+
 
     if (d.sunrise[currentDayIdx]) {
       const parts = d.sunrise[currentDayIdx].split('T')[1].split(':');
@@ -1647,21 +1823,27 @@
       sunsetHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
     }
 
+
     const daylightRemaining = sunsetHourDec - activeEvalHour;
     const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
+
 
     const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
     const rainTier = determineRainTier(windowRainSum, activeHourCode);
     updateBackgroundScene(bgScene, rainTier);
 
+
     const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
     let finalPct = evalObj.score;
     const subScores = evalObj.scores;
 
+
     const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
-    const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
+    const isFreezing = windowAvgTemp <= 2.0;
+
 
     dialTemp.textContent = toTemp(windowAvgTemp);
+
 
     if (hasLightning) {
       finalPct = 0;
@@ -1679,6 +1861,7 @@
       dialScore.textContent = `${finalPct}%`;
       updateDialGauge(finalPct);
 
+
       if (finalPct >= 85) {
         dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
         dialSub.textContent = windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`;
@@ -1687,21 +1870,21 @@
         if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
         else if (subScores[0] < 20) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
         else if (subScores[1] < 20) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
-        else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
         else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
       } else if (finalPct >= 50) {
-        dialVerdict.textContent = 'Not Bad ⛅';
+        dialVerdict.textContent = isFreezing ? 'Freezing 🥶' : 'Not Bad ⛅';
         if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
-        else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
+        else if (isFreezing) dialSub.textContent = `Bright and dry, but very cold (${toTemp(windowAvgTemp)}). Wrap up warm!`;
         else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
       } else if (finalPct >= 30) {
-        dialVerdict.textContent = 'Poor 🌧️';
-        dialSub.textContent = windowRainSum > 0 ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.` : `Strong winds or wet ground expected. No rain forecast during your round.`;
+        dialVerdict.textContent = isFreezing ? 'Very Cold ❄️' : 'Poor 🌧️';
+        dialSub.textContent = isFreezing ? `Freezing temperatures (${toTemp(windowAvgTemp)}) & hard frost expected. Winter greens likely.` : windowRainSum > 0 ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.` : `Strong winds or wet ground expected. No rain forecast during your round.`;
       } else {
-        dialVerdict.textContent = 'Heavy Rain / Wet 🌧️';
-        dialSub.textContent = windowRainSum > 0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
+        dialVerdict.textContent = isFreezing ? 'Hard Frost / Unplayable 🧊' : 'Heavy Rain / Wet 🌧️';
+        dialSub.textContent = isFreezing ? `Severe frost or freezing conditions (${toTemp(windowAvgTemp)}). Check for temporary greens.` : windowRainSum > 0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : 'Unplayable conditions. Hit the simulator instead!';
       }
     }
+
 
     if (daylightRemaining < 2.0) {
       daylightWarning.style.display = 'block';
@@ -1715,15 +1898,33 @@
       daylightWarning.style.display = 'none';
     }
 
+
+    const windCard = document.getElementById('windCardBtn');
+    const rainCard = document.getElementById('rainCardBtn');
+    const tempCard = document.getElementById('tempCardBtn');
+
+
     const windLabel = getWindLabel(windowMaxWind);
     document.getElementById('heroWindVal').textContent = toSpeed(windowMaxWind);
     document.getElementById('heroWindSub').textContent = windLabel;
+    if (subScores[1] >= 15) setCardStatus(windCard, 'good');
+    else if (subScores[1] >= 10) setCardStatus(windCard, 'warn');
+    else setCardStatus(windCard, 'danger');
+
 
     document.getElementById('heroRainVal').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
     document.getElementById('heroRainSub').textContent = windowRainSum > 0 ? '4h Window' : 'No rain';
+    if (windowRainSum === 0) setCardStatus(rainCard, 'good');
+    else if (windowRainSum <= 1.5) setCardStatus(rainCard, 'warn');
+    else setCardStatus(rainCard, 'danger');
+
 
     document.getElementById('heroTempVal').textContent = toTemp(windowAvgTemp);
     document.getElementById('heroTempSub').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
+    if (windowAvgTemp >= 12) setCardStatus(tempCard, 'good');
+    else if (windowAvgTemp >= 5) setCardStatus(tempCard, 'warn');
+    else setCardStatus(tempCard, 'danger');
+
 
     const isNightHour = activeEvalHour >= sunsetHourDec || activeEvalHour < sunriseHourDec;
     const weatherInfo = getWeatherInfo(activeHourCode, isNightHour);
@@ -1734,14 +1935,18 @@
     document.getElementById('feelsLikeTemp').textContent = `Feels like ${toTemp(windowAvgFeels)}`;
     document.getElementById('currentCondition').textContent = weatherInfo.text;
 
+
     document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
     document.getElementById('windSub').textContent = windLabel;
+
 
     document.getElementById('recentRain').textContent = toPrecip(last24hRain);
     document.getElementById('recentRainSub').textContent = last24hRain > 0 ? 'Past 24 hours' : 'None';
 
+
     document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
     document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
+
 
     const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
     document.getElementById('sunriseTime').textContent = sunriseStr;
@@ -1751,15 +1956,21 @@
     document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
     document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
 
+
     const groundCallout = document.getElementById('groundCallout');
     let groundShort = 'Firm & Dry';
     const isCurrentlyRaining = windowRainSum > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(activeHourCode);
+
 
     if (isCurrentlyRaining) {
       groundShort = 'Raining right now';
       const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over the past 24 hours (${toPrecip(past7DaysRain)} past 7 days)` : ` (${toPrecip(past7DaysRain)} past 7 days total)`;
       groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now and getting wetter${recentDesc}.`;
       setCardStatus(groundCallout, 'danger');
+    } else if (windowAvgTemp <= 1.0) {
+      groundShort = 'Hard Frost';
+      groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Hard frost / frozen ground at ${toTemp(windowAvgTemp)}. Expect temporary winter greens.`;
+      setCardStatus(groundCallout, 'warn');
     } else if (subScores[0] >= 15) {
       groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d).`;
       setCardStatus(groundCallout, 'good');
@@ -1772,6 +1983,7 @@
       groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d). Check course status.`;
       setCardStatus(groundCallout, 'danger');
     }
+
 
     const windCallout = document.getElementById('windCallout');
     let windAdvice = 'Minimal flight effect';
@@ -1788,6 +2000,7 @@
       setCardStatus(windCallout, 'danger');
     }
 
+
     const rainOutlookCallout = document.getElementById('rainOutlookCallout');
     if (hasLightning) {
       rainOutlookCallout.innerHTML = `<strong>⚡ Rain & Lightning</strong>Thunderstorm risk! Clear the course immediately.`;
@@ -1803,6 +2016,7 @@
       setCardStatus(rainOutlookCallout, 'good');
     }
 
+
     const carryCallout = document.getElementById('distancePenaltyCallout');
     const tempDiffC = 22 - windowAvgTemp;
     const penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
@@ -1810,6 +2024,7 @@
     if (windowAvgTemp < 3) setCardStatus(carryCallout, 'danger');
     else if (windowAvgTemp <= 10) setCardStatus(carryCallout, 'warn');
     else setCardStatus(carryCallout, 'good');
+
 
     const gearCallout = document.getElementById('gearCallout');
     let gear = 'Polo & light mid-layer 👕';
@@ -1820,6 +2035,7 @@
     if (windowAvgTemp < 3 || windowRainSum > 2.0) setCardStatus(gearCallout, 'danger');
     else if (windowAvgTemp <= 11 || windowRainSum > 0.1 || windowMaxWind / 1.609 > 15) setCardStatus(gearCallout, 'warn');
     else setCardStatus(gearCallout, 'good');
+
 
     activeRoundMetrics = {
       teeLabel: formatHourLabel(activeEvalHour),
@@ -1838,14 +2054,18 @@
       penaltyYards
     };
 
+
     const dayTempsC = h.temperature_2m.slice(startIndex, startIndex + 24);
     const dayPrecip = h.precipitation.slice(startIndex, startIndex + 24);
     const displayTemps = isF ? dayTempsC.map(t => (t * 9/5) + 32) : dayTempsC;
 
+
     renderChart(displayTemps, dayPrecip, sunriseHourDec, sunsetHourDec, currentHourNow, activeEvalHour, isToday);
   }
 
+
   window.addEventListener('resize', () => { if (currentData) render(); });
+
 
   unitToggle.addEventListener('click', () => {
     currentUnit = currentUnit === 'C' ? 'F' : 'C';
@@ -1854,11 +2074,13 @@
     render();
   });
 
+
   speedToggle.addEventListener('click', () => {
     speedUnit = speedUnit === 'mph' ? 'kmh' : 'mph';
     speedToggle.textContent = speedUnit;
     render();
   });
+
 
   themeToggle.addEventListener('click', () => {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
@@ -1866,7 +2088,9 @@
     themeToggle.textContent = isDark ? '🌙' : '☀️';
   });
 
+
   geoBtn.addEventListener('click', getUserLocation);
+
 
   function getUserLocation() {
     const hashData = parseUrlHash();
@@ -1881,6 +2105,7 @@
       fetchWeather(52.2927, -1.5397, 'Leamington & County Golf Club, UK');
     }
   }
+
 
   getUserLocation();
 </script>
