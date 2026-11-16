@@ -94,7 +94,7 @@
     }
 
 
-    /* Atmospheric Stage with Smooth Fading */
+    /* Single-Image CSS Atmospheric Stage with Smooth Fading Transitions */
     .bg-stage {
       position: fixed;
       inset: 0;
@@ -112,8 +112,8 @@
       background-size: cover;
       background-position: center bottom;
       filter: brightness(1.04) contrast(1.02) saturate(1.12);
-      transition: filter 1.2s ease-in-out, transform 1.2s ease-in-out, opacity 1.2s ease-in-out;
-      will-change: filter, transform, opacity;
+      transition: filter 0.8s ease-in-out, transform 0.8s ease-in-out;
+      will-change: filter, transform;
     }
 
 
@@ -121,11 +121,11 @@
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 82% 14%, rgba(255, 244, 200, 0.28) 0%, rgba(255, 255, 255, 0) 55%);
-      transition: background 1.2s ease-in-out;
+      transition: background 0.8s ease-in-out;
     }
 
 
-    /* Rain Overlay */
+    /* Dynamic Drops + Splats Rain Overlay */
     .rain-overlay-wrap {
       position: absolute;
       inset: 0;
@@ -194,7 +194,7 @@
     }
 
 
-    /* Weather Scene States with Smooth Transitions */
+    /* Weather Scene States */
     .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
     .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); }
     .bg-stage.scene-windy .bg-base { filter: brightness(0.94) contrast(1.04) saturate(0.85); animation: windBreeze 7s ease-in-out infinite alternate; }
@@ -206,7 +206,7 @@
     .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
 
 
-    /* Meteocon Keyframes */
+    /* Inline Meteocons SVG Keyframes */
     @keyframes mcSpin { 100% { transform: rotate(360deg); } }
     @keyframes mcDrift { 0%, 100% { transform: translateX(-2.5px); } 50% { transform: translateX(2.5px); } }
     @keyframes mcDrop { 0% { transform: translateY(-2px); opacity: 0.2; } 50% { opacity: 1; } 100% { transform: translateY(4px); opacity: 0.15; } }
@@ -332,7 +332,7 @@
     }
 
 
-    /* Glass Cards */
+    /* Glass Cards with Smooth Transitions */
     .glass-card {
       position: relative; z-index: 10; background: var(--glass-bg);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -498,13 +498,13 @@
     .callouts-grid { display: grid; grid-template-columns: 1fr; gap: 0.55rem; }
     .callout-item {
       background: var(--glass-card-inner); border: 1px solid var(--glass-border);
-      border-left: 5px solid var(--status-good); border-radius: 10px; padding: 0.65rem 0.85rem; font-size: 0.82rem;
+      border-left: 5px solid var(--status-good); border-radius: 10px; padding: 0.6rem 0.75rem; font-size: 0.8rem;
       transition: background 0.6s ease, border-color 0.6s ease;
     }
     .callout-item.status-good { border-left-color: var(--status-good); }
     .callout-item.status-warn { border-left-color: var(--status-warn); }
     .callout-item.status-danger { border-left-color: var(--status-danger); }
-    .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.84rem; }
+    .callout-item strong { display: block; margin-bottom: 2px; font-size: 0.8rem; }
 
 
     .footer-note { text-align: center; color: #ffffff; font-size: 0.82rem; font-weight: 600; font-style: italic; text-shadow: 0 1px 4px rgba(0,0,0,0.75); padding: 0.35rem 0 0.2rem 0; }
@@ -558,15 +558,8 @@
       .dial-status { font-size: 0.88rem; }
       .hero-right { border-left: none; padding-left: 0; gap: 0.65rem; }
       .verdict-headline { font-size: 0.92rem; }
-      
-      /* Keep mini-grid horizontal on mobile, compact and clean without tall stacking */
-      .hero-mini-grid { grid-template-columns: repeat(3, 1fr); gap: 0.35rem; }
-      .mini-stat { padding: 0.45rem 0.35rem; border-left-width: 3px; }
-      .mini-stat-label { font-size: 0.72rem; }
-      .mini-stat-val { font-size: 0.98rem; }
-      .mini-stat-sub { font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-
+      .hero-mini-grid { gap: 0.35rem; }
+      .mini-stat { padding: 0.42rem 0.38rem; }
       .date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; }
       .date-row::-webkit-scrollbar { display: none; }
       .forecast-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
@@ -815,7 +808,7 @@
 <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
 <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.12</span>
+  <span class="version-pill" id="versionTag">v5.13</span>
 </div>
   </main>
 
@@ -824,7 +817,7 @@
   <div class="modal-overlay" id="creatorModal">
     <div class="modal-card">
       <h3>Is it golf weather?</h3>
-      <p>Version 5.12 (Compact Layout & Spanned Guidance)<br>Made by KW in November 2026</p>
+      <p>Version 5.13 (Reverted Horizontal Mini-Cards & Smooth Transitions)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
     <div class="dev-modal-header">
@@ -1987,7 +1980,7 @@
 
     if (isCurrentlyRaining) {
       groundShort = 'Raining right now';
-      const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over past 24h (${toPrecip(past7DaysRain)} past 7d)` : ` (${toPrecip(past7DaysRain)} past 7d total)`;
+      const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over the past 24 hours (${toPrecip(past7DaysRain)} past 7 days)` : ` (${toPrecip(past7DaysRain)} past 7 days total)`;
       groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now and getting wetter${recentDesc}.`;
       setCardStatus(groundCallout, 'danger');
     } else if (windowAvgTemp <= 1.0) {
