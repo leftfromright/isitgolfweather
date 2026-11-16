@@ -573,10 +573,10 @@ svg { width: 100%; height: 100%; overflow: visible; }
 
 <!-- Footer Tagline & Bottom Bar -->
 <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
-<div class="footer-bottom-bar"><button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button><span class="version-pill" id="versionTag">v5.19</span></div></main>
+<div class="footer-bottom-bar"><button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button><span class="version-pill" id="versionTag">v5.20</span></div></main>
 
 <!-- Creator & Developer Sandbox Modal -->
-<div class="modal-overlay" id="creatorModal"><div class="modal-card"><h3>Is it golf weather?</h3><p>Version 5.19 (Responsive Layouts & Dynamic Chrome Header)<br>Made by KW in November 2026</p>
+<div class="modal-overlay" id="creatorModal"><div class="modal-card"><h3>Is it golf weather?</h3><p>Version 5.20 (Enhanced Cold Weather & Daylight Logic)<br>Made by KW in November 2026</p>
 <div class="dev-modal-section"><div class="dev-modal-header"><span>🛠️ Developer Sandbox</span><button id="devResetBtn" style="background:rgba(255,255,255,0.15); border:none; color:#fff; padding:0.15rem 0.45rem; border-radius:99px; font-size:0.65rem; cursor:pointer;">Reset</button></div><div class="dev-modal-grid"><div class="dev-field"><label for="devSceneSelect">Background Scene</label><select id="devSceneSelect"><option value="auto">Auto (Live Forecast)</option><option value="sunny">☀️ Sunny</option><option value="cloudy">☁️ Cloudy / Overcast</option><option value="windy">💨 Windy Breeze</option><option value="rain">🌧️ Rain / Storm</option><option value="ice">❄️ Frost / Ice</option><option value="snow">❄️ Snow Cover</option><option value="dusk">🌅 Golden Dusk</option><option value="night">🌙 Night / Dark</option></select></div><div class="dev-field"><label for="devRainIntensitySelect">Rain Overlay & Velocity</label><select id="devRainIntensitySelect"><option value="auto">Auto (Forecast Rainfall)</option><option value="none">Off (Dry)</option><option value="light">🌦️ Light Drizzle (Slow)</option><option value="moderate">🌧️ Moderate Rain (Medium)</option><option value="heavy">⛈️ Heavy Downpour (Fast)</option></select></div><div class="dev-field"><label for="devIconSelect">Forecast Meteocon Icon</label><select id="devIconSelect"><option value="auto">Auto (Live Code)</option><option value="0">Clear Sky (0)</option><option value="2">Partly Cloudy (2)</option><option value="3">Overcast (3)</option><option value="45">Foggy (45)</option><option value="51">Drizzle (51)</option><option value="63">Moderate Rain (63)</option><option value="65">Heavy Rain (65)</option><option value="73">Snowfall (73)</option><option value="95">Thunderstorm (95)</option></select></div><div class="dev-field"><label for="devHourSelect">Test Time of Day</label><select id="devHourSelect"><option value="auto">Sync w/ Tee Slider</option><option value="6">06:00 AM (Dawn)</option><option value="9">09:00 AM (Morning)</option><option value="13">01:00 PM (Midday)</option><option value="16">04:00 PM (Late Afternoon)</option><option value="19">07:00 PM (Evening)</option><option value="22">10:00 PM (Night)</option></select></div></div></div>
 <button class="modal-close-btn" id="closeModalBtn">Close</button></div></div>
 
@@ -960,7 +960,7 @@ function buildDateBar() {
   dateBar.appendChild(moreBtn);
 }
 
-function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
+function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning, feelsLikeC) {
   if (hasLightning || isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
   const windMph = windSpeedKmh / 1.609;
   let groundPts = 20;
@@ -982,16 +982,17 @@ function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpe
   else if (windowRainMm > 0.0) rainPts = 14;
 
   let tempPts = 20;
-  if (tempC < 3) tempPts = 0;
-  else if (tempC <= 7) tempPts = 5;
-  else if (tempC <= 12) tempPts = 10;
-  else if (tempC <= 17) tempPts = 15;
+  if (feelsLikeC < 3) tempPts = 0;
+  else if (feelsLikeC < 5) tempPts = 4;
+  else if (feelsLikeC <= 8) tempPts = 8;
+  else if (feelsLikeC <= 12) tempPts = 12;
+  else if (feelsLikeC <= 17) tempPts = 16;
 
   let gearPts = 20;
-  if (tempC < 3 || windowRainMm > 4.0) gearPts = 0;
-  else if (tempC <= 5 || windowRainMm > 1.5) gearPts = 5;
-  else if (tempC <= 10 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
-  else if (tempC <= 15 || windMph >= 10) gearPts = 15;
+  if (feelsLikeC < 5 || windowRainMm > 4.0) gearPts = 0;
+  else if (feelsLikeC <= 8 || windowRainMm > 1.5) gearPts = 5;
+  else if (feelsLikeC <= 12 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
+  else if (feelsLikeC <= 16 || windMph >= 10) gearPts = 15;
 
   let totalScore = groundPts + windPts + rainPts + tempPts + gearPts;
   if (windowRainMm > 1.5) totalScore = Math.min(totalScore, 42);
@@ -1130,6 +1131,7 @@ function render() {
   const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code)) || activeHourCode === 95;
 
   let sunriseHourDec = 6; let sunsetHourDec = 18;
+  const sunriseStrRaw = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
   const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
   if (d.sunrise[currentDayIdx]) {
     const parts = d.sunrise[currentDayIdx].split('T')[1].split(':'); sunriseHourDec = parseInt(parts[0]) + (parseInt(parts[1]) / 60);
@@ -1139,17 +1141,18 @@ function render() {
   }
 
   const daylightRemaining = sunsetHourDec - activeEvalHour;
-  const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
+  const isBeforeSunrise = activeEvalHour < sunriseHourDec;
+  const isPastSunset = activeEvalHour >= sunsetHourDec;
 
   const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, isPastSunset, daylightRemaining);
   const rainTier = determineRainTier(windowRainSum, activeHourCode);
   updateBackgroundScene(bgScene, rainTier);
 
-  const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
+  const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning, windowAvgFeels);
   let finalPct = evalObj.score; const subScores = evalObj.scores;
 
   const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
-  const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
+  const isCold = windowAvgFeels < 5.0;
 
   dialTemp.textContent = toTemp(windowAvgTemp);
 
@@ -1160,7 +1163,7 @@ function render() {
   else if (finalPct >= 50) dynamicThemeColor = '#f9a825';
   else if (finalPct >= 30) dynamicThemeColor = '#ef6c00';
   else dynamicThemeColor = '#c62828';
-  if (isPastSunset || hasLightning) dynamicThemeColor = '#0a140e';
+  if (isPastSunset || isBeforeSunrise || hasLightning) dynamicThemeColor = '#0a140e';
   themeColorMeta.setAttribute('content', dynamicThemeColor);
 
   if (hasLightning) {
@@ -1169,22 +1172,25 @@ function render() {
   } else if (isPastSunset) {
     finalPct = 0; dialScore.textContent = '0%'; updateDialGauge(0);
     dialVerdict.textContent = 'Too Dark 🌙'; dialSub.textContent = `Sunset is at ${sunsetStrRaw}. Choose an earlier tee time.`;
+  } else if (isBeforeSunrise) {
+    finalPct = 0; dialScore.textContent = '0%'; updateDialGauge(0);
+    dialVerdict.textContent = 'Before Sunrise ☀️'; dialSub.textContent = `Sunrise is at ${sunriseStrRaw}. Choose a later tee time.`;
   } else {
     dialScore.textContent = `${finalPct}%`; updateDialGauge(finalPct);
     if (finalPct >= 85) {
-      dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
-      dialSub.textContent = windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`;
+      dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : (isCold ? 'Cold & Clear 🥶' : 'Perfect ⛳');
+      dialSub.textContent = isCold ? `Cold conditions (feels like ${toTemp(windowAvgFeels)}). Wrap up warm!` : (windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`);
     } else if (finalPct >= 70) {
-      dialVerdict.textContent = 'Good 👍';
-      if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
+      dialVerdict.textContent = isCold ? 'Cold 🥶' : 'Good 👍';
+      if (isCold) dialSub.textContent = `Cold playing conditions (feels like ${toTemp(windowAvgFeels)}). Thermal layers required.`;
+      else if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
       else if (subScores[0] < 20) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
       else if (subScores[1] < 20) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
-      else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
       else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
     } else if (finalPct >= 50) {
-      dialVerdict.textContent = 'Not Bad ⛅';
-      if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
-      else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
+      dialVerdict.textContent = isCold ? 'Cold & Playable 🥶' : 'Not Bad ⛅';
+      if (isCold) dialSub.textContent = `Cold air (feels like ${toTemp(windowAvgFeels)}). Stay wrapped up warm.`;
+      else if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
       else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
     } else if (finalPct >= 30) {
       dialVerdict.textContent = 'Poor 🌧️';
@@ -1195,7 +1201,10 @@ function render() {
     }
   }
 
-  if (daylightRemaining < 2.0) {
+  if (isBeforeSunrise) {
+    daylightWarning.style.display = 'block'; daylightWarning.className = 'daylight-banner danger';
+    daylightWarning.textContent = `☀️ Sunrise is at ${sunriseStrRaw} — tee time is before daylight begins.`;
+  } else if (daylightRemaining < 2.0) {
     daylightWarning.style.display = 'block'; daylightWarning.className = 'daylight-banner danger';
     daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — insufficient daylight remaining for a full round.`;
   } else if (daylightRemaining <= 4.0) {
@@ -1226,7 +1235,7 @@ function render() {
   else setCardStatus(rainCard, 'good');
 
   const tempCard = document.getElementById('tempCardBtn');
-  if (windowAvgTemp < 3 || windowAvgTemp > 32) setCardStatus(tempCard, 'danger');
+  if (windowAvgFeels < 5.0 || windowAvgTemp > 32) setCardStatus(tempCard, 'danger');
   else if (windowAvgTemp <= 8) setCardStatus(tempCard, 'warn');
   else setCardStatus(tempCard, 'good');
 
@@ -1248,8 +1257,7 @@ function render() {
   document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
   document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
 
-  const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
-  document.getElementById('sunriseTime').textContent = sunriseStr;
+  document.getElementById('sunriseTime').textContent = sunriseStrRaw;
   document.getElementById('sunsetTime').textContent = sunsetStrRaw;
   document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
   document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
@@ -1312,17 +1320,17 @@ function render() {
   const tempDiffC = 22 - windowAvgTemp;
   const penaltyYards = tempDiffC > 0 ? Math.round((tempDiffC / 5) * 2.5) : 0;
   carryCallout.innerHTML = `<strong>🏌️‍♂️ Carry & Temp</strong>At ${toTemp(windowAvgTemp)}, expect ~${penaltyYards} yds carry loss per club.`;
-  if (windowAvgTemp < 3) setCardStatus(carryCallout, 'danger');
+  if (windowAvgFeels < 5.0) setCardStatus(carryCallout, 'danger');
   else if (windowAvgTemp <= 10) setCardStatus(carryCallout, 'warn');
   else setCardStatus(carryCallout, 'good');
 
   const gearCallout = document.getElementById('gearCallout');
   let gear = 'Polo & light mid-layer 👕';
-  if (windowAvgTemp < 5) gear = 'Thermal base layer, beanie & winter mitts 🥶';
-  else if (windowAvgTemp <= 11) gear = 'Windproof fleece & thermal layer 🧥';
+  if (windowAvgFeels < 5.0) gear = 'Thermal base layer, wooly hat, fleece & winter mitts 🧢🥶';
+  else if (windowAvgTemp < 11) gear = 'Windproof fleece & thermal layer 🧥';
   if (windowRainSum > 0.1) gear += ' + Waterproofs & umbrella ☔';
   gearCallout.innerHTML = `<strong>🎒 Recommended Gear</strong>${gear}`;
-  if (windowAvgTemp < 3 || windowRainSum > 2.0) setCardStatus(gearCallout, 'danger');
+  if (windowAvgFeels < 5.0 || windowRainSum > 2.0) setCardStatus(gearCallout, 'danger');
   else if (windowAvgTemp <= 11 || windowRainSum > 0.1 || windowMaxWind / 1.609 > 15) setCardStatus(gearCallout, 'warn');
   else setCardStatus(gearCallout, 'good');
 
