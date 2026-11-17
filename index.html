@@ -685,7 +685,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.24</span>
+  <span class="version-pill" id="versionTag">v5.25</span>
  </div>
 </main>
 
@@ -1098,29 +1098,14 @@ async function loadRootCourses() {
  }
 }
 
-nearbyBtn.addEventListener('click', async () => {
- autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Loading local courses from root database...</div>`;
- autocompleteList.style.display = 'block';
+let currentNearbyCourses = [];
+let renderedNearbyCount = 0;
 
- const courses = await loadRootCourses();
- if (courses.length === 0) {
-  autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:#ef4444;">⚠️ No courses found in root uk-golf-courses.json</div>`;
-  autocompleteList.style.display = 'block';
-  return;
- }
+function renderNearbyBatch() {
+ const batch = currentNearbyCourses.slice(renderedNearbyCount, renderedNearbyCount + 15);
+ if (batch.length === 0) return;
 
- // Compute distance strictly from userLat and userLon (the user's persistent GPS location)
- const sortedCourses = courses.map(course => {
-  const lat = course.latitude !== undefined ? course.latitude : course.lat;
-  const lon = course.longitude !== undefined ? course.longitude : course.lon;
-  const distKm = (lat !== undefined && lon !== undefined) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
-  const distMiles = distKm < 9999 ? (distKm * 0.621371).toFixed(1) : '--';
-  const isLikelyClosed = currentData && currentData.current && (currentData.current.temperature_2m <= -2.5 || (currentData.current.snowfall && currentData.current.snowfall > 2));
-  return { ...course, lat, lon, distKm, distMiles, isClosed: isLikelyClosed && distKm < 15 };
- }).sort((a, b) => a.distKm - b.distKm);
-
- autocompleteList.innerHTML = '';
- sortedCourses.slice(0, 10).forEach(course => {
+ batch.forEach(course => {
   const item = document.createElement('div');
   item.className = 'autocomplete-item';
   const tagClass = course.isClosed ? 'distance-tag closed-tag' : 'distance-tag';
@@ -1139,6 +1124,38 @@ nearbyBtn.addEventListener('click', async () => {
   });
   autocompleteList.appendChild(item);
  });
+ renderedNearbyCount += batch.length;
+}
+
+autocompleteList.addEventListener('scroll', () => {
+ if (autocompleteList.scrollTop + autocompleteList.clientHeight >= autocompleteList.scrollHeight - 30) {
+  renderNearbyBatch();
+ }
+});
+
+nearbyBtn.addEventListener('click', async () => {
+ autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Loading local courses from root database...</div>`;
+ autocompleteList.style.display = 'block';
+
+ const courses = await loadRootCourses();
+ if (courses.length === 0) {
+  autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:#ef4444;">⚠️ No courses found in root uk-golf-courses.json</div>`;
+  autocompleteList.style.display = 'block';
+  return;
+ }
+
+ currentNearbyCourses = courses.map(course => {
+  const lat = course.latitude !== undefined ? course.latitude : course.lat;
+  const lon = course.longitude !== undefined ? course.longitude : course.lon;
+  const distKm = (lat !== undefined && lon !== undefined) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
+  const distMiles = distKm < 9999 ? (distKm * 0.621371).toFixed(1) : '--';
+  const isLikelyClosed = currentData && currentData.current && (currentData.current.temperature_2m <= -2.5 || (currentData.current.snowfall && currentData.current.snowfall > 2));
+  return { ...course, lat, lon, distKm, distMiles, isClosed: isLikelyClosed && distKm < 15 };
+ }).sort((a, b) => a.distKm - b.distKm);
+
+ autocompleteList.innerHTML = '';
+ renderedNearbyCount = 0;
+ renderNearbyBatch();
  autocompleteList.style.display = 'block';
 });
 
