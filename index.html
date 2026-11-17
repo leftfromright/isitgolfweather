@@ -693,7 +693,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.1</span>
+  <span class="version-pill" id="versionTag">v6.2</span>
  </div>
 </main>
 
@@ -701,7 +701,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.1 (Compass Directions Added)<br>Made by KW in November 2026</p>
+  <p>Version 6.2 (Dynamic Rain/Forecast Wording)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1090,7 +1090,7 @@ function openMetricPopup(type) {
   m.hours.forEach((hr, i) => {
    metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>${m.rains[i]}</strong></div>`;
   });
-  metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px;"><span>Prior 24h Rain</span><strong>${m.last24RainStr}</strong></div><div class="modal-detail-row"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
+  metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px;"><span>Prior 24h Rain</span><strong>${m.last24RainStr}</strong></div><div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
  } else if (type === 'temp') {
   metricModalTitle.textContent = '🌡️ Temperature & Carry Impact';
   metricModalSubtitle.textContent = `4-hour playing window starting at ${m.teeLabel}`;
@@ -1777,13 +1777,20 @@ function render() {
 
  const groundCallout = document.getElementById('groundCallout');
  let groundShort = 'Firm & Dry';
- const isCurrentlyRaining = windowRainSum > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(activeHourCode);
+
+ // Check if user is viewing current live hour (Today + current hour)
+ const isLiveNow = isToday && Math.abs(activeEvalHour - currentHourNow) <= 1;
+ const isCurrentlyRaining = (isLiveNow || devRainIntensityOverride !== 'auto') && (windowRainSum > 0.1 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(activeHourCode));
 
  if (isCurrentlyRaining) {
   groundShort = 'Raining right now';
   const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over the past 24 hours (${toPrecip(past7DaysRain)} past 7 days)` : ` (${toPrecip(past7DaysRain)} past 7 days total)`;
   groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now and getting wetter${recentDesc}.`;
   setCardStatus(groundCallout, 'danger');
+ } else if (windowRainSum > 0.2) {
+  groundShort = 'Rain Forecast';
+  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Rain forecast during your round (${toPrecip(windowRainSum)} expected; ${toPrecip(past7DaysRain)} past 7d total).`;
+  setCardStatus(groundCallout, 'warn');
  } else if (subScores[0] >= 15) {
   groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d).`;
   setCardStatus(groundCallout, 'good');
