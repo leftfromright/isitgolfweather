@@ -685,7 +685,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.25</span>
+  <span class="version-pill" id="versionTag">v5.26</span>
  </div>
 </main>
 
@@ -1033,7 +1033,13 @@ closeMetricModalBtn.addEventListener('click', () => { metricModal.style.display 
 metricModal.addEventListener('click', (e) => { if (e.target === metricModal) metricModal.style.display = 'none'; });
 
 function openMetricPopup(type) {
- if (!activeRoundMetrics) return;
+ if (!activeRoundMetrics) {
+  metricModalTitle.textContent = '⏳ Loading Forecast';
+  metricModalSubtitle.textContent = 'Please wait while weather data loads...';
+  metricModalBody.innerHTML = `<div class="modal-detail-row"><span>Status</span><strong>Fetching live golf weather...</strong></div>`;
+  metricModal.style.display = 'flex';
+  return;
+ }
  const m = activeRoundMetrics;
  metricModalBody.innerHTML = '';
 
