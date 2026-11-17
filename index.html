@@ -106,8 +106,9 @@ html, body {
 .bg-atmosphere {
  position: absolute;
  inset: 0;
- background: radial-gradient(circle at 82% 14%, rgba(255, 244, 200, 0.28) 0%, rgba(255, 255, 255, 0) 55%);
- transition: background 0.8s ease-in-out;
+ background: radial-gradient(circle at 82% 14%, rgba(255, 244, 200, 0.32) 0%, rgba(255, 255, 255, 0) 55%);
+ transition: background 0.8s ease-in-out, opacity 0.8s ease-in-out;
+ opacity: 1;
 }
 
 /* Rain Overlay */
@@ -140,12 +141,16 @@ html, body {
 
 .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
 .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); }
+.bg-stage.scene-cloudy .bg-atmosphere { opacity: 0.4; }
 .bg-stage.scene-windy .bg-base { filter: brightness(0.94) contrast(1.04) saturate(0.85); }
 .bg-stage.scene-rain .bg-base { filter: brightness(0.54) contrast(1.26) saturate(0.85) grayscale(0.2); }
+.bg-stage.scene-rain .bg-atmosphere { opacity: 0.15; }
 .bg-stage.scene-ice .bg-base { filter: brightness(1.04) contrast(1.12) saturate(0.38) hue-rotate(175deg); }
 .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); }
 .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); }
+.bg-stage.scene-dusk .bg-atmosphere { background: radial-gradient(circle at 82% 14%, rgba(255, 170, 90, 0.4) 0%, rgba(255, 255, 255, 0) 60%); opacity: 0.9; }
 .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
+.bg-stage.scene-night .bg-atmosphere { opacity: 0.05; }
 
 @keyframes mcSpin { 100% { transform: rotate(360deg); } }
 @keyframes mcDrift { 0%, 100% { transform: translateX(-2.5px); } 50% { transform: translateX(2.5px); } }
@@ -694,7 +699,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.4</span>
+  <span class="version-pill" id="versionTag">v6.5</span>
  </div>
 </main>
 
@@ -702,7 +707,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.4 (Corrected Rain Verdict Phrasing)<br>Made by KW in November 2026</p>
+  <p>Version 6.5 (Smooth Twilight & Night Fades)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
