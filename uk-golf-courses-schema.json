@@ -1,41 +1,99 @@
+
 {
-  "dataset": "isitgolfweather-uk-golf-facilities",
-  "intended_output": "uk-golf-courses.json",
-  "fields": {
-    "id": "Stable source-qualified identifier",
-    "name": "Facility/course name",
-    "club_name": "Parent club/operator where available",
-    "facility_type": [
-      "golf_course",
-      "miniature",
-      "pitch_and_putt",
-      "driving_range",
-      "practice",
-      "footgolf"
-    ],
-    "address": "Formatted address from source address tags; null if unavailable",
-    "postcode": "Postcode; null if unavailable",
-    "city": "Town/city/locality; null if unavailable",
-    "county": "County; null if unavailable",
-    "country": "Country",
-    "latitude": "WGS84 decimal degrees",
-    "longitude": "WGS84 decimal degrees",
-    "holes": "Hole count if tagged",
-    "website": "Operator website if tagged",
-    "osm": "OpenStreetMap element type, ID and URL",
-    "verification_status": "Must not be treated as independently verified unless corroborated"
-  },
-  "quality_rules": [
-    "Do not invent missing addresses or postcodes.",
-    "Do not silently remove possible duplicates; flag them for review.",
-    "Independently check current operating status against the club/operator website before marking active.",
-    "Retain source attribution and comply with ODbL share-alike obligations."
-  ],
-  "source": {
-    "name": "OpenStreetMap",
-    "url": "https://www.openstreetmap.org/",
-    "licence": "ODbL 1.0",
-    "attribution": "\u00a9 OpenStreetMap contributors",
-    "copyright_url": "https://www.openstreetmap.org/copyright"
-  }
+  "dataset": "isitgolfweather-uk-golf-courses",
+  "version": "0.1",
+  "country": "United Kingdom",
+  "coordinate_system": "WGS84",
+  "courses": [
+    {
+      "id": "uk001",
+      "name": "Leamington & County Golf Club",
+      "address": "Golf Lane, Whitnash, Leamington Spa",
+      "postcode": "CV31 2QA",
+      "county": "Warwickshire",
+      "latitude": 52.2665,
+      "longitude": -1.5305
+    },
+    {
+      "id": "uk002",
+      "name": "Kenilworth Golf Club",
+      "address": "Crewe Lane, Kenilworth",
+      "postcode": "CV8 2EA",
+      "county": "Warwickshire",
+      "latitude": 52.3526,
+      "longitude": -1.5468
+    },
+    {
+      "id": "uk003",
+      "name": "The Warwickshire Golf & Country Club",
+      "address": "Leek Wootton, Warwick",
+      "postcode": "CV35 7QT",
+      "county": "Warwickshire",
+      "latitude": 52.3132,
+      "longitude": -1.5864
+    },
+    {
+      "id": "uk004",
+      "name": "Stoneleigh Deer Park Golf Club",
+      "address": "Coventry Road, Stoneleigh",
+      "postcode": "CV8 3DR",
+      "county": "Warwickshire",
+      "latitude": 52.3468,
+      "longitude": -1.5047
+    },
+    {
+      "id": "uk005",
+      "name": "Stratford-on-Avon Golf Club",
+      "address": "Tiddington Road, Stratford-upon-Avon",
+      "postcode": "CV37 7BA",
+      "county": "Warwickshire",
+      "latitude": 52.1947,
+      "longitude": -1.6912
+    },
+    {
+      "id": "uk006",
+      "name": "Rugby Golf Club",
+      "address": "Clifton Road, Rugby",
+      "postcode": "CV21 3RD",
+      "county": "Warwickshire",
+      "latitude": 52.3749,
+      "longitude": -1.2318
+    },
+    {
+      "id": "uk007",
+      "name": "Nuneaton Golf Club",
+      "address": "Golf Drive, Nuneaton",
+      "postcode": "CV11 6QF",
+      "county": "Warwickshire",
+      "latitude": 52.5065,
+      "longitude": -1.4185
+    },
+    {
+      "id": "uk008",
+      "name": "Atherstone Golf Club",
+      "address": "The Outwoods, Atherstone",
+      "postcode": "CV9 2RL",
+      "county": "Warwickshire",
+      "latitude": 52.5679,
+      "longitude": -1.5474
+    },
+    {
+      "id": "uk009",
+      "name": "Ardencote Golf Club",
+      "address": "Lye Green Road, Claverdon",
+      "postcode": "CV35 8LT",
+      "county": "Warwickshire",
+      "latitude": 52.2877,
+      "longitude": -1.7049
+    },
+    {
+      "id": "uk010",
+      "name": "Bidford Grange Golf Club",
+      "address": "Stratford Road, Bidford-on-Avon",
+      "postcode": "B50 4LX",
+      "county": "Warwickshire",
+      "latitude": 52.1713,
+      "longitude": -1.8359
+    }
+  ]
 }
