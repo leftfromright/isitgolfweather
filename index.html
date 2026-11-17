@@ -685,7 +685,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.26</span>
+  <span class="version-pill" id="versionTag">v5.27</span>
  </div>
 </main>
 
@@ -800,7 +800,22 @@ let userLon = -1.5333;
 let currentViewLat = 52.2825;
 let currentViewLon = -1.5333;
 
-let activeRoundMetrics = null;
+let activeRoundMetrics = {
+ teeLabel: '08:00 AM',
+ hours: ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM'],
+ winds: ['10 mph', '10 mph', '11 mph', '12 mph'],
+ gusts: ['15 mph', '15 mph', '16 mph', '18 mph'],
+ windAdvice: 'Minimal flight effect',
+ totalRainMm: 0,
+ totalRainStr: '0.0 mm',
+ rains: ['Dry', 'Dry', 'Dry', 'Dry'],
+ last24RainStr: '0.0 mm',
+ past7RainStr: '5.0 mm',
+ groundShort: 'Firm & Dry',
+ temps: ['14°C', '15°C', '16°C', '16°C'],
+ feels: ['13°C', '14°C', '15°C', '15°C'],
+ penaltyYards: 0
+};
 let activeRainTier = 'none';
 const circumference = 2 * Math.PI * 70;
 
@@ -1292,10 +1307,18 @@ async function fetchWeather(lat, lon, overrideName = '', isUserGps = false, targ
    userLon = lon;
   }
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
-  const [weatherData, locationName] = await Promise.all([
-   fetch(weatherUrl).then(r => r.json()),
-   overrideName ? Promise.resolve(overrideName) : fetchFriendlyLocationName(lat, lon)
-  ]);
+  
+  const weatherRes = await fetch(weatherUrl);
+  const weatherData = await weatherRes.json();
+  
+  let locationName = overrideName;
+  if (!locationName) {
+   try {
+    locationName = await fetchFriendlyLocationName(lat, lon);
+   } catch (e) {
+    locationName = `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
+   }
+  }
 
   currentData = weatherData;
   currentCityName = locationName;
