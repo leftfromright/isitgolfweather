@@ -685,7 +685,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.23</span>
+  <span class="version-pill" id="versionTag">v5.24</span>
  </div>
 </main>
 
@@ -693,7 +693,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 5.23 (Root JSON Course Finder Integrated)<br>Made by KW in November 2026</p>
+  <p>Version 5.24 (Fixed User Location for Nearby Distances)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -793,8 +793,12 @@ let selectedDayIndex = 0;
 const currentHourNow = new Date().getHours();
 let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
 let debounceTimer = null;
-let lastLat = 51.5074; // Default fallback (London)
-let lastLon = -0.1278;
+
+// Persistent User Location vs Current Viewed Course Location
+let userLat = 52.2825; // Whitnash / Leamington Spa default
+let userLon = -1.5333;
+let currentViewLat = 52.2825;
+let currentViewLon = -1.5333;
 
 let activeRoundMetrics = null;
 let activeRainTier = 'none';
@@ -992,7 +996,7 @@ devResetBtn.addEventListener('click', resetDevOverrides);
 
 shareLinkBtn.addEventListener('click', () => {
  if (!currentData) return;
- const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${currentData.latitude}&lon=${currentData.longitude}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
+ const shareUrl = `${window.location.origin}${window.location.pathname}#lat=${currentViewLat}&lon=${currentViewLon}&day=${selectedDayIndex}&tee=${selectedTeeHour}`;
  navigator.clipboard.writeText(shareUrl).then(() => {
   const originalHTML = shareLinkBtn.innerHTML;
   shareLinkBtn.innerHTML = '✅';
@@ -1105,10 +1109,11 @@ nearbyBtn.addEventListener('click', async () => {
   return;
  }
 
+ // Compute distance strictly from userLat and userLon (the user's persistent GPS location)
  const sortedCourses = courses.map(course => {
   const lat = course.latitude !== undefined ? course.latitude : course.lat;
   const lon = course.longitude !== undefined ? course.longitude : course.lon;
-  const distKm = (lat !== undefined && lon !== undefined) ? calculateDistance(lastLat, lastLon, lat, lon) : 9999;
+  const distKm = (lat !== undefined && lon !== undefined) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
   const distMiles = distKm < 9999 ? (distKm * 0.621371).toFixed(1) : '--';
   const isLikelyClosed = currentData && currentData.current && (currentData.current.temperature_2m <= -2.5 || (currentData.current.snowfall && currentData.current.snowfall > 2));
   return { ...course, lat, lon, distKm, distMiles, isClosed: isLikelyClosed && distKm < 15 };
@@ -1129,7 +1134,7 @@ nearbyBtn.addEventListener('click', async () => {
    autocompleteList.style.display = 'none';
    selectedDayIndex = 0;
    if (course.lat !== undefined && course.lon !== undefined) {
-    fetchWeather(course.lat, course.lon, course.name);
+    fetchWeather(course.lat, course.lon, course.name, false);
    }
   });
   autocompleteList.appendChild(item);
@@ -1149,7 +1154,6 @@ locationInput.addEventListener('input', () => {
 
 async function searchAutocomplete(query) {
  try {
-  // Only show results if they appear on our current list of courses from root uk-golf-courses.json
   const courses = await loadRootCourses();
   const matched = courses.filter(c => 
    c.name.toLowerCase().includes(query) || (c.address && c.address.toLowerCase().includes(query)) || (c.county && c.county.toLowerCase().includes(query))
@@ -1173,7 +1177,7 @@ async function searchAutocomplete(query) {
      locationInput.value = place.name;
      autocompleteList.style.display = 'none';
      selectedDayIndex = 0;
-     fetchWeather(place.latitude, place.longitude, place.name);
+     fetchWeather(place.latitude, place.longitude, place.name, false);
     });
     autocompleteList.appendChild(item);
    });
@@ -1256,10 +1260,14 @@ async function fetchFriendlyLocationName(lat, lon) {
  return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
 }
 
-async function fetchWeather(lat, lon, overrideName = '', targetDay = 0, targetTee = null) {
+async function fetchWeather(lat, lon, overrideName = '', isUserGps = false, targetDay = 0, targetTee = null) {
  try {
-  lastLat = lat;
-  lastLon = lon;
+  currentViewLat = lat;
+  currentViewLon = lon;
+  if (isUserGps) {
+   userLat = lat;
+   userLon = lon;
+  }
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
   const [weatherData, locationName] = await Promise.all([
    fetch(weatherUrl).then(r => r.json()),
@@ -1747,7 +1755,7 @@ function render() {
   totalRainStr: toPrecip(windowRainSum),
   rains: windowPrecip.map(r => r === 0 ? 'Dry' : toPrecip(r)),
   last24RainStr: toPrecip(last24hRain),
-  past7RainStr: toPrecip(past7DaysRain),
+  past7RainStr: toPrecip(last7DaysRain),
   groundShort,
   temps: windowTemps.map(t => toTemp(t)),
   feels: windowFeels.map(f => toTemp(f)),
@@ -1787,14 +1795,14 @@ geoBtn.addEventListener('click', getUserLocation);
 function getUserLocation() {
  const hashData = parseUrlHash();
  if (hashData) {
-  fetchWeather(hashData.lat, hashData.lon, '', hashData.day, hashData.tee);
+  fetchWeather(hashData.lat, hashData.lon, '', true, hashData.day, hashData.tee);
  } else if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
-   (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-   () => fetchWeather(lastLat, lastLon, 'London, GB')
+   (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude, '', true),
+   () => fetchWeather(userLat, userLon, 'Leamington Spa, UK', true)
   );
  } else {
-  fetchWeather(lastLat, lastLon, 'London, GB');
+  fetchWeather(userLat, userLon, 'Leamington Spa, UK', true);
  }
 }
 
