@@ -151,7 +151,7 @@ html, body {
 .mc-spin { transform-origin: 32px 32px; animation: mcSpin 16s linear infinite; }
 .mc-drift { animation: mcDrift 4s ease-in-out infinite; }
 
-/* Top Header Bar - FIXED flush to top on both mobile & desktop */
+/* Top Header Bar */
 .top-bar {
  position: fixed;
  top: 0;
@@ -200,7 +200,7 @@ html, body {
 .header-icon-btn:hover { background: rgba(255, 255, 255, 0.22); }
 .theme-btn { background: transparent; border: none; color: #ffffff; font-size: 1rem; cursor: pointer; padding: 0.2rem 0.3rem; }
 
-/* Main Container - adds top padding to account for fixed header bar */
+/* Main Container */
 .app-container {
  position: relative; z-index: 5; max-width: 760px; margin: 0 auto;
  padding: 4.2rem 0.85rem 2rem 0.85rem; display: flex; flex-direction: column; gap: 0.85rem;
@@ -244,7 +244,6 @@ html, body {
  background: rgba(46,125,50,0.12); padding: 2px 8px; border-radius: 99px;
  min-width: 58px; text-align: center; white-space: nowrap; flex-shrink: 0;
 }
-.distance-tag.closed-tag { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
 
 /* Glass Cards */
 .glass-card {
@@ -463,7 +462,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  </div>
 </div>
 
-<!-- Top Header Bar - FIXED flush to top -->
+<!-- Top Header Bar -->
 <header class="top-bar">
  <div class="top-bar-inner">
   <div class="brand">
@@ -487,7 +486,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <!-- Search Bar -->
  <div class="search-wrapper">
   <span style="font-size: 1.05rem;">📍</span>
-  <input type="text" id="locationInput" placeholder="Search golf club or location..." autocomplete="off">
+  <input type="text" id="locationInput" placeholder="Search golf course, town or city..." autocomplete="off">
   <button id="nearbyBtn" class="search-icon-btn" title="Courses Nearby (Root Database)">⛳</button>
   <button id="geoBtn" class="search-icon-btn" title="Use current location">📍</button>
   <div id="autocompleteList" class="autocomplete-list"></div>
@@ -686,7 +685,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.30</span>
+  <span class="version-pill" id="versionTag">v6.0</span>
  </div>
 </main>
 
@@ -694,7 +693,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 5.24 (Fixed User Location for Nearby Distances)<br>Made by KW in November 2026</p>
+  <p>Version 6.0 (Architecture & Scoring Refactor)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -795,9 +794,8 @@ const currentHourNow = new Date().getHours();
 let selectedTeeHour = Math.max(6, Math.min(20, currentHourNow));
 let debounceTimer = null;
 
-// Persistent User Location vs Current Viewed Course Location
-let userLat = 52.2825; // Whitnash / Leamington Spa default
-let userLon = -1.5333;
+let userRealLat = 52.2825; // Whitnash / Leamington Spa default
+let userRealLon = -1.5333;
 let currentViewLat = 52.2825;
 let currentViewLon = -1.5333;
 
@@ -854,17 +852,25 @@ function parseUrlHash() {
  const hash = window.location.hash.substring(1);
  if (!hash) return null;
  const params = new URLSearchParams(hash);
- const lat = params.get('lat');
- const lon = params.get('lon');
- const day = params.get('day');
- const tee = params.get('tee');
- if (lat && lon) {
-  return {
-   lat: parseFloat(lat),
-   lon: parseFloat(lon),
-   day: day !== null ? parseInt(day) : 0,
-   tee: tee !== null ? parseInt(tee) : Math.max(6, Math.min(20, new Date().getHours()))
-  };
+ const latStr = params.get('lat');
+ const lonStr = params.get('lon');
+ const dayStr = params.get('day');
+ const teeStr = params.get('tee');
+
+ if (latStr && lonStr) {
+  const lat = parseFloat(latStr);
+  const lon = parseFloat(lonStr);
+  const day = dayStr !== null ? parseInt(dayStr, 10) : 0;
+  const tee = teeStr !== null ? parseInt(teeStr, 10) : Math.max(6, Math.min(20, new Date().getHours()));
+
+  if (!isNaN(lat) && lat >= -90 && lat <= 90 && !isNaN(lon) && lon >= -180 && lon <= 180) {
+   return {
+    lat: lat,
+    lon: lon,
+    day: !isNaN(day) && day >= 0 && day <= 15 ? day : 0,
+    tee: !isNaN(tee) && tee >= 6 && tee <= 20 ? tee : Math.max(6, Math.min(20, new Date().getHours()))
+   };
+  }
  }
  return null;
 }
@@ -1130,11 +1136,10 @@ function renderNearbyBatch() {
  batch.forEach(course => {
   const item = document.createElement('div');
   item.className = 'autocomplete-item';
-  const tagClass = course.isClosed ? 'distance-tag closed-tag' : 'distance-tag';
-  const tagText = course.isClosed ? 'CLOSED ⚠️' : (course.distMiles !== '--' ? `${course.distMiles} mi` : 'Nearby');
+  const tagText = course.distMiles !== '--' ? `${course.distMiles} mi` : 'Nearby';
   const addressStr = [course.address, course.county].filter(Boolean).join(', ');
 
-  item.innerHTML = `<span>⛳ <strong>${course.name}</strong><br><small style="color:var(--text-muted);">${addressStr || course.country || ''}</small></span> <span class="${tagClass}">${tagText}</span>`;
+  item.innerHTML = `<span>⛳ <strong>${course.name}</strong><br><small style="color:var(--text-muted);">${addressStr || course.country || ''}</small></span> <span class="distance-tag">${tagText}</span>`;
   item.addEventListener('click', (e) => {
    e.stopPropagation();
    locationInput.value = `${course.name}`;
@@ -1169,10 +1174,9 @@ nearbyBtn.addEventListener('click', async () => {
  currentNearbyCourses = courses.map(course => {
   const lat = course.latitude !== undefined ? course.latitude : course.lat;
   const lon = course.longitude !== undefined ? course.longitude : course.lon;
-  const distKm = (lat !== undefined && lon !== undefined) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
+  const distKm = (lat !== undefined && lon !== undefined) ? calculateDistance(userRealLat, userRealLon, lat, lon) : 9999;
   const distMiles = distKm < 9999 ? (distKm * 0.621371).toFixed(1) : '--';
-  const isLikelyClosed = currentData && currentData.current && (currentData.current.temperature_2m <= -2.5 || (currentData.current.snowfall && currentData.current.snowfall > 2));
-  return { ...course, lat, lon, distKm, distMiles, isClosed: isLikelyClosed && distKm < 15 };
+  return { ...course, lat, lon, distKm, distMiles };
  }).sort((a, b) => a.distKm - b.distKm);
 
  autocompleteList.innerHTML = '';
@@ -1194,23 +1198,42 @@ locationInput.addEventListener('input', () => {
 async function searchAutocomplete(query) {
  try {
   const courses = await loadRootCourses();
-  const matched = courses.filter(c => 
+  const matchedCourses = courses.filter(c => 
    c.name.toLowerCase().includes(query) || (c.address && c.address.toLowerCase().includes(query)) || (c.county && c.county.toLowerCase().includes(query))
   ).map(c => ({
    name: c.name,
    address: [c.address, c.postcode, c.county].filter(Boolean).join(', '),
    latitude: c.latitude !== undefined ? c.latitude : c.lat,
    longitude: c.longitude !== undefined ? c.longitude : c.lon,
-   isRootList: true
+   tag: 'Course'
   }));
 
+  let matchedGeocode = [];
+  try {
+   const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`);
+   if (geoRes.ok) {
+    const geoData = await geoRes.json();
+    if (geoData && geoData.results) {
+     matchedGeocode = geoData.results.map(g => ({
+      name: g.name,
+      address: [g.admin1, g.country].filter(Boolean).join(', '),
+      latitude: g.latitude,
+      longitude: g.longitude,
+      tag: g.feature_code && g.feature_code.startsWith('PPL') ? 'City/Town' : 'Location'
+     }));
+    }
+   }
+  } catch (e) {}
+
+  const combined = [...matchedCourses.slice(0, 6), ...matchedGeocode.slice(0, 4)];
   autocompleteList.innerHTML = '';
 
-  if (matched.length > 0) {
-   matched.slice(0, 6).forEach(place => {
+  if (combined.length > 0) {
+   combined.slice(0, 8).forEach(place => {
     const item = document.createElement('div');
     item.className = 'autocomplete-item';
-    item.innerHTML = `<span>⛳ ${place.name}<br><small style="color:var(--text-muted);">${place.address || ''}</small></span><span class="distance-tag">Root DB</span>`;
+    const icon = place.tag === 'Course' ? '⛳' : '📍';
+    item.innerHTML = `<span>${icon} <strong>${place.name}</strong><br><small style="color:var(--text-muted);">${place.address || ''}</small></span><span class="distance-tag">${place.tag}</span>`;
     item.addEventListener('click', (e) => {
      e.stopPropagation();
      locationInput.value = place.name;
@@ -1299,18 +1322,30 @@ async function fetchFriendlyLocationName(lat, lon) {
  return `Location (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
 }
 
+let currentFetchController = null;
+
 async function fetchWeather(lat, lon, overrideName = '', isUserGps = false, targetDay = 0, targetTee = null) {
+ if (currentFetchController) {
+  currentFetchController.abort();
+ }
+ currentFetchController = new AbortController();
+
  try {
   currentViewLat = lat;
   currentViewLon = lon;
   if (isUserGps) {
-   userLat = lat;
-   userLon = lon;
+   userRealLat = lat;
+   userRealLon = lon;
   }
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,snowfall&hourly=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m,snowfall,snow_depth,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset&past_days=7&forecast_days=16&timezone=auto`;
   
-  const weatherRes = await fetch(weatherUrl);
+  const weatherRes = await fetch(weatherUrl, { signal: currentFetchController.signal });
+  if (!weatherRes.ok) throw new Error(`HTTP error! status: ${weatherRes.status}`);
   const weatherData = await weatherRes.json();
+
+  if (!weatherData.hourly || !weatherData.daily || !weatherData.hourly.temperature_2m) {
+   throw new Error('Invalid weather data structure returned from API');
+  }
   
   let locationName = overrideName;
   if (!locationName) {
@@ -1336,7 +1371,9 @@ async function fetchWeather(lat, lon, overrideName = '', isUserGps = false, targ
   updateTeeTimeDisplay();
   render();
  } catch (err) {
-  dialSub.textContent = 'Unable to load weather data.';
+  if (err.name !== 'AbortError') {
+   dialSub.textContent = 'Unable to load weather data.';
+  }
  }
 }
 
@@ -1399,7 +1436,7 @@ function buildDateBar() {
  dateBar.appendChild(moreBtn);
 }
 
-function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning) {
+function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning, daylightHours) {
  if (hasLightning || isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
  const windMph = windSpeedKmh / 1.609;
 
@@ -1409,35 +1446,33 @@ function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpe
  else if (past7DaysRainMm > 10 || past24RainMm > 4) groundPts = 10;
  else if (past7DaysRainMm >= 5) groundPts = 15;
 
- let windPts = 20;
+ let windPts = 25;
  if (windMph > 28) windPts = 0;
- else if (windMph >= 22) windPts = 5;
- else if (windMph >= 15) windPts = 10;
- else if (windMph >= 8) windPts = 15;
+ else if (windMph >= 22) windPts = 6;
+ else if (windMph >= 15) windPts = 12;
+ else if (windMph >= 8) windPts = 18;
 
- let rainPts = 20;
+ let rainPts = 25;
  if (windowRainMm > 4.0) rainPts = 0;
- else if (windowRainMm > 1.5) rainPts = 4;
- else if (windowRainMm > 0.4) rainPts = 10;
- else if (windowRainMm > 0.0) rainPts = 14;
+ else if (windowRainMm > 1.5) rainPts = 6;
+ else if (windowRainMm > 0.4) rainPts = 12;
+ else if (windowRainMm > 0.0) rainPts = 18;
 
- let tempPts = 20;
+ let tempPts = 15;
  if (tempC < 3) tempPts = 0;
- else if (tempC <= 7) tempPts = 5;
- else if (tempC <= 12) tempPts = 10;
- else if (tempC <= 17) tempPts = 15;
+ else if (tempC <= 7) tempPts = 4;
+ else if (tempC <= 12) tempPts = 8;
+ else if (tempC <= 17) tempPts = 12;
 
- let gearPts = 20;
- if (tempC < 3 || windowRainMm > 4.0) gearPts = 0;
- else if (tempC <= 5 || windowRainMm > 1.5) gearPts = 5;
- else if (tempC <= 10 || windowRainMm > 0.1 || windMph > 15) gearPts = 10;
- else if (tempC <= 15 || windMph >= 10) gearPts = 15;
+ let daylightPts = 15;
+ if (daylightHours < 2.0) daylightPts = 0;
+ else if (daylightHours < 4.0) daylightPts = 8;
 
- let totalScore = groundPts + windPts + rainPts + tempPts + gearPts;
- if (windowRainMm > 1.5) totalScore = Math.min(totalScore, 42);
- else if (windowRainMm > 0.4) totalScore = Math.min(totalScore, 62);
+ let totalScore = groundPts + windPts + rainPts + tempPts + daylightPts;
+ if (windowRainMm > 1.5) totalScore = Math.min(totalScore, 45);
+ else if (windowRainMm > 0.4) totalScore = Math.min(totalScore, 65);
 
- return { score: totalScore, scores: [groundPts, windPts, rainPts, tempPts, gearPts] };
+ return { score: Math.round(totalScore), scores: [groundPts, windPts, rainPts, tempPts, daylightPts] };
 }
 
 function updateDialGauge(percentage) {
@@ -1628,7 +1663,7 @@ function render() {
  const rainTier = determineRainTier(windowRainSum, activeHourCode);
  updateBackgroundScene(bgScene, rainTier);
 
- const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning);
+ const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning, daylightRemaining);
  let finalPct = evalObj.score;
  const subScores = evalObj.scores;
 
@@ -1657,8 +1692,8 @@ function render() {
   } else if (finalPct >= 70) {
    dialVerdict.textContent = 'Good 👍';
    if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
-   else if (subScores[0] < 20) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
-   else if (subScores[1] < 20) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
+   else if (subScores[0] < 15) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
+   else if (subScores[1] < 18) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
    else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
    else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
   } else if (finalPct >= 50) {
@@ -1747,10 +1782,10 @@ function render() {
 
  const windCallout = document.getElementById('windCallout');
  let windAdvice = 'Minimal flight effect';
- if (subScores[1] >= 15) {
+ if (subScores[1] >= 18) {
   windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Light breeze (${toSpeed(windowMaxWind)}). Minimal flight effect.`;
   setCardStatus(windCallout, 'good');
- } else if (subScores[1] === 10) {
+ } else if (subScores[1] >= 12) {
   windAdvice = 'Club up 1 into wind';
   windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Moderate wind (${toSpeed(windowMaxWind)}). Club up 1 into wind.`;
   setCardStatus(windCallout, 'warn');
@@ -1843,14 +1878,14 @@ geoBtn.addEventListener('click', getUserLocation);
 function getUserLocation() {
  const hashData = parseUrlHash();
  if (hashData) {
-  fetchWeather(hashData.lat, hashData.lon, '', true, hashData.day, hashData.tee);
+  fetchWeather(hashData.lat, hashData.lon, '', false, hashData.day, hashData.tee);
  } else if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
    (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude, '', true),
-   () => fetchWeather(userLat, userLon, 'Leamington Spa, UK', true)
+   () => fetchWeather(userRealLat, userRealLon, 'Leamington Spa, UK', true)
   );
  } else {
-  fetchWeather(userLat, userLon, 'Leamington Spa, UK', true);
+  fetchWeather(userRealLat, userRealLon, 'Leamington Spa, UK', true);
  }
 }
 
