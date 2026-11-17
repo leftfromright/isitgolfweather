@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Is It Golf Weather? - Golf Course Finder</title>
+    <title>Is It Golf Weather? - Golf Course Finder (Dev Mode)</title>
     <!-- Tailwind CSS for modern responsive styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,24 +17,51 @@
                 <i class="fa-solid fa-golf-ball-tee text-emerald-400 text-2xl"></i>
                 <h1 class="text-xl font-bold tracking-tight text-white">Is It Golf Weather?</h1>
             </div>
-            <!-- Golf Course Finder Button -->
-            <button id="find-courses-btn" onclick="openGolfFinder()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 shadow">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Nearby Courses</span>
-            </button>
+            <div class="flex items-center space-x-3">
+                <!-- Dev Status Badge -->
+                <span id="dev-status-badge" class="hidden text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> JSON Missing
+                </span>
+                <!-- Golf Course Finder Button -->
+                <button id="find-courses-btn" onclick="openGolfFinder()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 shadow">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Nearby Courses</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content / Weather Dashboard Placeholder -->
-    <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full">
+    <!-- Main Content / Dev Page Dashboard -->
+    <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-6">
+        <!-- Weather Dashboard Card -->
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 shadow-xl text-center">
             <h2 class="text-2xl font-bold mb-3 text-emerald-400">Ready for a Round?</h2>
             <p class="text-slate-300 max-w-xl mx-auto mb-6">
-                Check local weather conditions or click the <strong class="text-white">Nearby Courses</strong> button above to find golf courses closest to your current location using your custom course database.
+                Check local weather conditions or click the <strong class="text-white">Nearby Courses</strong> button above to find golf courses closest to your location using your root JSON database.
             </p>
             <div class="inline-flex items-center space-x-2 bg-slate-700/60 px-4 py-2 rounded-full text-sm text-slate-300">
                 <i class="fa-solid fa-cloud-sun text-amber-400"></i>
                 <span>Current Location: Royal Leamington Spa, UK</span>
+            </div>
+        </div>
+
+        <!-- Dev Status & File Check Card -->
+        <div id="dev-panel" class="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 shadow-xl">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-700 mb-4">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-code text-indigo-400"></i>
+                    <h3 class="text-lg font-bold text-white">Developer File Check Panel</h3>
+                </div>
+                <button onclick="checkDataFile()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1.5 rounded-lg text-slate-200 transition">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Re-check File
+                </button>
+            </div>
+            
+            <div id="file-check-status" class="space-y-3 text-sm">
+                <div class="flex items-center space-x-3 text-slate-400">
+                    <i class="fa-solid fa-spinner fa-spin text-emerald-400"></i>
+                    <span>Checking existence of <code class="bg-slate-900 px-2 py-0.5 rounded text-emerald-300">uk-golf-courses.json</code> in root...</span>
+                </div>
             </div>
         </div>
     </main>
@@ -57,7 +84,7 @@
             <div id="golf-modal-body" class="p-6 overflow-y-auto space-y-4 flex-grow">
                 <div id="loading-state" class="text-center py-10 text-slate-400">
                     <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-3"></i>
-                    <p>Detecting your location and loading golf courses from root directory...</p>
+                    <p>Verifying file existence and loading golf courses...</p>
                 </div>
                 <div id="course-list" class="space-y-3 hidden">
                     <!-- Dynamic course cards inserted here -->
@@ -79,16 +106,74 @@
 
     <!-- Footer -->
     <footer class="bg-slate-800 border-t border-slate-700 py-4 text-center text-xs text-slate-400">
-        <p>&copy; 2026 Is It Golf Weather? &bull; Powered by custom course database</p>
+        <p>&copy; 2026 Is It Golf Weather? &bull; Dev Mode & Course Finder</p>
     </footer>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript Logic with Pre-check -->
     <script>
         const modal = document.getElementById('golf-modal');
         const loadingState = document.getElementById('loading-state');
         const courseListContainer = document.getElementById('course-list');
         const errorState = document.getElementById('error-state');
         const errorMessage = document.getElementById('error-message');
+        const fileCheckStatus = document.getElementById('file-check-status');
+        const devStatusBadge = document.getElementById('dev-status-badge');
+
+        // Run file existence check on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkDataFile();
+        });
+
+        async function checkDataFile() {
+            fileCheckStatus.innerHTML = `
+                <div class="flex items-center space-x-3 text-slate-400">
+                    <i class="fa-solid fa-spinner fa-spin text-emerald-400"></i>
+                    <span>Checking existence of <code class="bg-slate-900 px-2 py-0.5 rounded text-emerald-300">uk-golf-courses.json</code> in root...</span>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('uk-golf-courses.json', { method: 'GET' });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const jsonRoot = await response.json();
+                const courseCount = jsonRoot.courses ? jsonRoot.courses.length : (Array.isArray(jsonRoot) ? jsonRoot.length : 0);
+
+                // Success state in dev panel
+                fileCheckStatus.innerHTML = `
+                    <div class="flex items-center justify-between bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-xl">
+                        <div class="flex items-center space-x-3 text-emerald-300">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+                            <div>
+                                <p class="font-semibold">File Found & Validated</p>
+                                <p class="text-xs text-slate-300">Loaded <code class="text-emerald-300">uk-golf-courses.json</code> successfully (${courseCount} courses available).</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-medium">Ready</span>
+                    </div>
+                `;
+                devStatusBadge.classList.add('hidden');
+
+            } catch (err) {
+                console.warn("File check failed:", err);
+                fileCheckStatus.innerHTML = `
+                    <div class="flex items-center justify-between bg-red-950/40 border border-red-800/50 p-3 rounded-xl">
+                        <div class="flex items-center space-x-3 text-red-300">
+                            <i class="fa-solid fa-triangle-exclamation text-red-400 text-lg"></i>
+                            <div>
+                                <p class="font-semibold">File Missing or Unreachable</p>
+                                <p class="text-xs text-slate-300">Could not find <code class="text-red-300">uk-golf-courses.json</code> in the root directory. Please upload it.</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-red-600 text-white px-2.5 py-1 rounded-md font-medium">Missing</span>
+                    </div>
+                `;
+                devStatusBadge.classList.remove('hidden');
+            }
+        }
 
         function openGolfFinder() {
             modal.classList.remove('hidden');
@@ -106,18 +191,17 @@
             errorState.classList.add('hidden');
 
             try {
-                // Fetch the JSON file from the root directory
-                let response = await fetch('uk-golf-courses.json').catch(() => null);
-                if (!response || !response.ok) {
-                    response = await fetch('courses_uk_ireland.json').catch(() => null);
-                }
-                if (!response || !response.ok) {
-                    response = await fetch('uk-golf-courses.json'); // Will trigger catch block if fails
+                const response = await fetch('uk-golf-courses.json');
+                if (!response.ok) {
+                    throw new Error(`File not found (Status: ${response.status})`);
                 }
 
                 const jsonRoot = await response.json();
-                // Extract courses array from the new nested object structure
                 const courses = jsonRoot.courses || (Array.isArray(jsonRoot) ? jsonRoot : []);
+
+                if (courses.length === 0) {
+                    throw new Error("JSON loaded but no courses found inside 'courses' array.");
+                }
 
                 if (!navigator.geolocation) {
                     throw new Error("Geolocation is not supported by your browser.");
@@ -146,7 +230,7 @@
                             lat: course.latitude !== undefined ? course.latitude : course.lat,
                             lon: course.longitude !== undefined ? course.longitude : course.lon
                         }));
-                        renderCourses(processedCourses, "Location access denied or unavailable. Showing all courses alphabetically/unsorted:");
+                        renderCourses(processedCourses, "Location access denied or unavailable. Showing all courses from root JSON:");
                     },
                     { timeout: 10000 }
                 );
@@ -154,7 +238,7 @@
             } catch (err) {
                 console.error("Failed to load courses:", err);
                 loadingState.classList.add('hidden');
-                errorMessage.textContent = "Failed to load golf course data from root directory. Please verify the JSON filename in /root.";
+                errorMessage.innerHTML = `<strong>Error loading <code class="text-amber-300">uk-golf-courses.json</code>:</strong><br>${err.message}<br><span class="text-xs text-slate-400 mt-2 block">Make sure the file is uploaded to the root directory of your website.</span>`;
                 errorState.classList.remove('hidden');
             }
         }
