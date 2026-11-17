@@ -1,0 +1,41 @@
+{
+  "dataset": "isitgolfweather-uk-golf-facilities",
+  "intended_output": "uk-golf-courses.json",
+  "fields": {
+    "id": "Stable source-qualified identifier",
+    "name": "Facility/course name",
+    "club_name": "Parent club/operator where available",
+    "facility_type": [
+      "golf_course",
+      "miniature",
+      "pitch_and_putt",
+      "driving_range",
+      "practice",
+      "footgolf"
+    ],
+    "address": "Formatted address from source address tags; null if unavailable",
+    "postcode": "Postcode; null if unavailable",
+    "city": "Town/city/locality; null if unavailable",
+    "county": "County; null if unavailable",
+    "country": "Country",
+    "latitude": "WGS84 decimal degrees",
+    "longitude": "WGS84 decimal degrees",
+    "holes": "Hole count if tagged",
+    "website": "Operator website if tagged",
+    "osm": "OpenStreetMap element type, ID and URL",
+    "verification_status": "Must not be treated as independently verified unless corroborated"
+  },
+  "quality_rules": [
+    "Do not invent missing addresses or postcodes.",
+    "Do not silently remove possible duplicates; flag them for review.",
+    "Independently check current operating status against the club/operator website before marking active.",
+    "Retain source attribution and comply with ODbL share-alike obligations."
+  ],
+  "source": {
+    "name": "OpenStreetMap",
+    "url": "https://www.openstreetmap.org/",
+    "licence": "ODbL 1.0",
+    "attribution": "\u00a9 OpenStreetMap contributors",
+    "copyright_url": "https://www.openstreetmap.org/copyright"
+  }
+}
