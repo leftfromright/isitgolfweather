@@ -694,7 +694,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.3</span>
+  <span class="version-pill" id="versionTag">v6.4</span>
  </div>
 </main>
 
@@ -702,7 +702,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.3 (Realistic Rain Thresholds)<br>Made by KW in November 2026</p>
+  <p>Version 6.4 (Corrected Rain Verdict Phrasing)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -962,8 +962,8 @@ function determineRainTier(windowRainMm, weatherCode) {
  if (devRainIntensityOverride !== 'auto') return devRainIntensityOverride;
  const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
  if (windowRainMm <= 0.05 && !rainCodes.includes(weatherCode)) return 'none';
- if (windowRainMm > 6.0 || [65, 82, 95, 96, 99].includes(weatherCode)) return 'heavy';
- if (windowRainMm > 2.0 || [55, 63, 81].includes(weatherCode)) return 'moderate';
+ if (windowRainMm > 4.0 || [65, 82, 95, 96, 99].includes(weatherCode)) return 'heavy';
+ if (windowRainMm > 1.0 || [55, 63, 81].includes(weatherCode)) return 'moderate';
  return 'light';
 }
 
@@ -1471,9 +1471,9 @@ function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpe
  else if (windMph >= 8) windPts = 18;
 
  let rainPts = 25;
- if (windowRainMm > 6.0) rainPts = 0;
- else if (windowRainMm > 2.0) rainPts = 8;
- else if (windowRainMm > 0.5) rainPts = 16;
+ if (windowRainMm > 4.0) rainPts = 0;
+ else if (windowRainMm > 1.0) rainPts = 8;
+ else if (windowRainMm > 0.2) rainPts = 16;
  else if (windowRainMm > 0.0) rainPts = 22;
 
  let tempPts = 15;
@@ -1488,7 +1488,7 @@ function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpe
 
  let totalScore = groundPts + windPts + rainPts + tempPts + daylightPts;
  if (windowRainMm > 2.0) totalScore = Math.min(totalScore, 45);
- else if (windowRainMm > 0.5) totalScore = Math.min(totalScore, 70);
+ else if (windowRainMm > 0.2) totalScore = Math.min(totalScore, 75);
 
  return { score: Math.round(totalScore), scores: [groundPts, windPts, rainPts, tempPts, daylightPts] };
 }
@@ -1720,11 +1720,11 @@ function render() {
    else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
    else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
   } else if (finalPct >= 30) {
-   dialVerdict.textContent = 'Poor 🌧️';
-   dialSub.textContent = windowRainSum > 0 ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.` : `Strong winds or wet ground expected. No rain forecast during your round.`;
+   dialVerdict.textContent = windowRainSum > 2.0 ? 'Poor 🌧️' : 'Showery 🌦️';
+   dialSub.textContent = windowRainSum > 2.0 ? `Rain expected (${toPrecip(windowRainSum)}). Waterproofs recommended.` : `Light passing showers (${toPrecip(windowRainSum)}). Bring a light jacket.`;
   } else {
-   dialVerdict.textContent = 'Heavy Rain / Wet 🌧️';
-   dialSub.textContent = windowRainSum > 0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : hasSnowCover ? 'Snow cover on greens!' : 'Unplayable conditions. Hit the simulator instead!';
+   dialVerdict.textContent = windowRainSum > 4.0 ? 'Heavy Rain / Wet 🌧️' : 'Showery 🌦️';
+   dialSub.textContent = windowRainSum > 4.0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : `Passing dampness (${toPrecip(windowRainSum)}). Playable with light gear.`;
   }
  }
 
@@ -1787,7 +1787,7 @@ function render() {
   const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over the past 24 hours (${toPrecip(past7DaysRain)} past 7 days)` : ` (${toPrecip(past7DaysRain)} past 7 days total)`;
   groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now and getting wetter${recentDesc}.`;
   setCardStatus(groundCallout, 'danger');
- } else if (windowRainSum > 0.5) {
+ } else if (windowRainSum > 0.2) {
   groundShort = 'Rain Forecast';
   groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Rain forecast during your round (${toPrecip(windowRainSum)} expected; ${toPrecip(past7DaysRain)} past 7d total).`;
   setCardStatus(groundCallout, 'warn');
@@ -1823,10 +1823,10 @@ function render() {
  if (hasLightning) {
   rainOutlookCallout.innerHTML = `<strong>⚡ Rain & Lightning</strong>Thunderstorm risk! Clear the course immediately.`;
   setCardStatus(rainOutlookCallout, 'danger');
- } else if (windowRainSum > 6.0) {
+ } else if (windowRainSum > 4.0) {
   rainOutlookCallout.innerHTML = `<strong>☔ Rain Outlook</strong>Heavy rain (${toPrecip(windowRainSum)}) forecast during your 4h round.`;
   setCardStatus(rainOutlookCallout, 'danger');
- } else if (windowRainSum > 0.5) {
+ } else if (windowRainSum > 0.2) {
   rainOutlookCallout.innerHTML = `<strong>🌦️ Rain Outlook</strong>Light showers (${toPrecip(windowRainSum)}) forecast during round.`;
   setCardStatus(rainOutlookCallout, 'warn');
  } else {
@@ -1846,11 +1846,11 @@ function render() {
  let gear = 'Polo & light mid-layer 👕';
  if (windowAvgTemp < 5) gear = 'Thermal base layer, beanie & winter mitts 🥶';
  else if (windowAvgTemp <= 11) gear = 'Windproof fleece & thermal layer 🧥';
- if (windowRainSum > 2.0) gear += ' + Full waterproof suit & umbrella ☔';
- else if (windowRainSum > 0.5) gear += ' + Light waterproof jacket or umbrella ☔';
+ if (windowRainSum > 4.0) gear += ' + Full waterproof suit & umbrella ☔';
+ else if (windowRainSum > 0.2) gear += ' + Light umbrella or windbreaker ☔';
  gearCallout.innerHTML = `<strong>🎒 Recommended Gear</strong>${gear}`;
- if (windowAvgTemp < 3 || windowRainSum > 6.0) setCardStatus(gearCallout, 'danger');
- else if (windowAvgTemp <= 11 || windowRainSum > 0.5 || windowMaxWind / 1.609 > 15) setCardStatus(gearCallout, 'warn');
+ if (windowAvgTemp < 3 || windowRainSum > 4.0) setCardStatus(gearCallout, 'danger');
+ else if (windowAvgTemp <= 11 || windowRainSum > 0.2 || windowMaxWind / 1.609 > 15) setCardStatus(gearCallout, 'warn');
  else setCardStatus(gearCallout, 'good');
 
  activeRoundMetrics = {
