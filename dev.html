@@ -107,7 +107,6 @@
 
             try {
                 // Fetch the JSON file from the root directory
-                // Trying common filenames or default json filename placed in root
                 let response = await fetch('uk-golf-courses.json').catch(() => null);
                 if (!response || !response.ok) {
                     response = await fetch('courses_uk_ireland.json').catch(() => null);
@@ -116,7 +115,9 @@
                     response = await fetch('uk-golf-courses.json'); // Will trigger catch block if fails
                 }
 
-                const courses = await response.json();
+                const jsonRoot = await response.json();
+                // Extract courses array from the new nested object structure
+                const courses = jsonRoot.courses || (Array.isArray(jsonRoot) ? jsonRoot : []);
 
                 if (!navigator.geolocation) {
                     throw new Error("Geolocation is not supported by your browser.");
@@ -128,9 +129,9 @@
                         const userLon = position.coords.longitude;
 
                         const processedCourses = courses.map(course => {
-                            const lat = course.lat || course.latitude;
-                            const lon = course.lon || course.longitude;
-                            const dist = (lat && lon) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
+                            const lat = course.latitude !== undefined ? course.latitude : course.lat;
+                            const lon = course.longitude !== undefined ? course.longitude : course.lon;
+                            const dist = (lat !== undefined && lon !== undefined) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
                             return { ...course, distanceKm: dist, lat, lon };
                         });
 
@@ -139,12 +140,11 @@
                     },
                     error => {
                         console.warn("Geolocation warning/error:", error.message);
-                        // Fallback: show all courses without distance sorting
                         const processedCourses = courses.map(course => ({
                             ...course,
                             distanceKm: null,
-                            lat: course.lat || course.latitude,
-                            lon: course.lon || course.longitude
+                            lat: course.latitude !== undefined ? course.latitude : course.lat,
+                            lon: course.longitude !== undefined ? course.longitude : course.lon
                         }));
                         renderCourses(processedCourses, "Location access denied or unavailable. Showing all courses alphabetically/unsorted:");
                     },
@@ -178,14 +178,16 @@
                     ? `<span class="text-emerald-400 font-semibold text-sm"><i class="fa-solid fa-location-arrow mr-1"></i>${course.distanceKm.toFixed(1)} km away</span>`
                     : `<span class="text-slate-400 text-xs">Distance unavailable</span>`;
 
-                const mapsUrl = (course.lat && course.lon) 
+                const fullAddress = [course.address, course.postcode, course.county].filter(Boolean).join(', ');
+
+                const mapsUrl = (course.lat !== undefined && course.lon !== undefined) 
                     ? `https://www.google.com/maps/search/?api=1&query=${course.lat},${course.lon}`
-                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(course.name + ' ' + (course.address || ''))}`;
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(course.name + ' ' + fullAddress)}`;
 
                 card.innerHTML = `
                     <div class="space-y-1 pr-3">
                         <h4 class="font-bold text-white text-base">${course.name}</h4>
-                        <p class="text-slate-300 text-xs">${course.address || course.city || course.region || 'Warwickshire, UK'}</p>
+                        <p class="text-slate-300 text-xs">${fullAddress || course.city || course.region || 'UK'}</p>
                         <div class="pt-1">${distText}</div>
                     </div>
                     <a href="${mapsUrl}" target="_blank" class="bg-slate-600 hover:bg-emerald-600 text-white p-3 rounded-lg transition flex items-center justify-center shrink-0" title="Get Directions">
