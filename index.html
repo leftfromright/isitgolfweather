@@ -239,11 +239,23 @@ html, body {
 .autocomplete-item:last-child { border-bottom: none; }
 .autocomplete-item:hover { background: rgba(46, 125, 50, 0.15); }
 
+.distance-group {
+ display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0;
+}
 .distance-tag { 
  font-size: 0.75rem; color: var(--accent); font-weight: 700; 
  background: rgba(46,125,50,0.12); padding: 2px 8px; border-radius: 99px;
- min-width: 58px; text-align: center; white-space: nowrap; flex-shrink: 0;
+ min-width: 58px; text-align: center; white-space: nowrap;
 }
+.directions-btn {
+ background: rgba(46, 125, 50, 0.12); border: 1px solid rgba(46, 125, 50, 0.25);
+ border-radius: 50%; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+ cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: var(--accent);
+}
+.directions-btn:hover {
+ background: var(--accent); color: #ffffff; transform: scale(1.08);
+}
+.directions-btn svg { width: 14px; height: 14px; fill: currentColor; }
 
 /* Glass Cards */
 .glass-card {
@@ -685,7 +697,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.0</span>
+  <span class="version-pill" id="versionTag">v6.1</span>
  </div>
 </main>
 
@@ -693,7 +705,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.0 (Architecture & Scoring Refactor)<br>Made by KW in November 2026</p>
+  <p>Version 6.1 (Directions Feature Added)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1138,8 +1150,9 @@ function renderNearbyBatch() {
   item.className = 'autocomplete-item';
   const tagText = course.distMiles !== '--' ? `${course.distMiles} mi` : 'Nearby';
   const addressStr = [course.address, course.county].filter(Boolean).join(', ');
+  const mapsQuery = encodeURIComponent(`${course.name} golf course ${addressStr}`);
 
-  item.innerHTML = `<span>⛳ <strong>${course.name}</strong><br><small style="color:var(--text-muted);">${addressStr || course.country || ''}</small></span> <span class="distance-tag">${tagText}</span>`;
+  item.innerHTML = `<span>⛳ <strong>${course.name}</strong><br><small style="color:var(--text-muted);">${addressStr || course.country || ''}</small></span> <div class="distance-group"><span class="distance-tag">${tagText}</span><a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" class="directions-btn" title="Get Directions" onclick="event.stopPropagation();"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"/></svg></a></div>`;
   item.addEventListener('click', (e) => {
    e.stopPropagation();
    locationInput.value = `${course.name}`;
@@ -1233,7 +1246,15 @@ async function searchAutocomplete(query) {
     const item = document.createElement('div');
     item.className = 'autocomplete-item';
     const icon = place.tag === 'Course' ? '⛳' : '📍';
-    item.innerHTML = `<span>${icon} <strong>${place.name}</strong><br><small style="color:var(--text-muted);">${place.address || ''}</small></span><span class="distance-tag">${place.tag}</span>`;
+    const fullAddress = place.address || '';
+    const mapsQuery = encodeURIComponent(`${place.name} ${fullAddress}`);
+    
+    let rightContent = `<span class="distance-tag">${place.tag}</span>`;
+    if (place.tag === 'Course') {
+     rightContent = `<div class="distance-group"><span class="distance-tag">${place.tag}</span><a href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" class="directions-btn" title="Get Directions" onclick="event.stopPropagation();"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor"/></svg></a></div>`;
+    }
+
+    item.innerHTML = `<span>${icon} <strong>${place.name}</strong><br><small style="color:var(--text-muted);">${fullAddress}</small></span>${rightContent}`;
     item.addEventListener('click', (e) => {
      e.stopPropagation();
      locationInput.value = place.name;
@@ -1686,22 +1707,22 @@ function render() {
   dialScore.textContent = `${finalPct}%`;
   updateDialGauge(finalPct);
 
-  if (finalPct >= 85) {
+  if (percentage >= 85) {
    dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
    dialSub.textContent = windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`;
-  } else if (finalPct >= 70) {
+  } else if (percentage >= 70) {
    dialVerdict.textContent = 'Good 👍';
    if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
    else if (subScores[0] < 15) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
    else if (subScores[1] < 18) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
    else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
    else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
-  } else if (finalPct >= 50) {
+  } else if (percentage >= 50) {
    dialVerdict.textContent = 'Not Bad ⛅';
    if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
    else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
    else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
-  } else if (finalPct >= 30) {
+  } else if (percentage >= 30) {
    dialVerdict.textContent = 'Poor 🌧️';
    dialSub.textContent = windowRainSum > 0 ? `Heavy rain (${toPrecip(windowRainSum)}) expected. Full waterproofs needed.` : `Strong winds or wet ground expected. No rain forecast during your round.`;
   } else {
