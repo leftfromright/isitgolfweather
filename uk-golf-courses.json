@@ -45,8 +45,8 @@
       "verification_status": "sample_coordinate_approximate_address_from_prior_sample"
     },
     {
-      "id": "the-warwickshire-earls-course",
-      "name": "The Warwickshire Golf & Country Club — Earls Course",
+      "id": "the-warwickshire",
+      "name": "The Warwickshire Golf & Country Club",
       "club_name": "The Warwickshire Golf & Country Club",
       "facility_type": "golf_course",
       "address": "Leek Wootton, Warwick",
@@ -61,8 +61,8 @@
       "verification_status": "sample_coordinate_approximate_address_from_prior_sample"
     },
     {
-      "id": "stoneleigh-deer-park-tantara-course",
-      "name": "Stoneleigh Deer Park Golf Club — Tantara Course",
+      "id": "stoneleigh-deer-park",
+      "name": "Stoneleigh Deer Park Golf Club",
       "club_name": "Stoneleigh Deer Park Golf Club",
       "facility_type": "golf_course",
       "address": "Coventry Road, Stoneleigh",
