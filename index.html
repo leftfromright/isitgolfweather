@@ -331,7 +331,7 @@ input[type="range"]::-moz-range-thumb {
 .meteocon-header svg { width: 100%; height: 100%; }
 
 /* Forecast Details */
-.forecast-grid { display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; gap: 0.6rem; align-items: center; }
+.forecast-grid { display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; gap: 0.6rem; align-items: stretch; }
 .forecast-main { display: flex; align-items: center; gap: 0.65rem; }
 .meteocon-main { width: 66px; height: 66px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.14)); }
 .meteocon-main svg { width: 100%; height: 100%; }
@@ -342,6 +342,7 @@ input[type="range"]::-moz-range-thumb {
 .detail-box {
  background: var(--glass-card-inner); border: 1px solid var(--glass-border);
  border-radius: 12px; padding: 0.6rem 0.7rem; cursor: pointer; transition: transform 0.18s ease;
+ display: flex; flex-direction: column; justify-content: space-between;
 }
 .detail-box:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.14); }
 .detail-box .db-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem; }
@@ -685,7 +686,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v5.27</span>
+  <span class="version-pill" id="versionTag">v5.29</span>
  </div>
 </main>
 
@@ -1471,6 +1472,7 @@ function renderChart(hourlyTemps, hourlyPrecip, sunriseHourDec, sunsetHourDec, c
  const paddingTop = 18;
 
  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+ ySvg.setAttribute('viewBox', `0 0 34 ${height}`);
 
  const maxTemp = Math.ceil(Math.max(...hourlyTemps)) + 1;
  const minTemp = Math.floor(Math.min(...hourlyTemps)) - 1;
