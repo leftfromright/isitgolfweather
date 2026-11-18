@@ -106,9 +106,9 @@ html, body {
 .bg-atmosphere {
  position: absolute;
  inset: 0;
- background: radial-gradient(circle at 82% 14%, rgba(255, 244, 200, 0.32) 0%, rgba(255, 255, 255, 0) 55%);
- transition: background 0.8s ease-in-out, opacity 0.8s ease-in-out;
- opacity: 1;
+ background: radial-gradient(circle at 82% 14%, rgba(255, 235, 170, 0.45) 0%, rgba(255, 255, 255, 0) 60%);
+ transition: opacity 0.8s ease-in-out, filter 0.8s ease-in-out;
+ opacity: 0.85;
 }
 
 /* Rain Overlay */
@@ -140,17 +140,28 @@ html, body {
 }
 
 .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
+.bg-stage.scene-sunny .bg-atmosphere { opacity: 0.9; filter: hue-rotate(0deg); }
+
 .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); }
-.bg-stage.scene-cloudy .bg-atmosphere { opacity: 0.4; }
+.bg-stage.scene-cloudy .bg-atmosphere { opacity: 0.3; }
+
 .bg-stage.scene-windy .bg-base { filter: brightness(0.94) contrast(1.04) saturate(0.85); }
+.bg-stage.scene-windy .bg-atmosphere { opacity: 0.6; }
+
 .bg-stage.scene-rain .bg-base { filter: brightness(0.54) contrast(1.26) saturate(0.85) grayscale(0.2); }
-.bg-stage.scene-rain .bg-atmosphere { opacity: 0.15; }
+.bg-stage.scene-rain .bg-atmosphere { opacity: 0.12; }
+
 .bg-stage.scene-ice .bg-base { filter: brightness(1.04) contrast(1.12) saturate(0.38) hue-rotate(175deg); }
+.bg-stage.scene-ice .bg-atmosphere { opacity: 0.4; filter: hue-rotate(180deg); }
+
 .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); }
+.bg-stage.scene-snow .bg-atmosphere { opacity: 0.25; filter: hue-rotate(180deg); }
+
 .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); }
-.bg-stage.scene-dusk .bg-atmosphere { background: radial-gradient(circle at 82% 14%, rgba(255, 170, 90, 0.4) 0%, rgba(255, 255, 255, 0) 60%); opacity: 0.9; }
+.bg-stage.scene-dusk .bg-atmosphere { opacity: 0.95; filter: hue-rotate(-25deg) saturate(1.5); }
+
 .bg-stage.scene-night .bg-base { filter: brightness(0.28) contrast(1.25) saturate(0.60) hue-rotate(195deg); }
-.bg-stage.scene-night .bg-atmosphere { opacity: 0.05; }
+.bg-stage.scene-night .bg-atmosphere { opacity: 0.03; }
 
 @keyframes mcSpin { 100% { transform: rotate(360deg); } }
 @keyframes mcDrift { 0%, 100% { transform: translateX(-2.5px); } 50% { transform: translateX(2.5px); } }
@@ -280,7 +291,7 @@ html, body {
 .dial-status { font-size: 1.15rem; font-weight: 800; line-height: 1.15; margin-top: 0.35rem; }
 
 .hero-right { display: flex; flex-direction: column; gap: 1.1rem; border-left: 1px solid rgba(120, 140, 128, 0.25); padding-left: 1.5rem; }
-.verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+.verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); min-height: 3.8rem; }
 
 .hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
 .mini-stat {
@@ -452,7 +463,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  .dial-pct { font-size: 1.95rem; }
  .dial-status { font-size: 0.9rem; margin-top: 0.2rem; }
  .hero-right { border-left: none; padding-left: 0; gap: 0.65rem; }
- .verdict-headline { font-size: 0.92rem; }
+ .verdict-headline { font-size: 0.92rem; min-height: 3.7rem; }
  .hero-mini-grid { gap: 0.35rem; }
  .mini-stat { padding: 0.42rem 0.38rem; }
  .date-row { grid-template-columns: repeat(7, minmax(56px, 1fr)); overflow-x: auto; scrollbar-width: none; }
@@ -699,7 +710,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.5</span>
+  <span class="version-pill" id="versionTag">v6.6</span>
  </div>
 </main>
 
@@ -707,7 +718,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.5 (Smooth Twilight & Night Fades)<br>Made by KW in November 2026</p>
+  <p>Version 6.6 (Smooth Transitions & Stable Mobile Headline)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
