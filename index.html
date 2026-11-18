@@ -745,7 +745,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v7.0</span>
+  <span class="version-pill" id="versionTag">v7.1</span>
  </div>
 </main>
 
@@ -753,7 +753,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 7.0 (Gust-Aware & Precision Slicing)<br>Made by KW in November 2026</p>
+  <p>Version 7.1 (Continuous Smooth Component Scoring)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1624,10 +1624,12 @@ function calculateGolfScorePercentage(tempC, windowRainMm, recentRainMm, windSpe
  else if (gustMph >= 22 || windMph >= 15) windPts = 12;
  else if (gustMph >= 16 || windMph >= 8) windPts = 18;
 
+ // Smooth continuous rain component scoring (out of 25)
  let rainPts = 25;
  if (windowRainMm > 4.0) rainPts = 0;
- else if (windowRainMm > 1.0) rainPts = 8;
- else if (windowRainMm > 0.2) rainPts = 16;
+ else if (windowRainMm > 2.0) rainPts = 8;
+ else if (windowRainMm > 1.0) rainPts = 13;
+ else if (windowRainMm > 0.2) rainPts = 18;
  else if (windowRainMm > 0.0) rainPts = 22;
 
  let tempPts = 15;
@@ -1640,11 +1642,8 @@ function calculateGolfScorePercentage(tempC, windowRainMm, recentRainMm, windSpe
  if (daylightHours < 2.0) daylightPts = 0;
  else if (daylightHours < 4.0) daylightPts = 8;
 
- let totalScore = groundPts + windPts + rainPts + tempPts + daylightPts;
- if (windowRainMm > 2.0) totalScore = Math.min(totalScore, 45);
- else if (windowRainMm > 0.2) totalScore = Math.min(totalScore, 75);
-
- return { score: Math.round(totalScore), scores: [groundPts, windPts, rainPts, tempPts, daylightPts] };
+ const totalScore = groundPts + windPts + rainPts + tempPts + daylightPts;
+ return { score: Math.round(Math.min(100, Math.max(0, totalScore))), scores: [groundPts, windPts, rainPts, tempPts, daylightPts] };
 }
 
 function updateDialGauge(percentage) {
@@ -1805,10 +1804,8 @@ function render() {
  const windowMaxWind = Math.max(...windowWinds, 0);
  const windowMaxGust = Math.max(...windowGusts, 0);
 
- // Review A: Accurate 7-day rainfall preceding selected forecast date
  const past7DaysRain = h.precipitation.slice(Math.max(0, startIndex - 168), startIndex).reduce((a, b) => a + b, 0);
 
- // Review B: Rolling 24-hour rainfall for today vs prior 24-hour for future days
  let recentRainVal = 0;
  let recentRainTitle = 'Prior 24h';
  if (isToday) {
@@ -1958,7 +1955,6 @@ function render() {
  const groundCallout = document.getElementById('groundCallout');
  let groundShort = 'Firm & Dry';
 
- // Segregated current condition vs round rain vs ground conditions
  const currentHourIndex = (pastOffset * 24) + new Date().getHours();
  const currentHourPrecip = h.precipitation[currentHourIndex] || 0;
  const currentHourCode = h.weather_code[currentHourIndex] || 0;
