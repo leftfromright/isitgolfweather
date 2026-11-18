@@ -713,7 +713,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.7</span>
+  <span class="version-pill" id="versionTag">v6.8</span>
  </div>
 </main>
 
@@ -721,7 +721,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.7 (Smooth Sunrise/Sunset Twilight Fades)<br>Made by KW in November 2026</p>
+  <p>Version 6.8 (Smart Pre-Sunrise/Sunset Text Guidance)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1067,11 +1067,9 @@ function updateBackgroundScene(sceneKey, rainTier) {
 function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, hasSnowCover, activeEvalHour, sunriseHourDec, sunsetHourDec, daylightRemaining) {
  if (devSceneOverride !== 'auto') return devSceneOverride;
 
- // Dawn / Sunrise twilight buffer (1 hour before sunrise)
  if (activeEvalHour >= (sunriseHourDec - 1) && activeEvalHour <= (sunriseHourDec + 0.5)) {
   return 'twilight';
  }
- // Dusk / Sunset twilight buffer (within 1 hour after sunset)
  if (activeEvalHour >= sunsetHourDec && activeEvalHour <= (sunsetHourDec + 1)) {
   return 'twilight';
  }
@@ -1695,6 +1693,7 @@ function render() {
 
  let sunriseHourDec = 6;
  let sunsetHourDec = 18;
+ const sunriseStrRaw = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
  const sunsetStrRaw = d.sunset[currentDayIdx] ? d.sunset[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
 
  if (d.sunrise[currentDayIdx]) {
@@ -1708,6 +1707,7 @@ function render() {
 
  const daylightRemaining = sunsetHourDec - activeEvalHour;
  const isPastSunset = activeEvalHour >= sunsetHourDec || activeEvalHour < (sunriseHourDec - 1);
+ const isPreSunrise = activeEvalHour < sunriseHourDec;
 
  const bgScene = determineBackgroundScene(activeHourCode, windowAvgTemp, windowMaxWind, windowRainSum, windowSnow, hasSnowCover, activeEvalHour, sunriseHourDec, sunsetHourDec, daylightRemaining);
  const rainTier = determineRainTier(windowRainSum, activeHourCode);
@@ -1726,6 +1726,12 @@ function render() {
   updateDialGauge(0);
   dialVerdict.textContent = 'Lightning ⚡';
   dialSub.textContent = 'Thunderstorms forecast! Clear the course immediately.';
+ } else if (isPreSunrise) {
+  finalPct = 0;
+  dialScore.textContent = '0%';
+  updateDialGauge(0);
+  dialVerdict.textContent = 'Too Dark 🌙';
+  dialSub.textContent = `Sunrise is at ${sunriseStrRaw}. Choose a later tee time.`;
  } else if (isPastSunset) {
   finalPct = 0;
   dialScore.textContent = '0%';
@@ -1800,8 +1806,7 @@ function render() {
  document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
  document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
 
- const sunriseStr = d.sunrise[currentDayIdx] ? d.sunrise[currentDayIdx].split('T')[1].slice(0, 5) : '--:--';
- document.getElementById('sunriseTime').textContent = sunriseStr;
+ document.getElementById('sunriseTime').textContent = sunriseStrRaw;
  document.getElementById('sunsetTime').textContent = sunsetStrRaw;
  document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
  document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
