@@ -346,12 +346,35 @@ input[type="range"]::-moz-range-thumb {
 
 .daylight-banner {
  display: none; margin-top: 0.35rem; padding: 0.45rem 0.8rem; border-radius: 10px;
- font-size: 0.76rem; font-weight: 600; text-align: center; background: rgba(16, 28, 44, 0.88);
- color: #e2e8f0; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
- box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1px solid rgba(100, 160, 255, 0.25);
+ font-size: 0.76rem; font-weight: 600; text-align: center;
+ backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+ box-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
-.daylight-banner.warn { border-left: 4px solid #f59e0b; border-right: 4px solid #f59e0b; }
-.daylight-banner.danger { border-left: 4px solid #ef4444; border-right: 4px solid #ef4444; border-color: rgba(239, 68, 68, 0.35); }
+.daylight-banner.warn { 
+ background: rgba(254, 243, 199, 0.92); 
+ color: #92400e; 
+ border: 1px solid rgba(245, 158, 11, 0.45); 
+ border-left: 4px solid #f59e0b; 
+ border-right: 4px solid #f59e0b; 
+}
+[data-theme="dark"] .daylight-banner.warn { 
+ background: rgba(69, 53, 10, 0.90); 
+ color: #fde68a; 
+ border: 1px solid rgba(245, 158, 11, 0.4); 
+}
+
+.daylight-banner.danger { 
+ background: rgba(254, 226, 226, 0.92); 
+ color: #991b1b; 
+ border: 1px solid rgba(239, 68, 68, 0.45); 
+ border-left: 4px solid #ef4444; 
+ border-right: 4px solid #ef4444; 
+}
+[data-theme="dark"] .daylight-banner.danger { 
+ background: rgba(87, 26, 26, 0.90); 
+ color: #fecaca; 
+ border: 1px solid rgba(239, 68, 68, 0.4); 
+}
 
 .card-header { font-size: 0.94rem; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.45rem; }
 .meteocon-header { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
