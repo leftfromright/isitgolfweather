@@ -286,23 +286,23 @@ html, body {
  border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
 }
 
-/* Desktop Hero Card Layout */
+/* Desktop Hero Card Layout (Tidied v7.6) */
 .hero-card {
  display: grid;
- grid-template-columns: 225px 1fr;
+ grid-template-columns: 215px 1fr;
  grid-template-areas: 
   "dial right"
   "dial mini";
- gap: 1.25rem 1.5rem;
+ gap: 1rem 1.5rem;
  align-items: center;
- padding: 1.65rem 1.75rem;
+ padding: 1.5rem 1.75rem;
 }
 
 .dial-box { 
  grid-area: dial; 
  position: relative; 
- width: 215px; 
- height: 215px; 
+ width: 205px; 
+ height: 205px; 
  margin: 0 auto; 
  cursor: pointer; 
  transition: transform 0.18s ease; 
@@ -316,37 +316,41 @@ html, body {
  stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.5s ease-out, stroke 0.35s ease;
 }
 .dial-center { position: absolute; inset: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.dial-pct { font-size: 3.1rem; font-weight: 800; line-height: 1; letter-spacing: -1.5px; }
-.dial-status { font-size: 1.15rem; font-weight: 800; line-height: 1.15; margin-top: 0.35rem; }
+.dial-pct { font-size: 2.9rem; font-weight: 800; line-height: 1; letter-spacing: -1.5px; }
+.dial-status { font-size: 1.1rem; font-weight: 800; line-height: 1.15; margin-top: 0.3rem; }
 
 .hero-right {
  grid-area: right;
  display: flex;
  flex-direction: column;
- padding-left: 0.5rem;
+ justify-content: center;
+ padding-left: 0.25rem;
 }
-.verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+.verdict-headline { font-size: 1.25rem; font-weight: 600; line-height: 1.35; color: var(--text); }
 
 .hero-mini-grid {
  grid-area: mini;
  display: grid;
- grid-template-columns: repeat(3, 1fr);
+ grid-template-columns: repeat(3, minmax(0, 1fr));
  gap: 0.75rem;
- padding-left: 0.5rem;
+ padding-left: 0.25rem;
+ width: 100%;
+ align-self: start;
 }
 
 .mini-stat {
  background: var(--glass-card-inner); border: 1px solid var(--glass-border);
- border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease;
+ border-radius: 12px; padding: 0.65rem 0.75rem; cursor: pointer; transition: transform 0.18s ease;
  display: flex; flex-direction: column; justify-content: space-between;
+ min-width: 0;
 }
 .mini-stat:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 16px rgba(27, 94, 32, 0.15); }
-.mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem; }
-.mini-stat-icon { font-size: 1.55rem; line-height: 1.1; }
+.mini-stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.2rem; }
+.mini-stat-icon { font-size: 1.45rem; line-height: 1.1; }
 .mini-info-hint { font-size: 0.68rem; font-weight: 700; color: var(--accent); opacity: 0.75; }
-.mini-stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
-.mini-stat-val { font-size: 1.2rem; font-weight: 800; margin: 0.1rem 0; }
-.mini-stat-sub { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
+.mini-stat-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-val { font-size: 1.12rem; font-weight: 800; margin: 0.1rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* Date Row */
 .date-row { position: relative; z-index: 10; display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.45rem; }
@@ -498,7 +502,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 .modal-card {
  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
  border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.35rem 1.4rem; width: 100%;
- max-width: 380px; text-align: center; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3); color: var(--text); max-height: 90vh; overflow-y: auto;
+ max-width: 400px; text-align: center; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3); color: var(--text); max-height: 90vh; overflow-y: auto;
 }
 [data-theme="dark"] .modal-card { background: rgba(20, 36, 27, 0.96); }
 .modal-card h3 { font-size: 1.1rem; margin-bottom: 0.45rem; }
@@ -506,10 +510,17 @@ svg { width: 100%; height: 100%; overflow: visible; }
 
 .modal-detail-list {
  text-align: left; background: rgba(120, 140, 128, 0.12); border-radius: 12px;
- padding: 0.75rem 0.9rem; margin-bottom: 1.1rem; font-size: 0.84rem; display: flex; flex-direction: column; gap: 0.45rem;
+ padding: 0.75rem 0.9rem; margin-bottom: 1.1rem; font-size: 0.84rem; display: flex; flex-direction: column; gap: 0.6rem;
 }
-.modal-detail-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(120, 140, 128, 0.18); padding-bottom: 0.3rem; }
+.modal-detail-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(120, 140, 128, 0.18); padding-bottom: 0.4rem; }
 .modal-detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+/* Score Breakdown Progress Bars */
+.score-breakdown-item { display: flex; flex-direction: column; gap: 0.2rem; width: 100%; border-bottom: 1px solid rgba(120, 140, 128, 0.18); padding-bottom: 0.45rem; }
+.score-breakdown-item:last-child { border-bottom: none; padding-bottom: 0; }
+.score-breakdown-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; font-weight: 600; }
+.score-bar-track { width: 100%; height: 8px; background: rgba(120, 140, 128, 0.25); border-radius: 999px; overflow: hidden; margin-top: 2px; }
+.score-bar-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
 
 .dev-modal-section {
  text-align: left; background: rgba(18, 34, 24, 0.85); border: 1px solid rgba(102, 187, 106, 0.35);
@@ -825,7 +836,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v7.5</span>
+  <span class="version-pill" id="versionTag">v7.6</span>
  </div>
 </main>
 
@@ -833,7 +844,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 7.5 (Desktop Unchanged, Mobile Stacked Aligned)<br>Made by KW in November 2026</p>
+  <p>Version 7.6 (Tidied Desktop Mini-Stats, Score Bar Breakdown)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1243,6 +1254,14 @@ creatorModal.addEventListener('click', (e) => { if (e.target === creatorModal) c
 closeMetricModalBtn.addEventListener('click', () => { metricModal.style.display = 'none'; });
 metricModal.addEventListener('click', (e) => { if (e.target === metricModal) metricModal.style.display = 'none'; });
 
+function getScoreBarColor(scoreRatio) {
+ if (scoreRatio >= 0.85) return '#2e7d32'; // Green
+ if (scoreRatio >= 0.70) return '#689f38'; // Light Green
+ if (scoreRatio >= 0.50) return '#f9a825'; // Yellow / Amber
+ if (scoreRatio >= 0.30) return '#ef6c00'; // Orange
+ return '#c62828'; // Red
+}
+
 function openMetricPopup(type) {
  if (!activeRoundMetrics) {
   metricModalTitle.textContent = '⏳ Loading Forecast';
@@ -1257,12 +1276,34 @@ function openMetricPopup(type) {
  if (type === 'score') {
   metricModalTitle.textContent = '⛳ Golf Weather Score Breakdown';
   metricModalSubtitle.textContent = `Overall Playability Score: ${m.finalScore}%`;
-  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>🌱 Ground Conditions</span><strong>${m.scoreBreakdown.ground} / 20 pts</strong></div>`;
-  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>💨 Wind & Gusts</span><strong>${m.scoreBreakdown.wind} / 25 pts</strong></div>`;
-  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>💧 Rain & Showers</span><strong>${m.scoreBreakdown.rain} / 25 pts</strong></div>`;
-  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>🌡️ Temperature</span><strong>${m.scoreBreakdown.temp} / 15 pts</strong></div>`;
-  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>⏳ Daylight Remaining</span><strong>${m.scoreBreakdown.daylight} / 15 pts</strong></div>`;
-  metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:6px; color:var(--accent);"><span>Total Playability</span><strong>${m.finalScore}%</strong></div>`;
+
+  const breakdownItems = [
+   { label: '🌱 Ground Conditions', val: m.scoreBreakdown.ground, max: 20 },
+   { label: '💨 Wind & Gusts', val: m.scoreBreakdown.wind, max: 25 },
+   { label: '💧 Rain & Showers', val: m.scoreBreakdown.rain, max: 25 },
+   { label: '🌡️ Temperature', val: m.scoreBreakdown.temp, max: 15 },
+   { label: '⏳ Daylight Remaining', val: m.scoreBreakdown.daylight, max: 15 }
+  ];
+
+  breakdownItems.forEach(item => {
+   const ratio = item.val / item.max;
+   const barColor = getScoreBarColor(ratio);
+   const pctWidth = Math.round(ratio * 100);
+
+   metricModalBody.innerHTML += `
+    <div class="score-breakdown-item">
+     <div class="score-breakdown-header">
+      <span>${item.label}</span>
+      <strong>${item.val} / ${item.max} pts</strong>
+     </div>
+     <div class="score-bar-track">
+      <div class="score-bar-fill" style="width: ${pctWidth}%; background-color: ${barColor};"></div>
+     </div>
+    </div>
+   `;
+  });
+
+  metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px; border-top:1px solid rgba(120,140,128,0.25); padding-top:6px; color:var(--accent);"><span>Total Playability</span><strong>${m.finalScore}%</strong></div>`;
  } else if (type === 'wind') {
   metricModalTitle.textContent = '💨 Round Wind & Gust Breakdown';
   metricModalSubtitle.textContent = `4-hour playing window starting at ${m.teeLabel}`;
