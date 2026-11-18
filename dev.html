@@ -3,26 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Is It Golf Weather? - Golf Course Finder (Dev Mode)</title>
+    <title>Is It Golf Weather? - Developer Sandbox & Preview</title>
     <!-- Tailwind CSS for modern responsive styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Atmospheric Stage & Fade Transitions */
+        .bg-stage {
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            overflow: hidden;
+            pointer-events: none;
+            background: #14261c;
+            transition: background 1.2s ease-in-out;
+        }
+        .bg-base {
+            position: absolute;
+            inset: -24px;
+            background-color: #1a2e22;
+            background-size: cover;
+            background-position: center bottom;
+            filter: brightness(1.04) contrast(1.02) saturate(1.12);
+            transition: filter 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s ease-in-out;
+        }
+        .bg-atmosphere {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 82% 14%, rgba(255, 235, 170, 0.45) 0%, rgba(255, 255, 255, 0) 60%);
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), filter 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.85;
+        }
+
+        /* Scene Filter States */
+        .bg-stage.scene-sunny .bg-base { filter: brightness(1.05) contrast(1.03) saturate(1.18); }
+        .bg-stage.scene-cloudy .bg-base { filter: brightness(0.88) contrast(0.95) saturate(0.65) grayscale(0.12); }
+        .bg-stage.scene-windy .bg-base { filter: brightness(0.94) contrast(1.04) saturate(0.85); }
+        .bg-stage.scene-rain .bg-base { filter: brightness(0.54) contrast(1.26) saturate(0.85) grayscale(0.2); }
+        .bg-stage.scene-ice .bg-base { filter: brightness(1.04) contrast(1.12) saturate(0.38) hue-rotate(175deg); }
+        .bg-stage.scene-snow .bg-base { filter: brightness(1.24) contrast(1.08) saturate(0.15) hue-rotate(180deg) grayscale(0.85); }
+        .bg-stage.scene-dusk .bg-base { filter: brightness(0.78) contrast(1.12) saturate(1.38) sepia(0.32); }
+        .bg-stage.scene-twilight .bg-base { filter: brightness(0.45) contrast(1.18) saturate(0.90) hue-rotate(15deg) sepia(0.2); }
+        .bg-stage.scene-night .bg-base { filter: brightness(0.26) contrast(1.25) saturate(0.55) hue-rotate(195deg); }
+
+        /* Rain Animation Overlay */
+        .rain-overlay-wrap { position: absolute; inset: 0; pointer-events: none; display: none; overflow: hidden; }
+        .bg-stage.is-raining .rain-overlay-wrap { display: block; }
+        .rain-row { position: absolute; left: 0; width: 100%; height: 100%; }
+        .drop { position: absolute; bottom: 100%; width: 2px; height: 35px; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.6)); animation: cpDrop 0.6s linear infinite; }
+        @keyframes cpDrop { 0% { transform: translateY(0vh); } 100% { transform: translateY(105vh); } }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between font-sans relative selection:bg-emerald-500 selection:text-white">
+
+    <!-- Atmospheric Stage & Rain Overlay -->
+    <div id="bgStage" class="bg-stage scene-sunny">
+        <div class="bg-base"></div>
+        <div class="bg-atmosphere"></div>
+        <div id="rainOverlayWrap" class="rain-overlay-wrap">
+            <div id="rainFrontRow" class="rain-row"></div>
+        </div>
+    </div>
 
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 shadow-md">
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-700/60 py-4 px-6 shadow-md sticky top-0 z-40">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <i class="fa-solid fa-golf-ball-tee text-emerald-400 text-2xl"></i>
-                <h1 class="text-xl font-bold tracking-tight text-white">Is It Golf Weather?</h1>
+                <h1 class="text-xl font-bold tracking-tight text-white">Is It Golf Weather? <span class="text-xs bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full ml-2">Dev Sandbox v6.8</span></h1>
             </div>
             <div class="flex items-center space-x-3">
-                <!-- Dev Status Badge -->
                 <span id="dev-status-badge" class="hidden text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
                     <i class="fa-solid fa-triangle-exclamation mr-1"></i> JSON Missing
                 </span>
-                <!-- Golf Course Finder Button -->
                 <button id="find-courses-btn" onclick="openGolfFinder()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 shadow">
                     <i class="fa-solid fa-location-dot"></i>
                     <span>Nearby Courses</span>
@@ -31,33 +84,91 @@
         </div>
     </header>
 
-    <!-- Main Content / Dev Page Dashboard -->
-    <main class="max-w-4xl mx-auto px-6 py-10 flex-grow w-full space-y-6">
+    <!-- Main Content / Dev Sandbox Dashboard -->
+    <main class="max-w-4xl mx-auto px-6 py-8 flex-grow w-full space-y-6 z-10">
+
+        <!-- Sunset / Daylight Banner Design Preview Component -->
+        <section class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Sunset / Daylight Banner Design Options</h3>
+            
+            <!-- Option 1: Twilight Gradient Glass Pill -->
+            <div class="p-4 rounded-xl bg-gradient-to-r from-amber-950/70 via-slate-900/80 to-indigo-950/70 border border-amber-500/30 backdrop-blur-md shadow-lg flex items-center justify-between text-xs md:text-sm">
+                <div class="flex items-center space-x-3">
+                    <span class="text-amber-400 text-lg">🌅</span>
+                    <div>
+                        <strong class="text-white">Dusk Horizon Tight</strong> • <span class="text-amber-300">1.4 hrs daylight left</span> (Sunset at 16:45)
+                    </div>
+                </div>
+                <span class="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-full font-semibold">9 Holes Recommended</span>
+            </div>
+
+            <!-- Option 2: Pre-Sunrise Context Banner -->
+            <div class="p-4 rounded-xl bg-gradient-to-r from-sky-950/70 via-slate-900/80 to-amber-950/70 border border-sky-500/30 backdrop-blur-md shadow-lg flex items-center justify-between text-xs md:text-sm">
+                <div class="flex items-center space-x-3">
+                    <span class="text-sky-400 text-lg">☀️</span>
+                    <div>
+                        <strong class="text-white">Pre-Sunrise Hours</strong> • <span class="text-sky-300">Sunrise at 07:15 AM</span> — daylight opening up soon
+                    </div>
+                </div>
+                <span class="text-[11px] bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2.5 py-1 rounded-full font-semibold">Choose Later Tee Time</span>
+            </div>
+        </section>
+
         <!-- Weather Dashboard Card -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 shadow-xl text-center">
+        <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-xl text-center">
             <h2 class="text-2xl font-bold mb-3 text-emerald-400">Ready for a Round?</h2>
-            <p class="text-slate-300 max-w-xl mx-auto mb-6">
-                Check local weather conditions or click the <strong class="text-white">Nearby Courses</strong> button above to find golf courses closest to your location using your root JSON database.
+            <p class="text-slate-300 max-w-xl mx-auto mb-6 text-sm">
+                Use the developer controls below to preview atmospheric background fades, rain overlays, and time-of-day transitions live.
             </p>
-            <div class="inline-flex items-center space-x-2 bg-slate-700/60 px-4 py-2 rounded-full text-sm text-slate-300">
+            <div class="inline-flex items-center space-x-2 bg-slate-900/70 px-4 py-2 rounded-full text-sm text-slate-300 border border-slate-700/60">
                 <i class="fa-solid fa-cloud-sun text-amber-400"></i>
                 <span>Current Location: Royal Leamington Spa, UK</span>
             </div>
         </div>
 
-        <!-- Dev Status & File Check Card -->
-        <div id="dev-panel" class="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 shadow-xl">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-700 mb-4">
+        <!-- Dev Sandbox Control Panel -->
+        <div id="dev-panel" class="bg-slate-800/90 backdrop-blur-md border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-700">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-code text-indigo-400"></i>
-                    <h3 class="text-lg font-bold text-white">Developer File Check Panel</h3>
+                    <i class="fa-solid fa-sliders text-indigo-400"></i>
+                    <h3 class="text-lg font-bold text-white">Developer Sandbox Controls</h3>
                 </div>
-                <button onclick="checkDataFile()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1.5 rounded-lg text-slate-200 transition">
-                    <i class="fa-solid fa-rotate-right mr-1"></i> Re-check File
+                <button onclick="resetDevOverrides()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1.5 rounded-lg text-slate-200 transition">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Reset All
                 </button>
             </div>
             
-            <div id="file-check-status" class="space-y-3 text-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <!-- Background Scene Selector -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Background Scene</label>
+                    <select id="devSceneSelect" onchange="applyDevScene(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-200 outline-none focus:border-emerald-500">
+                        <option value="sunny">☀️ Sunny (Default)</option>
+                        <option value="cloudy">☁️ Cloudy / Overcast</option>
+                        <option value="windy">💨 Windy Breeze</option>
+                        <option value="rain">🌧️ Rain / Storm</option>
+                        <option value="ice">🧊 Frost / Ice</option>
+                        <option value="snow">❄️ Snow Cover</option>
+                        <option value="dusk">🌆 Golden Dusk</option>
+                        <option value="twilight">🌇 Twilight / Dawn Fade</option>
+                        <option value="night">🌙 Night / Dark</option>
+                    </select>
+                </div>
+
+                <!-- Rain Intensity Selector -->
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Rain Overlay & Velocity</label>
+                    <select id="devRainSelect" onchange="applyDevRain(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-slate-200 outline-none focus:border-emerald-500">
+                        <option value="none">Off (Dry)</option>
+                        <option value="light">🌦️ Light Drizzle (Slow)</option>
+                        <option value="moderate" selected>🌧️ Moderate Rain (Medium)</option>
+                        <option value="heavy">⛈️ Heavy Downpour (Fast)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- File Check Status Bar -->
+            <div id="file-check-status" class="pt-2">
                 <div class="flex items-center space-x-3 text-slate-400">
                     <i class="fa-solid fa-spinner fa-spin text-emerald-400"></i>
                     <span>Checking existence of <code class="bg-slate-900 px-2 py-0.5 rounded text-emerald-300">uk-golf-courses.json</code> in root...</span>
@@ -69,7 +180,6 @@
     <!-- Golf Courses Modal / Drawer -->
     <div id="golf-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <!-- Modal Header -->
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-800/80">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-flag text-emerald-400"></i>
@@ -79,23 +189,17 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
-            <!-- Modal Body -->
             <div id="golf-modal-body" class="p-6 overflow-y-auto space-y-4 flex-grow">
                 <div id="loading-state" class="text-center py-10 text-slate-400">
                     <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-3"></i>
                     <p>Verifying file existence and loading golf courses...</p>
                 </div>
-                <div id="course-list" class="space-y-3 hidden">
-                    <!-- Dynamic course cards inserted here -->
-                </div>
+                <div id="course-list" class="space-y-3 hidden"></div>
                 <div id="error-state" class="text-center py-10 text-red-400 hidden">
                     <i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i>
                     <p id="error-message">Could not load golf courses.</p>
                 </div>
             </div>
-
-            <!-- Modal Footer -->
             <div class="p-4 border-t border-slate-700 bg-slate-900/50 text-right">
                 <button onclick="closeGolfFinder()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                     Close
@@ -105,12 +209,15 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-slate-800 border-t border-slate-700 py-4 text-center text-xs text-slate-400">
-        <p>&copy; 2026 Is It Golf Weather? &bull; Dev Mode & Course Finder</p>
+    <footer class="bg-slate-900/80 backdrop-blur-md border-t border-slate-700/60 py-4 text-center text-xs text-slate-400 z-30">
+        <p>&copy; 2026 Is It Golf Weather? &bull; Dev Sandbox & Preview Mode</p>
     </footer>
 
-    <!-- JavaScript Logic with Pre-check -->
+    <!-- JavaScript Logic -->
     <script>
+        const bgStage = document.getElementById('bgStage');
+        const rainOverlayWrap = document.getElementById('rainOverlayWrap');
+        const rainFrontRow = document.getElementById('rainFrontRow');
         const modal = document.getElementById('golf-modal');
         const loadingState = document.getElementById('loading-state');
         const courseListContainer = document.getElementById('course-list');
@@ -119,30 +226,53 @@
         const fileCheckStatus = document.getElementById('file-check-status');
         const devStatusBadge = document.getElementById('dev-status-badge');
 
-        // Run file existence check on page load
         window.addEventListener('DOMContentLoaded', () => {
             checkDataFile();
         });
 
-        async function checkDataFile() {
-            fileCheckStatus.innerHTML = `
-                <div class="flex items-center space-x-3 text-slate-400">
-                    <i class="fa-solid fa-spinner fa-spin text-emerald-400"></i>
-                    <span>Checking existence of <code class="bg-slate-900 px-2 py-0.5 rounded text-emerald-300">uk-golf-courses.json</code> in root...</span>
-                </div>
-            `;
+        function applyDevScene(scene) {
+            bgStage.className = `bg-stage scene-${scene}${rainOverlayWrap.style.display === 'block' ? ' is-raining' : ''}`;
+        }
 
+        function applyDevRain(tier) {
+            rainFrontRow.innerHTML = '';
+            if (tier === 'none') {
+                rainOverlayWrap.style.display = 'none';
+                bgStage.classList.remove('is-raining');
+                return;
+            }
+
+            rainOverlayWrap.style.display = 'block';
+            bgStage.classList.add('is-raining');
+
+            let count = 25;
+            if (tier === 'light') count = 15;
+            if (tier === 'heavy') count = 50;
+
+            let html = '';
+            for (let i = 0; i < count; i++) {
+                const left = Math.random() * 100;
+                const delay = (Math.random() * 0.8).toFixed(2);
+                const duration = (tier === 'heavy' ? 0.35 : tier === 'light' ? 0.8 : 0.55).toFixed(2);
+                html += `<div class="drop" style="left: ${left}%; animation-delay: ${delay}s; animation-duration: ${duration}s;"></div>`;
+            }
+            rainFrontRow.innerHTML = html;
+        }
+
+        function resetDevOverrides() {
+            document.getElementById('devSceneSelect').value = 'sunny';
+            document.getElementById('devRainSelect').value = 'none';
+            applyDevScene('sunny');
+            applyDevRain('none');
+        }
+
+        async function checkDataFile() {
             try {
                 const response = await fetch('uk-golf-courses.json', { method: 'GET' });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const jsonRoot = await response.json();
                 const courseCount = jsonRoot.courses ? jsonRoot.courses.length : (Array.isArray(jsonRoot) ? jsonRoot.length : 0);
 
-                // Success state in dev panel
                 fileCheckStatus.innerHTML = `
                     <div class="flex items-center justify-between bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-xl">
                         <div class="flex items-center space-x-3 text-emerald-300">
@@ -156,16 +286,14 @@
                     </div>
                 `;
                 devStatusBadge.classList.add('hidden');
-
             } catch (err) {
-                console.warn("File check failed:", err);
                 fileCheckStatus.innerHTML = `
                     <div class="flex items-center justify-between bg-red-950/40 border border-red-800/50 p-3 rounded-xl">
                         <div class="flex items-center space-x-3 text-red-300">
                             <i class="fa-solid fa-triangle-exclamation text-red-400 text-lg"></i>
                             <div>
                                 <p class="font-semibold">File Missing or Unreachable</p>
-                                <p class="text-xs text-slate-300">Could not find <code class="text-red-300">uk-golf-courses.json</code> in the root directory. Please upload it.</p>
+                                <p class="text-xs text-slate-300">Could not find <code class="text-red-300">uk-golf-courses.json</code> in the root directory.</p>
                             </div>
                         </div>
                         <span class="text-xs bg-red-600 text-white px-2.5 py-1 rounded-md font-medium">Missing</span>
@@ -175,126 +303,8 @@
             }
         }
 
-        function openGolfFinder() {
-            modal.classList.remove('hidden');
-            loadAndSortCourses();
-        }
-
-        function closeGolfFinder() {
-            modal.classList.add('hidden');
-        }
-
-        async function loadAndSortCourses() {
-            loadingState.classList.remove('hidden');
-            courseListContainer.classList.add('hidden');
-            courseListContainer.innerHTML = '';
-            errorState.classList.add('hidden');
-
-            try {
-                const response = await fetch('uk-golf-courses.json');
-                if (!response.ok) {
-                    throw new Error(`File not found (Status: ${response.status})`);
-                }
-
-                const jsonRoot = await response.json();
-                const courses = jsonRoot.courses || (Array.isArray(jsonRoot) ? jsonRoot : []);
-
-                if (courses.length === 0) {
-                    throw new Error("JSON loaded but no courses found inside 'courses' array.");
-                }
-
-                if (!navigator.geolocation) {
-                    throw new Error("Geolocation is not supported by your browser.");
-                }
-
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        const userLat = position.coords.latitude;
-                        const userLon = position.coords.longitude;
-
-                        const processedCourses = courses.map(course => {
-                            const lat = course.latitude !== undefined ? course.latitude : course.lat;
-                            const lon = course.longitude !== undefined ? course.longitude : course.lon;
-                            const dist = (lat !== undefined && lon !== undefined) ? calculateDistance(userLat, userLon, lat, lon) : 9999;
-                            return { ...course, distanceKm: dist, lat, lon };
-                        });
-
-                        processedCourses.sort((a, b) => a.distanceKm - b.distanceKm);
-                        renderCourses(processedCourses);
-                    },
-                    error => {
-                        console.warn("Geolocation warning/error:", error.message);
-                        const processedCourses = courses.map(course => ({
-                            ...course,
-                            distanceKm: null,
-                            lat: course.latitude !== undefined ? course.latitude : course.lat,
-                            lon: course.longitude !== undefined ? course.longitude : course.lon
-                        }));
-                        renderCourses(processedCourses, "Location access denied or unavailable. Showing all courses from root JSON:");
-                    },
-                    { timeout: 10000 }
-                );
-
-            } catch (err) {
-                console.error("Failed to load courses:", err);
-                loadingState.classList.add('hidden');
-                errorMessage.innerHTML = `<strong>Error loading <code class="text-amber-300">uk-golf-courses.json</code>:</strong><br>${err.message}<br><span class="text-xs text-slate-400 mt-2 block">Make sure the file is uploaded to the root directory of your website.</span>`;
-                errorState.classList.remove('hidden');
-            }
-        }
-
-        function renderCourses(courses, notice = "") {
-            loadingState.classList.add('hidden');
-            courseListContainer.innerHTML = '';
-
-            if (notice) {
-                const noticeEl = document.createElement('div');
-                noticeEl.className = 'text-amber-400 text-xs mb-2 bg-amber-950/40 p-2 rounded border border-amber-800/50';
-                noticeEl.textContent = notice;
-                courseListContainer.appendChild(noticeEl);
-            }
-
-            courses.forEach(course => {
-                const card = document.createElement('div');
-                card.className = 'bg-slate-700/50 border border-slate-600/60 rounded-xl p-4 hover:border-emerald-500/50 transition flex justify-between items-center';
-                
-                const distText = course.distanceKm !== null && course.distanceKm < 9999 
-                    ? `<span class="text-emerald-400 font-semibold text-sm"><i class="fa-solid fa-location-arrow mr-1"></i>${course.distanceKm.toFixed(1)} km away</span>`
-                    : `<span class="text-slate-400 text-xs">Distance unavailable</span>`;
-
-                const fullAddress = [course.address, course.postcode, course.county].filter(Boolean).join(', ');
-
-                const mapsUrl = (course.lat !== undefined && course.lon !== undefined) 
-                    ? `https://www.google.com/maps/search/?api=1&query=${course.lat},${course.lon}`
-                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(course.name + ' ' + fullAddress)}`;
-
-                card.innerHTML = `
-                    <div class="space-y-1 pr-3">
-                        <h4 class="font-bold text-white text-base">${course.name}</h4>
-                        <p class="text-slate-300 text-xs">${fullAddress || course.city || course.region || 'UK'}</p>
-                        <div class="pt-1">${distText}</div>
-                    </div>
-                    <a href="${mapsUrl}" target="_blank" class="bg-slate-600 hover:bg-emerald-600 text-white p-3 rounded-lg transition flex items-center justify-center shrink-0" title="Get Directions">
-                        <i class="fa-solid fa-directions"></i>
-                    </a>
-                `;
-                courseListContainer.appendChild(card);
-            });
-
-            courseListContainer.classList.remove('hidden');
-        }
-
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Earth radius in km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
+        function openGolfFinder() { modal.classList.remove('hidden'); }
+        function closeGolfFinder() { modal.classList.add('hidden'); }
     </script>
 </body>
 </html>
