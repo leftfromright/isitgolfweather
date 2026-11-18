@@ -358,7 +358,6 @@ input[type="range"]::-moz-range-thumb {
  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
  position: relative;
  overflow: hidden;
- display: flex;
  align-items: center;
  gap: 0.75rem;
 }
@@ -569,12 +568,12 @@ svg { width: 100%; height: 100%; overflow: visible; }
   <div class="hero-right">
    <div id="dialSub" class="verdict-headline">Locating golf forecast...</div>
    <div class="hero-mini-grid">
-    <div class="mini-stat" id="windCardBtn" title="Click for hourly wind details">
+    <div class="mini-stat" id="windCardBtn" title="Click for hourly wind & gust details">
      <div class="mini-stat-header">
       <div class="mini-stat-icon">💨</div>
       <span class="mini-info-hint">ⓘ</span>
      </div>
-     <div class="mini-stat-label">Wind</div>
+     <div class="mini-stat-label">Wind / Gusts</div>
      <div id="heroWindVal" class="mini-stat-val">--</div>
      <div id="heroWindSub" class="mini-stat-sub">--</div>
     </div>
@@ -643,7 +642,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 
    <div class="detail-box" id="forecastRecentBtn" title="Click for turf & prior rainfall details">
     <div class="db-label-row">
-     <span class="db-label">Recent (24h)</span>
+     <span class="db-label" id="recentRainLabel">Recent (24h)</span>
      <span class="mini-info-hint">ⓘ</span>
     </div>
     <div class="db-val">🌧️ <span id="recentRain">--</span></div>
@@ -723,7 +722,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
    <div class="summary-pill">
     <div class="sp-icon">💨</div>
     <div>
-     <div class="sp-label">Max Wind</div>
+     <div class="sp-label">Max Wind / Gust</div>
      <div id="maxWind" class="sp-val">--</div>
     </div>
    </div>
@@ -746,7 +745,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.9</span>
+  <span class="version-pill" id="versionTag">v7.0</span>
  </div>
 </main>
 
@@ -754,7 +753,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.9 (Yellow/Red Daylight Warning Triangles)<br>Made by KW in November 2026</p>
+  <p>Version 7.0 (Gust-Aware & Precision Slicing)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -870,7 +869,8 @@ let activeRoundMetrics = {
  totalRainMm: 0,
  totalRainStr: '0.0 mm',
  rains: ['Dry', 'Dry', 'Dry', 'Dry'],
- last24RainStr: '0.0 mm',
+ recentRainStr: '0.0 mm',
+ recentRainTitle: 'Past 24 Hours',
  past7RainStr: '5.0 mm',
  groundShort: 'Firm & Dry',
  temps: ['14°C', '15°C', '16°C', '16°C'],
@@ -885,11 +885,10 @@ const installAppBtn = document.getElementById('installAppBtn');
 const installModal = document.getElementById('installModal');
 const closeInstallModalBtn = document.getElementById('closeInstallModalBtn');
 
-installAppBtn.style.display = 'inline-flex';
-
 window.addEventListener('beforeinstallprompt', (e) => {
  e.preventDefault();
  deferredInstallPrompt = e;
+ installAppBtn.style.display = 'inline-flex';
 });
 
 installAppBtn.addEventListener('click', async () => {
@@ -1013,11 +1012,45 @@ function makeItRain(tier) {
 
 function determineRainTier(windowRainMm, weatherCode) {
  if (devRainIntensityOverride !== 'auto') return devRainIntensityOverride;
- const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99];
+ const rainCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
  if (windowRainMm <= 0.05 && !rainCodes.includes(weatherCode)) return 'none';
- if (windowRainMm > 4.0 || [65, 82, 95, 96, 99].includes(weatherCode)) return 'heavy';
- if (windowRainMm > 1.0 || [55, 63, 81].includes(weatherCode)) return 'moderate';
+ if (windowRainMm > 4.0 || [65, 67, 82, 95, 96, 99].includes(weatherCode)) return 'heavy';
+ if (windowRainMm > 1.0 || [55, 57, 63, 66, 81].includes(weatherCode)) return 'moderate';
  return 'light';
+}
+
+function getWeatherInfo(code, isNight = false) {
+ const codes = {
+  0: { text: 'Clear sky', icon: '☀️', mcKey: isNight ? 'clear-night' : 'clear-day' },
+  1: { text: 'Mainly clear', icon: '🌤️', mcKey: isNight ? 'partly-cloudy-night' : 'partly-cloudy-day' },
+  2: { text: 'Partly cloudy', icon: '⛅', mcKey: isNight ? 'partly-cloudy-night' : 'partly-cloudy-day' },
+  3: { text: 'Overcast', icon: '☁️', mcKey: 'overcast' },
+  45: { text: 'Foggy', icon: '🌫️', mcKey: 'fog' },
+  48: { text: 'Freezing fog', icon: '❄️🌫️', mcKey: 'fog' },
+  51: { text: 'Light drizzle', icon: '🌦️', mcKey: 'drizzle' },
+  53: { text: 'Moderate drizzle', icon: '🌦️', mcKey: 'drizzle' },
+  55: { text: 'Dense drizzle', icon: '🌧️', mcKey: 'rain' },
+  56: { text: 'Light freezing drizzle', icon: '❄️🌦️', mcKey: 'drizzle' },
+  57: { text: 'Dense freezing drizzle', icon: '❄️🌧️', mcKey: 'rain' },
+  61: { text: 'Slight rain', icon: '🌧️', mcKey: 'rain' },
+  63: { text: 'Moderate rain', icon: '🌧️', mcKey: 'rain' },
+  65: { text: 'Heavy rain', icon: '🌧️☔', mcKey: 'extreme-rain' },
+  66: { text: 'Light freezing rain', icon: '❄️🌧️', mcKey: 'rain' },
+  67: { text: 'Heavy freezing rain', icon: '❄️⛈️', mcKey: 'extreme-rain' },
+  71: { text: 'Slight snow', icon: '❄️', mcKey: 'snow' },
+  73: { text: 'Moderate snow', icon: '❄️', mcKey: 'snow' },
+  75: { text: 'Heavy snow', icon: '❄️🌨️', mcKey: 'snow' },
+  77: { text: 'Snow grains', icon: '❄️', mcKey: 'snow' },
+  80: { text: 'Rain showers', icon: '🌦️', mcKey: 'drizzle' },
+  81: { text: 'Moderate showers', icon: '🌧️', mcKey: 'rain' },
+  82: { text: 'Heavy showers', icon: '🌧️☔', mcKey: 'extreme-rain' },
+  85: { text: 'Snow showers', icon: '❄️', mcKey: 'snow' },
+  86: { text: 'Heavy snow showers', icon: '❄️🌨️', mcKey: 'snow' },
+  95: { text: 'Thunderstorm', icon: '⚡', mcKey: 'thunderstorm' },
+  96: { text: 'Thunderstorm w/ hail', icon: '⚡⛈️', mcKey: 'thunderstorm' },
+  99: { text: 'Heavy thunderstorm', icon: '⚡⛈️', mcKey: 'thunderstorm' }
+ };
+ return codes[code] || { text: 'Cloudy', icon: '⛅', mcKey: 'overcast' };
 }
 
 function getMeteoconSVG(type) {
@@ -1110,9 +1143,11 @@ function determineBackgroundScene(weatherCode, tempC, windKmh, rainMm, snowMm, h
   return 'night';
  }
 
- if (snowMm > 0 || hasSnowCover || [71, 73, 75, 77, 85, 86].includes(weatherCode)) return 'snow';
+ const snowCodes = [71, 73, 75, 77, 85, 86];
+ const rainCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
+ if (snowMm > 0 || hasSnowCover || snowCodes.includes(weatherCode)) return 'snow';
  if (tempC <= 0.5) return 'ice';
- if (rainMm > 0.5 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(weatherCode)) return 'rain';
+ if (rainMm > 0.5 || rainCodes.includes(weatherCode)) return 'rain';
  if (daylightRemaining > 0 && daylightRemaining < 3.5) return 'dusk';
  if (windKmh / 1.609 >= 18) return 'windy';
  if ([2, 3, 45, 48].includes(weatherCode)) return 'cloudy';
@@ -1138,23 +1173,23 @@ function openMetricPopup(type) {
  metricModalBody.innerHTML = '';
 
  if (type === 'wind') {
-  metricModalTitle.textContent = '💨 Round Wind Breakdown';
+  metricModalTitle.textContent = '💨 Round Wind & Gust Breakdown';
   metricModalSubtitle.textContent = `4-hour playing window starting at ${m.teeLabel}`;
   m.hours.forEach((hr, i) => {
-   metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>${m.winds[i]} (Gusts ${m.gusts[i]})</strong></div>`;
+   metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>Wind: ${m.winds[i]} | Gusts: ${m.gusts[i]}</strong></div>`;
   });
   metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Club Impact</span><strong>${m.windAdvice}</strong></div>`;
  } else if (type === 'recent') {
-  metricModalTitle.textContent = '🌧️ Ground & Recent Rainfall';
+  metricModalTitle.textContent = `🌧️ Ground & ${m.recentRainTitle}`;
   metricModalSubtitle.textContent = 'Course saturation & fairway roll assessment';
-  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>Past 24 Hours</span><strong>${m.last24RainStr}</strong></div><div class="modal-detail-row"><span>Past 7 Days Total</span><strong>${m.past7RainStr}</strong></div><div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
+  metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${m.recentRainTitle}</span><strong>${m.recentRainStr}</strong></div><div class="modal-detail-row"><span>Prior 7-Day Total</span><strong>${m.past7RainStr}</strong></div><div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
  } else if (type === 'rain') {
   metricModalTitle.textContent = '💧 Round Rain & Turf Outlook';
   metricModalSubtitle.textContent = m.totalRainMm === 0 ? 'No rain forecast during your round' : `Total ${m.totalRainStr} expected over 4 hours`;
   m.hours.forEach((hr, i) => {
    metricModalBody.innerHTML += `<div class="modal-detail-row"><span>${hr}</span><strong>${m.rains[i]}</strong></div>`;
   });
-  metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px;"><span>Prior 24h Rain</span><strong>${m.last24RainStr}</strong></div><div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
+  metricModalBody.innerHTML += `<div class="modal-detail-row" style="margin-top:4px;"><span>${m.recentRainTitle}</span><strong>${m.recentRainStr}</strong></div><div class="modal-detail-row" style="margin-top:4px; color:var(--accent);"><span>Fairway Turf</span><strong>${m.groundShort}</strong></div>`;
  } else if (type === 'temp') {
   metricModalTitle.textContent = '🌡️ Temperature & Carry Impact';
   metricModalSubtitle.textContent = `4-hour playing window starting at ${m.teeLabel}`;
@@ -1213,10 +1248,41 @@ function renderNearbyBatch() {
   const mapQuery = encodeURIComponent(`${course.name} ${addressStr}`);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
-  item.innerHTML = `<span>⛳ <strong>${course.name}</strong><br><small style="color:var(--text-muted);">${addressStr || course.country || ''}</small></span> <div class="item-right-wrap"><span class="distance-tag">${tagText}</span><a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="directions-link" title="Get Directions on Google Maps" onclick="event.stopPropagation()">🧭</a></div>`;
+  const textSpan = document.createElement('span');
+  const strongEl = document.createElement('strong');
+  strongEl.textContent = course.name;
+  textSpan.appendChild(strongEl);
+  if (addressStr || course.country) {
+   textSpan.appendChild(document.createElement('br'));
+   const smallEl = document.createElement('small');
+   smallEl.style.color = 'var(--text-muted)';
+   smallEl.textContent = addressStr || course.country;
+   textSpan.appendChild(smallEl);
+  }
+
+  const rightWrap = document.createElement('div');
+  rightWrap.className = 'item-right-wrap';
+  const distSpan = document.createElement('span');
+  distSpan.className = 'distance-tag';
+  distSpan.textContent = tagText;
+  const dirLink = document.createElement('a');
+  dirLink.className = 'directions-link';
+  dirLink.href = mapsUrl;
+  dirLink.target = '_blank';
+  dirLink.rel = 'noopener noreferrer';
+  dirLink.title = 'Get Directions on Google Maps';
+  dirLink.textContent = '🧭';
+  dirLink.addEventListener('click', (e) => e.stopPropagation());
+
+  rightWrap.appendChild(distSpan);
+  rightWrap.appendChild(dirLink);
+
+  item.appendChild(textSpan);
+  item.appendChild(rightWrap);
+
   item.addEventListener('click', (e) => {
    e.stopPropagation();
-   locationInput.value = `${course.name}`;
+   locationInput.value = course.name;
    autocompleteList.style.display = 'none';
    selectedDayIndex = 0;
    if (course.lat !== undefined && course.lon !== undefined) {
@@ -1235,12 +1301,24 @@ autocompleteList.addEventListener('scroll', () => {
 });
 
 nearbyBtn.addEventListener('click', async () => {
- autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:var(--text-muted);">⏳ Loading local courses from root database...</div>`;
+ autocompleteList.innerHTML = '';
+ const loadingItem = document.createElement('div');
+ loadingItem.className = 'autocomplete-item';
+ loadingItem.style.justifyContent = 'center';
+ loadingItem.style.color = 'var(--text-muted)';
+ loadingItem.textContent = '⏳ Loading local courses from root database...';
+ autocompleteList.appendChild(loadingItem);
  autocompleteList.style.display = 'block';
 
  const courses = await loadRootCourses();
  if (courses.length === 0) {
-  autocompleteList.innerHTML = `<div class="autocomplete-item" style="justify-content:center; color:#ef4444;">⚠️ No courses found in root uk-golf-courses.json</div>`;
+  autocompleteList.innerHTML = '';
+  const errItem = document.createElement('div');
+  errItem.className = 'autocomplete-item';
+  errItem.style.justifyContent = 'center';
+  errItem.style.color = '#ef4444';
+  errItem.textContent = '⚠️ No courses found in root uk-golf-courses.json';
+  autocompleteList.appendChild(errItem);
   autocompleteList.style.display = 'block';
   return;
  }
@@ -1310,11 +1388,45 @@ async function searchAutocomplete(query) {
     const mapQuery = encodeURIComponent(`${place.name} ${place.address || ''}`);
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
 
-    const rightWidget = place.tag === 'Course'
-     ? `<div class="item-right-wrap"><span class="distance-tag">${place.tag}</span><a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="directions-link" title="Get Directions on Google Maps" onclick="event.stopPropagation()">🧭</a></div>`
-     : `<span class="distance-tag">${place.tag}</span>`;
+    const textSpan = document.createElement('span');
+    textSpan.textContent = `${icon} `;
+    const strongEl = document.createElement('strong');
+    strongEl.textContent = place.name;
+    textSpan.appendChild(strongEl);
+    if (place.address) {
+     textSpan.appendChild(document.createElement('br'));
+     const smallEl = document.createElement('small');
+     smallEl.style.color = 'var(--text-muted)';
+     smallEl.textContent = place.address;
+     textSpan.appendChild(smallEl);
+    }
 
-    item.innerHTML = `<span>${icon} <strong>${place.name}</strong><br><small style="color:var(--text-muted);">${place.address || ''}</small></span>${rightWidget}`;
+    item.appendChild(textSpan);
+
+    if (place.tag === 'Course') {
+     const rightWrap = document.createElement('div');
+     rightWrap.className = 'item-right-wrap';
+     const tagSpan = document.createElement('span');
+     tagSpan.className = 'distance-tag';
+     tagSpan.textContent = place.tag;
+     const dirLink = document.createElement('a');
+     dirLink.className = 'directions-link';
+     dirLink.href = mapsUrl;
+     dirLink.target = '_blank';
+     dirLink.rel = 'noopener noreferrer';
+     dirLink.title = 'Get Directions on Google Maps';
+     dirLink.textContent = '🧭';
+     dirLink.addEventListener('click', (e) => e.stopPropagation());
+     rightWrap.appendChild(tagSpan);
+     rightWrap.appendChild(dirLink);
+     item.appendChild(rightWrap);
+    } else {
+     const tagSpan = document.createElement('span');
+     tagSpan.className = 'distance-tag';
+     tagSpan.textContent = place.tag;
+     item.appendChild(tagSpan);
+    }
+
     item.addEventListener('click', (e) => {
      e.stopPropagation();
      locationInput.value = place.name;
@@ -1358,35 +1470,11 @@ function updateTeeTimeDisplay() {
  teeTimeDisplay.textContent = formatHourLabel(selectedTeeHour);
 }
 
-function getWeatherInfo(code, isNight = false) {
- const codes = {
-  0: { text: 'Clear sky', icon: '☀️', mcKey: isNight ? 'clear-night' : 'clear-day' },
-  1: { text: 'Mainly clear', icon: '🌤️', mcKey: isNight ? 'partly-cloudy-night' : 'partly-cloudy-day' },
-  2: { text: 'Partly cloudy', icon: '⛅', mcKey: isNight ? 'partly-cloudy-night' : 'partly-cloudy-day' },
-  3: { text: 'Overcast', icon: '☁️', mcKey: 'overcast' },
-  45: { text: 'Foggy', icon: '🌫️', mcKey: 'fog' },
-  48: { text: 'Freezing fog', icon: '❄️🌫️', mcKey: 'fog' },
-  51: { text: 'Drizzle', icon: '🌦️', mcKey: 'drizzle' },
-  53: { text: 'Moderate drizzle', icon: '🌦️', mcKey: 'drizzle' },
-  55: { text: 'Dense drizzle', icon: '🌧️', mcKey: 'rain' },
-  61: { text: 'Slight rain', icon: '🌧️', mcKey: 'rain' },
-  63: { text: 'Moderate rain', icon: '🌧️', mcKey: 'rain' },
-  65: { text: 'Heavy rain', icon: '🌧️☔', mcKey: 'extreme-rain' },
-  71: { text: 'Slight snow', icon: '❄️', mcKey: 'snow' },
-  73: { text: 'Moderate snow', icon: '❄️', mcKey: 'snow' },
-  75: { text: 'Heavy snow', icon: '❄️🌨️', mcKey: 'snow' },
-  80: { text: 'Rain showers', icon: '🌦️', mcKey: 'drizzle' },
-  81: { text: 'Moderate showers', icon: '🌧️', mcKey: 'rain' },
-  82: { text: 'Heavy showers', icon: '🌧️☔', mcKey: 'extreme-rain' },
-  95: { text: 'Thunderstorm', icon: '⚡', mcKey: 'thunderstorm' },
-  96: { text: 'Thunderstorm w/ hail', icon: '⚡⛈️', mcKey: 'thunderstorm' },
-  99: { text: 'Heavy thunderstorm', icon: '⚡⛈️', mcKey: 'thunderstorm' }
- };
- return codes[code] || { text: 'Cloudy', icon: '⛅', mcKey: 'overcast' };
-}
-
-function getWindLabel(speedKmh) {
+function getWindLabel(speedKmh, gustKmh) {
  const mph = speedKmh / 1.609;
+ const gustMph = gustKmh / 1.609;
+ if (gustMph >= 30) return 'Gale Gusts';
+ if (gustMph >= 22) return 'Gusty Wind';
  if (mph < 8) return 'Gentle Breeze';
  if (mph <= 18) return 'Moderate Breeze';
  if (mph <= 25) return 'Fresh Wind';
@@ -1410,6 +1498,8 @@ async function fetchWeather(lat, lon, overrideName = '', isUserGps = false, targ
   currentFetchController.abort();
  }
  currentFetchController = new AbortController();
+
+ dialSub.textContent = 'Loading weather forecast...';
 
  try {
   currentViewLat = lat;
@@ -1453,7 +1543,7 @@ async function fetchWeather(lat, lon, overrideName = '', isUserGps = false, targ
   render();
  } catch (err) {
   if (err.name !== 'AbortError') {
-   dialSub.textContent = 'Unable to load weather data.';
+   dialSub.textContent = 'Unable to load weather data. Please check connection.';
   }
  }
 }
@@ -1517,21 +1607,22 @@ function buildDateBar() {
  dateBar.appendChild(moreBtn);
 }
 
-function calculateGolfScorePercentage(tempC, windowRainMm, past24RainMm, windSpeedKmh, past7DaysRainMm, isSnowing, hasLightning, daylightHours) {
+function calculateGolfScorePercentage(tempC, windowRainMm, recentRainMm, windSpeedKmh, gustSpeedKmh, past7DaysRainMm, isSnowing, hasLightning, daylightHours) {
  if (hasLightning || isSnowing || tempC <= -2) return { score: 0, scores: [0, 0, 0, 0, 0] };
  const windMph = windSpeedKmh / 1.609;
+ const gustMph = gustSpeedKmh / 1.609;
 
  let groundPts = 20;
  if (past7DaysRainMm > 35 || tempC <= 0) groundPts = 0;
- else if (past7DaysRainMm > 20 || past24RainMm > 12) groundPts = 5;
- else if (past7DaysRainMm > 10 || past24RainMm > 4) groundPts = 10;
+ else if (past7DaysRainMm > 20 || recentRainMm > 12) groundPts = 5;
+ else if (past7DaysRainMm > 10 || recentRainMm > 4) groundPts = 10;
  else if (past7DaysRainMm >= 5) groundPts = 15;
 
  let windPts = 25;
- if (windMph > 28) windPts = 0;
- else if (windMph >= 22) windPts = 6;
- else if (windMph >= 15) windPts = 12;
- else if (windMph >= 8) windPts = 18;
+ if (gustMph > 35 || windMph > 28) windPts = 0;
+ else if (gustMph >= 28 || windMph >= 22) windPts = 6;
+ else if (gustMph >= 22 || windMph >= 15) windPts = 12;
+ else if (gustMph >= 16 || windMph >= 8) windPts = 18;
 
  let rainPts = 25;
  if (windowRainMm > 4.0) rainPts = 0;
@@ -1712,9 +1803,25 @@ function render() {
  const windowWinds = h.wind_speed_10m.slice(teeStartHourIndex, teeStartHourIndex + 4);
  const windowGusts = h.wind_gusts_10m ? h.wind_gusts_10m.slice(teeStartHourIndex, teeStartHourIndex + 4) : windowWinds;
  const windowMaxWind = Math.max(...windowWinds, 0);
+ const windowMaxGust = Math.max(...windowGusts, 0);
 
- const last24hRain = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
- const past7DaysRain = h.precipitation.slice(0, startIndex).reduce((a, b) => a + b, 0);
+ // Review A: Accurate 7-day rainfall preceding selected forecast date
+ const past7DaysRain = h.precipitation.slice(Math.max(0, startIndex - 168), startIndex).reduce((a, b) => a + b, 0);
+
+ // Review B: Rolling 24-hour rainfall for today vs prior 24-hour for future days
+ let recentRainVal = 0;
+ let recentRainTitle = 'Prior 24h';
+ if (isToday) {
+  const currentGlobalHour = new Date().getHours();
+  const currentGlobalIndex = (pastOffset * 24) + currentGlobalHour;
+  recentRainVal = h.precipitation.slice(Math.max(0, currentGlobalIndex - 24), currentGlobalIndex).reduce((a, b) => a + b, 0);
+  recentRainTitle = 'Past 24 Hours';
+ } else {
+  recentRainVal = h.precipitation.slice(startIndex - 24, startIndex).reduce((a, b) => a + b, 0);
+  recentRainTitle = 'Prior 24h';
+ }
+
+ document.getElementById('recentRainLabel').textContent = recentRainTitle;
 
  const windowSnow = h.snowfall ? h.snowfall.slice(teeStartHourIndex, teeStartHourIndex + 4).reduce((a, b) => a + b, 0) : 0;
  const hasSnowCover = windowSnow > 0 || (h.snow_depth && h.snow_depth[teeStartHourIndex] > 0);
@@ -1722,7 +1829,9 @@ function render() {
  const windowCodes = h.weather_code ? h.weather_code.slice(teeStartHourIndex, teeStartHourIndex + 4) : [];
  const liveHourCode = windowCodes[0] !== undefined ? windowCodes[0] : d.weather_code[currentDayIdx];
  const activeHourCode = devIconOverride !== 'auto' ? parseInt(devIconOverride) : liveHourCode;
- const hasLightning = windowCodes.some(code => [95, 96, 99].includes(code)) || activeHourCode === 95;
+ 
+ const thunderstormCodes = [95, 96, 99];
+ const hasLightning = windowCodes.some(code => thunderstormCodes.includes(code)) || thunderstormCodes.includes(activeHourCode);
 
  let sunriseHourDec = 6;
  let sunsetHourDec = 18;
@@ -1746,7 +1855,7 @@ function render() {
  const rainTier = determineRainTier(windowRainSum, activeHourCode);
  updateBackgroundScene(bgScene, rainTier);
 
- const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, last24hRain, windowMaxWind, past7DaysRain, hasSnowCover, hasLightning, daylightRemaining);
+ const evalObj = calculateGolfScorePercentage(windowAvgTemp, windowRainSum, recentRainVal, windowMaxWind, windowMaxGust, past7DaysRain, hasSnowCover, hasLightning, daylightRemaining);
  let finalPct = evalObj.score;
  const subScores = evalObj.scores;
 
@@ -1800,20 +1909,20 @@ function render() {
  }
 
  if (daylightRemaining < 2.0) {
-  daylightWarning.style.display = 'block';
+  daylightWarning.style.display = 'flex';
   daylightWarning.className = 'daylight-banner danger';
   daylightWarning.textContent = `🚨 Sunset at ${sunsetStrRaw} — insufficient daylight remaining for 9 or 18 holes.`;
  } else if (daylightRemaining <= 4.0) {
-  daylightWarning.style.display = 'block';
+  daylightWarning.style.display = 'flex';
   daylightWarning.className = 'daylight-banner warn';
   daylightWarning.textContent = `⚠️ Sunset at ${sunsetStrRaw} — daylight is tight for 18 holes; 9 holes recommended.`;
  } else {
   daylightWarning.style.display = 'none';
  }
 
- const windLabel = getWindLabel(windowMaxWind);
- document.getElementById('heroWindVal').textContent = toSpeed(windowMaxWind);
- document.getElementById('heroWindSub').textContent = windLabel;
+ const windLabel = getWindLabel(windowMaxWind, windowMaxGust);
+ document.getElementById('heroWindVal').textContent = `${toSpeed(windowMaxWind)}`;
+ document.getElementById('heroWindSub').textContent = `Gusts ${toSpeed(windowMaxGust)} (${windLabel})`;
 
  document.getElementById('heroRainVal').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
  document.getElementById('heroRainSub').textContent = windowRainSum > 0 ? '4h Window' : 'No rain';
@@ -1831,10 +1940,10 @@ function render() {
  document.getElementById('currentCondition').textContent = weatherInfo.text;
 
  document.getElementById('currentWind').textContent = toSpeed(windowMaxWind);
- document.getElementById('windSub').textContent = windLabel;
+ document.getElementById('windSub').textContent = `Gusts up to ${toSpeed(windowMaxGust)}`;
 
- document.getElementById('recentRain').textContent = toPrecip(last24hRain);
- document.getElementById('recentRainSub').textContent = last24hRain > 0 ? 'Past 24 hours' : 'None';
+ document.getElementById('recentRain').textContent = toPrecip(recentRainVal);
+ document.getElementById('recentRainSub').textContent = recentRainVal > 0 ? recentRainTitle : 'None';
 
  document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
  document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
@@ -1844,48 +1953,51 @@ function render() {
  document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
  document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
  document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
- document.getElementById('maxWind').textContent = toSpeed(d.wind_speed_10m_max[currentDayIdx]);
+ document.getElementById('maxWind').textContent = `${toSpeed(d.wind_speed_10m_max[currentDayIdx])} (Gusts ${toSpeed(Math.max(...h.wind_gusts_10m.slice(startIndex, startIndex + 24), 0))})`;
 
  const groundCallout = document.getElementById('groundCallout');
  let groundShort = 'Firm & Dry';
 
- const isLiveNow = isToday && Math.abs(activeEvalHour - currentHourNow) <= 1;
- const isCurrentlyRaining = (isLiveNow || devRainIntensityOverride !== 'auto') && (windowRainSum > 0.2 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(activeHourCode));
+ // Segregated current condition vs round rain vs ground conditions
+ const currentHourIndex = (pastOffset * 24) + new Date().getHours();
+ const currentHourPrecip = h.precipitation[currentHourIndex] || 0;
+ const currentHourCode = h.weather_code[currentHourIndex] || 0;
+ const isCurrentlyRainingNow = isToday && (currentHourPrecip > 0.1 || [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(currentHourCode));
 
- if (isCurrentlyRaining) {
+ if (isCurrentlyRainingNow) {
   groundShort = 'Raining right now';
-  const recentDesc = last24hRain > 0 ? ` with ${toPrecip(last24hRain)} over the past 24 hours (${toPrecip(past7DaysRain)} past 7 days)` : ` (${toPrecip(past7DaysRain)} past 7 days total)`;
+  const recentDesc = recentRainVal > 0 ? ` with ${toPrecip(recentRainVal)} over the ${recentRainTitle.toLowerCase()} (${toPrecip(past7DaysRain)} prior 7 days)` : ` (${toPrecip(past7DaysRain)} prior 7 days total)`;
   groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Raining right now and getting wetter${recentDesc}.`;
   setCardStatus(groundCallout, 'danger');
  } else if (windowRainSum > 0.2) {
   groundShort = 'Rain Forecast';
-  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Rain forecast during your round (${toPrecip(windowRainSum)} expected; ${toPrecip(past7DaysRain)} past 7d total).`;
+  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Rain forecast during your round (${toPrecip(windowRainSum)} expected; ${toPrecip(past7DaysRain)} prior 7d total).`;
   setCardStatus(groundCallout, 'warn');
  } else if (subScores[0] >= 15) {
-  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d).`;
+  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Dry / firm fairways with good roll (${toPrecip(recentRainVal)} ${recentRainTitle.toLowerCase()}, ${toPrecip(past7DaysRain)} prior 7d).`;
   setCardStatus(groundCallout, 'good');
  } else if (subScores[0] >= 5) {
   groundShort = 'Soft / Damp';
-  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} 7d total, ${toPrecip(last24hRain)} past 24h). Less roll.`;
+  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Soft / damp ground (${toPrecip(past7DaysRain)} prior 7d total, ${toPrecip(recentRainVal)} ${recentRainTitle.toLowerCase()}). Less roll.`;
   setCardStatus(groundCallout, 'warn');
  } else {
   groundShort = 'Soggy / Frozen';
-  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf (${toPrecip(last24hRain)} past 24h, ${toPrecip(past7DaysRain)} 7d). Check course status.`;
+  groundCallout.innerHTML = `<strong>🌱 Ground Status</strong>Waterlogged or frozen turf (${toPrecip(recentRainVal)} ${recentRainTitle.toLowerCase()}, ${toPrecip(past7DaysRain)} prior 7d). Check course status.`;
   setCardStatus(groundCallout, 'danger');
  }
 
  const windCallout = document.getElementById('windCallout');
  let windAdvice = 'Minimal flight effect';
  if (subScores[1] >= 18) {
-  windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Light breeze (${toSpeed(windowMaxWind)}). Minimal flight effect.`;
+  windCallout.innerHTML = `<strong>💨 Wind & Gust Impact</strong>Sustained ${toSpeed(windowMaxWind)}, gusts to ${toSpeed(windowMaxGust)}. Minimal flight effect.`;
   setCardStatus(windCallout, 'good');
  } else if (subScores[1] >= 12) {
   windAdvice = 'Club up 1 into wind';
-  windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Moderate wind (${toSpeed(windowMaxWind)}). Club up 1 into wind.`;
+  windCallout.innerHTML = `<strong>💨 Wind & Gust Impact</strong>Moderate breeze (${toSpeed(windowMaxWind)}, gusts ${toSpeed(windowMaxGust)}). Club up 1 into wind.`;
   setCardStatus(windCallout, 'warn');
  } else {
   windAdvice = 'Take 2+ extra clubs';
-  windCallout.innerHTML = `<strong>💨 Wind Impact</strong>Strong wind (${toSpeed(windowMaxWind)}). Take 2+ extra clubs.`;
+  windCallout.innerHTML = `<strong>💨 Wind & Gust Impact</strong>Strong wind/gusts (${toSpeed(windowMaxWind)}, gusts ${toSpeed(windowMaxGust)}). Take 2+ extra clubs.`;
   setCardStatus(windCallout, 'danger');
  }
 
@@ -1932,7 +2044,8 @@ function render() {
   totalRainMm: windowRainSum,
   totalRainStr: toPrecip(windowRainSum),
   rains: windowPrecip.map(r => r === 0 ? 'Dry' : toPrecip(r)),
-  last24RainStr: toPrecip(last24hRain),
+  recentRainStr: toPrecip(recentRainVal),
+  recentRainTitle,
   past7RainStr: toPrecip(past7DaysRain),
   groundShort,
   temps: windowTemps.map(t => toTemp(t)),
