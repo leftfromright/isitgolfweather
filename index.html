@@ -90,7 +90,9 @@ html, body {
  overflow: hidden;
  pointer-events: none;
  background: #14261c;
- transition: background 1.2s ease-in-out;
+ /* Force hardware acceleration container */
+ transform: translateZ(0);
+ backface-visibility: hidden;
 }
 
 .bg-base {
@@ -101,6 +103,8 @@ html, body {
  background-position: center bottom;
  filter: brightness(1.04) contrast(1.02) saturate(1.12);
  transition: filter 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s ease-in-out;
+ will-change: filter;
+ transform: translateZ(0);
 }
 
 .bg-atmosphere {
@@ -109,6 +113,8 @@ html, body {
  background: radial-gradient(circle at 82% 14%, rgba(255, 235, 170, 0.45) 0%, rgba(255, 255, 255, 0) 60%);
  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), filter 1.2s cubic-bezier(0.4, 0, 0.2, 1), background 1.2s ease-in-out;
  opacity: 0.85;
+ will-change: opacity, filter, background;
+ transform: translateZ(0);
 }
 
 /* Rain Overlay */
