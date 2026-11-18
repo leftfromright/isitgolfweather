@@ -286,10 +286,19 @@ html, body {
  border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
 }
 
-/* Desktop Hero Card Layout (Original Unchanged) */
-.hero-card { display: grid; grid-template-columns: 225px 1fr; gap: 1.5rem; align-items: center; padding: 1.65rem 1.75rem; }
+/* Desktop Hero Card Layout */
+.hero-card {
+ display: grid;
+ grid-template-columns: 225px 1fr;
+ grid-template-areas: 
+  "dial right"
+  "dial mini";
+ gap: 1.25rem 1.5rem;
+ align-items: center;
+ padding: 1.65rem 1.75rem;
+}
 
-.dial-box { position: relative; width: 215px; height: 215px; margin: 0 auto; }
+.dial-box { grid-area: dial; position: relative; width: 215px; height: 215px; margin: 0 auto; }
 .dial-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .dial-track { fill: none; stroke: rgba(120, 140, 128, 0.25); stroke-width: 15; }
 .dial-arc {
@@ -300,10 +309,24 @@ html, body {
 .dial-pct { font-size: 3.1rem; font-weight: 800; line-height: 1; letter-spacing: -1.5px; }
 .dial-status { font-size: 1.15rem; font-weight: 800; line-height: 1.15; margin-top: 0.35rem; }
 
-.hero-right { display: flex; flex-direction: column; gap: 1.1rem; border-left: 1px solid rgba(120, 140, 128, 0.25); padding-left: 1.5rem; }
-.verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); min-height: 3.8rem; }
+.hero-right {
+ grid-area: right;
+ display: flex;
+ flex-direction: column;
+ border-left: 1px solid rgba(120, 140, 128, 0.25);
+ padding-left: 1.5rem;
+}
+.verdict-headline { font-size: 1.28rem; font-weight: 600; line-height: 1.35; color: var(--text); }
 
-.hero-mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.hero-mini-grid {
+ grid-area: mini;
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 0.75rem;
+ border-left: 1px solid rgba(120, 140, 128, 0.25);
+ padding-left: 1.5rem;
+}
+
 .mini-stat {
  background: var(--glass-card-inner); border: 1px solid var(--glass-border);
  border-radius: 13px; padding: 0.7rem 0.75rem; cursor: pointer; transition: transform 0.18s ease;
@@ -370,7 +393,6 @@ input[type="range"]::-moz-range-thumb {
  gap: 0.75rem;
 }
 
-/* Diagonal stripe texture overlay */
 .daylight-banner::before {
  content: "";
  position: absolute;
@@ -379,14 +401,12 @@ input[type="range"]::-moz-range-thumb {
  pointer-events: none;
 }
 
-/* Yellow / Orange Warning Style (Tight Daylight) */
 .daylight-banner.warn { 
  background: linear-gradient(to bottom, #f97316, #ea580c); 
  color: #ffffff; 
  border: 1px solid rgba(251, 191, 36, 0.4);
 }
 
-/* Red Error Style (Insufficient Time / Too Dark) */
 .daylight-banner.danger { 
  background: linear-gradient(to bottom, #dc2626, #b91c1c); 
  color: #ffffff; 
@@ -502,16 +522,38 @@ svg { width: 100%; height: 100%; overflow: visible; }
 @media (max-width: 768px) {
  .brand h1 { font-size: 0.94rem; }
  
- /* Hero Card: Side-by-side Dial and Summary Text on Mobile */
- .hero-card { display: grid; grid-template-columns: 130px 1fr; gap: 0.85rem; padding: 1.1rem; align-items: center; }
- .dial-box { width: 120px; height: 120px; margin: 0; }
+ /* Hero Card: Side-by-side Dial and Summary Text, Mini-stats stacked below */
+ .hero-card {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  grid-template-areas: 
+   "dial right"
+   "mini mini";
+  gap: 0.85rem;
+  padding: 1.1rem;
+  align-items: center;
+ }
+ .dial-box { grid-area: dial; width: 120px; height: 120px; margin: 0; }
  .dial-pct { font-size: 1.85rem; }
  .dial-status { font-size: 0.85rem; margin-top: 0.15rem; }
- .hero-right { border-left: none; padding-left: 0; gap: 0.65rem; border-top: none; padding-top: 0; }
+ 
+ .hero-right {
+  grid-area: right;
+  border-left: none;
+  padding-left: 0;
+ }
  .verdict-headline { font-size: 0.88rem; min-height: auto; text-align: left; line-height: 1.3; }
  
- /* Stack the 3 mini-stat boxes vertically underneath with aligned internal text */
- .hero-mini-grid { grid-column: span 2; display: grid; grid-template-columns: 1fr; gap: 0.45rem; margin-top: 0.35rem; }
+ /* Stack the 3 mini-stat boxes vertically underneath across both columns */
+ .hero-mini-grid {
+  grid-area: mini;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  border-left: none;
+  padding-left: 0;
+  margin-top: 0.2rem;
+ }
  .mini-stat { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 0.5rem; padding: 0.5rem 0.7rem; align-items: center; }
  .mini-stat-header { grid-column: 1; grid-row: 1 / span 2; margin-bottom: 0; align-self: center; }
  .mini-stat-icon { font-size: 1.3rem; }
@@ -586,45 +628,46 @@ svg { width: 100%; height: 100%; overflow: visible; }
 
   <div class="hero-right">
    <div id="dialSub" class="verdict-headline">Locating golf forecast...</div>
-   <div class="hero-mini-grid">
-    <div class="mini-stat" id="windCardBtn" title="Click for hourly wind & gust details">
-     <div class="mini-stat-header">
-      <div class="mini-stat-icon">💨</div>
-     </div>
-     <div class="mini-stat-label">
-      <span>Wind / Gusts</span>
-      <span class="mini-info-hint">ⓘ</span>
-     </div>
-     <div class="mini-stat-val">
-      <span id="heroWindVal">--</span>
-      <span id="heroWindSub" class="mini-stat-sub">--</span>
-     </div>
+  </div>
+
+  <div class="hero-mini-grid">
+   <div class="mini-stat" id="windCardBtn" title="Click for hourly wind & gust details">
+    <div class="mini-stat-header">
+     <div class="mini-stat-icon">💨</div>
     </div>
-    <div class="mini-stat" id="rainCardBtn" title="Click for hourly rain details">
-     <div class="mini-stat-header">
-      <div class="mini-stat-icon">💧</div>
-     </div>
-     <div class="mini-stat-label">
-      <span>Rain</span>
-      <span class="mini-info-hint">ⓘ</span>
-     </div>
-     <div class="mini-stat-val">
-      <span id="heroRainVal">--</span>
-      <span id="heroRainSub" class="mini-stat-sub">--</span>
-     </div>
+    <div class="mini-stat-label">
+     <span>Wind / Gusts</span>
+     <span class="mini-info-hint">ⓘ</span>
     </div>
-    <div class="mini-stat" id="tempCardBtn" title="Click for hourly temp & carry details">
-     <div class="mini-stat-header">
-      <div class="mini-stat-icon">🌡️</div>
-     </div>
-     <div class="mini-stat-label">
-      <span>Temp</span>
-      <span class="mini-info-hint">ⓘ</span>
-     </div>
-     <div class="mini-stat-val">
-      <span id="heroTempVal">--</span>
-      <span id="heroTempSub" class="mini-stat-sub">--</span>
-     </div>
+    <div class="mini-stat-val">
+     <span id="heroWindVal">--</span>
+     <span id="heroWindSub" class="mini-stat-sub">--</span>
+    </div>
+   </div>
+   <div class="mini-stat" id="rainCardBtn" title="Click for hourly rain details">
+    <div class="mini-stat-header">
+     <div class="mini-stat-icon">💧</div>
+    </div>
+    <div class="mini-stat-label">
+     <span>Rain</span>
+     <span class="mini-info-hint">ⓘ</span>
+    </div>
+    <div class="mini-stat-val">
+     <span id="heroRainVal">--</span>
+     <span id="heroRainSub" class="mini-stat-sub">--</span>
+    </div>
+   </div>
+   <div class="mini-stat" id="tempCardBtn" title="Click for hourly temp & carry details">
+    <div class="mini-stat-header">
+     <div class="mini-stat-icon">🌡️</div>
+    </div>
+    <div class="mini-stat-label">
+     <span>Temp</span>
+     <span class="mini-info-hint">ⓘ</span>
+    </div>
+    <div class="mini-stat-val">
+     <span id="heroTempVal">--</span>
+     <span id="heroTempSub" class="mini-stat-sub">--</span>
     </div>
    </div>
   </div>
