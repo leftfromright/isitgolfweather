@@ -344,36 +344,46 @@ input[type="range"]::-moz-range-thumb {
  border: 1px solid #94a3b8; box-shadow: 0 3px 8px rgba(0,0,0,0.25); cursor: pointer;
 }
 
+/* Daylight Warning Notification Banner Styles */
 .daylight-banner {
- display: none; margin-top: 0.35rem; padding: 0.45rem 0.8rem; border-radius: 10px;
- font-size: 0.76rem; font-weight: 600; text-align: center;
- backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
- box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-.daylight-banner.warn { 
- background: rgba(254, 243, 199, 0.92); 
- color: #92400e; 
- border: 1px solid rgba(245, 158, 11, 0.45); 
- border-left: 4px solid #f59e0b; 
- border-right: 4px solid #f59e0b; 
-}
-[data-theme="dark"] .daylight-banner.warn { 
- background: rgba(69, 53, 10, 0.90); 
- color: #fde68a; 
- border: 1px solid rgba(245, 158, 11, 0.4); 
+ display: none; 
+ margin-top: 0.5rem; 
+ padding: 0.65rem 0.9rem; 
+ border-radius: 6px;
+ font-size: 0.8rem; 
+ font-weight: 500; 
+ text-align: left;
+ backdrop-filter: blur(14px); 
+ -webkit-backdrop-filter: blur(14px);
+ box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+ position: relative;
+ overflow: hidden;
+ display: flex;
+ align-items: center;
+ gap: 0.75rem;
 }
 
-.daylight-banner.danger { 
- background: rgba(254, 226, 226, 0.92); 
- color: #991b1b; 
- border: 1px solid rgba(239, 68, 68, 0.45); 
- border-left: 4px solid #ef4444; 
- border-right: 4px solid #ef4444; 
+/* Diagonal stripe texture overlay */
+.daylight-banner::before {
+ content: "";
+ position: absolute;
+ inset: 0;
+ background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.07) 10px, rgba(255,255,255,0.07) 20px);
+ pointer-events: none;
 }
-[data-theme="dark"] .daylight-banner.danger { 
- background: rgba(87, 26, 26, 0.90); 
- color: #fecaca; 
- border: 1px solid rgba(239, 68, 68, 0.4); 
+
+/* Yellow / Orange Warning Style (Tight Daylight) */
+.daylight-banner.warn { 
+ background: linear-gradient(to bottom, #f97316, #ea580c); 
+ color: #ffffff; 
+ border: 1px solid rgba(251, 191, 36, 0.4);
+}
+
+/* Red Error Style (Insufficient Time / Too Dark) */
+.daylight-banner.danger { 
+ background: linear-gradient(to bottom, #dc2626, #b91c1c); 
+ color: #ffffff; 
+ border: 1px solid rgba(248, 113, 113, 0.4);
 }
 
 .card-header { font-size: 0.94rem; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.45rem; }
