@@ -713,7 +713,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v6.8</span>
+  <span class="version-pill" id="versionTag">v6.9</span>
  </div>
 </main>
 
@@ -721,7 +721,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 6.8 (Smart Pre-Sunrise/Sunset Text Guidance)<br>Made by KW in November 2026</p>
+  <p>Version 6.9 (Yellow/Red Daylight Warning Triangles)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1769,11 +1769,11 @@ function render() {
  if (daylightRemaining < 2.0) {
   daylightWarning.style.display = 'block';
   daylightWarning.className = 'daylight-banner danger';
-  daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — insufficient daylight remaining for a full round.`;
+  daylightWarning.textContent = `🚨 Sunset at ${sunsetStrRaw} — insufficient daylight remaining for 9 or 18 holes.`;
  } else if (daylightRemaining <= 4.0) {
   daylightWarning.style.display = 'block';
   daylightWarning.className = 'daylight-banner warn';
-  daylightWarning.textContent = `🌙 Sunset at ${sunsetStrRaw} — daylight is tight for 18 holes; 9 holes recommended.`;
+  daylightWarning.textContent = `⚠️ Sunset at ${sunsetStrRaw} — daylight is tight for 18 holes; 9 holes recommended.`;
  } else {
   daylightWarning.style.display = 'none';
  }
