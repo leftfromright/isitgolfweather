@@ -286,7 +286,7 @@ html, body {
  border: 1px solid var(--glass-border); border-radius: 18px; padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
 }
 
-/* Desktop Hero Card Layout (Tidied v7.7) */
+/* Desktop Hero Card Layout (Tidied v7.8) */
 .hero-card {
  display: grid;
  grid-template-columns: 205px 1fr;
@@ -836,7 +836,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
  <div class="footer-note">🏌️‍♂️ Plan your round with confidence</div>
  <div class="footer-bottom-bar">
   <button id="installAppBtn" class="version-pill" style="display: none; background: #1b5e20;">📱 Install App</button>
-  <span class="version-pill" id="versionTag">v7.7</span>
+  <span class="version-pill" id="versionTag">v7.8</span>
  </div>
 </main>
 
@@ -844,7 +844,7 @@ svg { width: 100%; height: 100%; overflow: visible; }
 <div class="modal-overlay" id="creatorModal">
  <div class="modal-card">
   <h3>Is it golf weather?</h3>
-  <p>Version 7.7 (Expanded Desktop Mini-Stat Box Widths, Score Bar Breakdown)<br>Made by KW in November 2026</p>
+  <p>Version 7.8 (Compact Wind/Gust Summary, Wet Underfoot Verdict Notice)<br>Made by KW in November 2026</p>
 
   <div class="dev-modal-section">
    <div class="dev-modal-header">
@@ -1993,6 +1993,8 @@ function render() {
 
  const isTightDaylight = daylightRemaining < 2.0 && daylightRemaining > 0;
  const isCold = windowAvgTemp <= 4.0 && windowAvgTemp >= -1.0;
+ const isVeryWetUnderfoot = subScores.ground < 5 && windowAvgTemp > 0.5;
+ const wetSuffix = isVeryWetUnderfoot ? ' It may be very wet underfoot.' : '';
 
  if (hasLightning) {
   finalPct = 0;
@@ -2018,25 +2020,31 @@ function render() {
 
   if (finalPct >= 85) {
    dialVerdict.textContent = isTightDaylight ? '9 Holes 🌙' : 'Perfect ⛳';
-   dialSub.textContent = windowRainSum > 0 ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).` : `Firm fairways & light breeze. No rain forecast during your round.`;
+   dialSub.textContent = windowRainSum > 0
+    ? `Great conditions with light passing showers (${toPrecip(windowRainSum)}).${wetSuffix}`
+    : `Firm fairways & light breeze. No rain forecast during your round.${wetSuffix}`;
   } else if (finalPct >= 70) {
    dialVerdict.textContent = 'Good 👍';
-   if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.`;
-   else if (subScores.ground < 15) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.`;
-   else if (subScores.wind < 18) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.`;
-   else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.`;
-   else dialSub.textContent = `Solid golf weather. No rain forecast during your round.`;
+   if (windowRainSum > 0) dialSub.textContent = `Good golf weather with ${toPrecip(windowRainSum)} rain forecast. Pack an umbrella.${wetSuffix}`;
+   else if (subScores.ground < 15) dialSub.textContent = `Soft fairways with less roll. No rain forecast during your round.${wetSuffix}`;
+   else if (subScores.wind < 18) dialSub.textContent = `Breezy conditions — factor 1–2 extra clubs. No rain forecast during your round.${wetSuffix}`;
+   else if (isCold) dialSub.textContent = `Chilly air — thermal layers advised. No rain forecast during your round.${wetSuffix}`;
+   else dialSub.textContent = `Solid golf weather. No rain forecast during your round.${wetSuffix}`;
   } else if (finalPct >= 50) {
    dialVerdict.textContent = 'Not Bad ⛅';
-   if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.`;
-   else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.`;
-   else dialSub.textContent = `Playable round ahead. No rain forecast during your round.`;
+   if (windowRainSum > 0) dialSub.textContent = `Playable, but ${toPrecip(windowRainSum)} rain forecast. Bring waterproofs.${wetSuffix}`;
+   else if (isCold) dialSub.textContent = `Playable, but cold air & cool breeze. No rain forecast during your round.${wetSuffix}`;
+   else dialSub.textContent = `Playable round ahead. No rain forecast during your round.${wetSuffix}`;
   } else if (finalPct >= 30) {
    dialVerdict.textContent = windowRainSum > 2.0 ? 'Poor 🌧️' : 'Showery 🌦️';
-   dialSub.textContent = windowRainSum > 2.0 ? `Rain expected (${toPrecip(windowRainSum)}). Waterproofs recommended.` : `Light passing showers (${toPrecip(windowRainSum)}). Bring a light jacket.`;
+   dialSub.textContent = windowRainSum > 2.0
+    ? `Rain expected (${toPrecip(windowRainSum)}). Waterproofs recommended.${wetSuffix}`
+    : `Light passing showers (${toPrecip(windowRainSum)}). Bring a light jacket.${wetSuffix}`;
   } else {
    dialVerdict.textContent = windowRainSum > 4.0 ? 'Heavy Rain / Wet 🌧️' : 'Showery 🌦️';
-   dialSub.textContent = windowRainSum > 4.0 ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.` : `Passing dampness (${toPrecip(windowRainSum)}). Playable with light gear.`;
+   dialSub.textContent = windowRainSum > 4.0
+    ? `Heavy rainfall (${toPrecip(windowRainSum)}) during your round. Full waterproof gear required.${wetSuffix}`
+    : `Passing dampness (${toPrecip(windowRainSum)}). Playable with light gear.${wetSuffix}`;
   }
  }
 
@@ -2080,12 +2088,13 @@ function render() {
  document.getElementById('forecastRain').textContent = windowRainSum === 0 ? 'Dry' : toPrecip(windowRainSum);
  document.getElementById('forecastRainSub').textContent = windowRainSum > 0 ? 'Round forecast' : 'No rain';
 
+ const maxDayGust = Math.max(...h.wind_gusts_10m.slice(startIndex, startIndex + 24), 0);
  document.getElementById('sunriseTime').textContent = sunriseStrRaw;
  document.getElementById('sunsetTime').textContent = sunsetStrRaw;
  document.getElementById('tempRange').textContent = `${toTemp(d.temperature_2m_max[currentDayIdx])} / ${toTemp(d.temperature_2m_min[currentDayIdx])}`;
  document.getElementById('daylightLeft').textContent = `${Math.max(0, daylightRemaining).toFixed(1)} hrs`;
  document.getElementById('todayRain').textContent = toPrecip(d.precipitation_sum[currentDayIdx]);
- document.getElementById('maxWind').textContent = `${toSpeed(d.wind_speed_10m_max[currentDayIdx])} (Gusts ${toSpeed(Math.max(...h.wind_gusts_10m.slice(startIndex, startIndex + 24), 0))})`;
+ document.getElementById('maxWind').textContent = `${toSpeed(d.wind_speed_10m_max[currentDayIdx])}/${toSpeed(maxDayGust)}`;
 
  const groundCallout = document.getElementById('groundCallout');
  let groundShort = 'Firm & Dry';
